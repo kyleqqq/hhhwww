@@ -10,6 +10,8 @@ async def main():
     await page.goto('https://devcloud.huaweicloud.com/bonususer/home')
     await asyncio.sleep(2)
 
+    print(page.url)
+
     await page.evaluate('''() =>{ Object.defineProperties(navigator,{ webdriver:{ get: () => false } }) }''')
     await page.type('#personalAccountInputId .tiny-input-text', 'caoyufei')
     await page.type('#personalPasswordInputId .tiny-input-text', 'hack3321')
@@ -17,13 +19,25 @@ async def main():
 
     await asyncio.sleep(5)
 
-    await page.click('#homeheader-signin')
+    print(page.url)
 
-    await asyncio.sleep(5)
+    html = await page.content()
+    if html.find('homeheader-signin') != -1:
+        await page.click('#homeheader-signin')
 
-    title_elements = await page.xpath('//div[@id="homeheader-coins"]')
-    txt = await (await title_elements[0].getProperty('textContent')).jsonValue()
-    print(txt)
+        await asyncio.sleep(5)
+
+        title_elements = await page.xpath('//div[@id="homeheader-coins"]')
+        txt = await (await title_elements[0].getProperty('textContent')).jsonValue()
+        print(txt)
+    elif html.find('mobile-loading-btn-body') != -1:
+        await page.click('.mobile-loading-btn-body')
+
+        await asyncio.sleep(5)
+
+        title_elements = await page.xpath('//div[@class=""count""]')
+        txt = await (await title_elements[0].getProperty('textContent')).jsonValue()
+        print(txt)
 
     await page.close()
     await browser.close()
