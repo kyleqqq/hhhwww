@@ -35,7 +35,7 @@ async def main():
 
         await asyncio.sleep(5)
 
-        title_elements = await page.xpath('//div[@class=""count""]')
+        title_elements = await page.xpath('//div[@class="count"]')
         txt = await (await title_elements[0].getProperty('textContent')).jsonValue()
         print(txt)
 
