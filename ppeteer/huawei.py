@@ -4,7 +4,8 @@ from pyppeteer import launch
 
 
 async def main():
-    browser = await launch(ignorehttpserrrors=True, args=['--disable-infobars', '--no-sandbox'])
+    browser = await launch(ignorehttpserrrors=True,
+                           args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
     page = await browser.newPage()
     await page.goto('https://devcloud.huaweicloud.com/bonususer/home', {'waitUntil': 'load'})
 
