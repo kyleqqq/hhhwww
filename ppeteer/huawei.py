@@ -3,14 +3,12 @@ import asyncio
 from pyppeteer import launch
 
 
-# executablePath='C:\Program Files (x86)\Google\Chrome\Application\chrome.exe',
 async def main():
     browser = await launch(ignorehttpserrrors=True, args=['--disable-infobars', '--no-sandbox'])
     page = await browser.newPage()
-    await page.goto('https://devcloud.huaweicloud.com/bonususer/home')
-    await asyncio.sleep(2)
+    await page.goto('https://devcloud.huaweicloud.com/bonususer/home', {'waitUntil': 'load'})
 
-    print(page.url)
+    await page.waitForSelector('#personalAccountInputId .tiny-input-text', {'visible': True})
 
     await page.evaluate('''() =>{ Object.defineProperties(navigator,{ webdriver:{ get: () => false } }) }''')
     await page.type('#personalAccountInputId .tiny-input-text', 'caoyufei')

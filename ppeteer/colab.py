@@ -1,4 +1,5 @@
 import asyncio
+import codecs
 
 from pyppeteer import launch
 
@@ -32,7 +33,7 @@ async def main():
 
     q = await page.xpath('//div[@class="outputview"]/iframe')
     f = q[0].contentFrame()
-    print(f.content())
+    print(f)
     # nodeInfo = await q._client.send('DOM.describeNode', {
     #     'objectId': q._remoteObject.get('objectId'),
     # })
@@ -40,8 +41,9 @@ async def main():
 
     # print(frame.title)
     print('')
-    for f in page.frames:
-        print(await f.content())
+    for i, frame in enumerate(page.frames):
+        with codecs.open('{}.txt'.format(i), 'w') as f:
+            f.write(await frame.content())
 
     # link = await page.Jeval('#output-footer a', 'el => el.href')
     # await page.type('#output-footer .raw_input', 'hack3321')
