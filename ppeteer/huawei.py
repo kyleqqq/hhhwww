@@ -5,7 +5,7 @@ from pyppeteer import launch
 
 async def main():
     browser = await launch(ignorehttpserrrors=True,
-                           args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
+                           args=['--disable-infobars', '--no-sandbox'])
     page = await browser.newPage()
     await page.goto('https://devcloud.huaweicloud.com/bonususer/home', {'waitUntil': 'load'})
 
@@ -16,27 +16,20 @@ async def main():
     await page.type('#personalPasswordInputId .tiny-input-text', 'hack3321')
     await page.click('#btn_submit')
 
-    await asyncio.sleep(5)
-
-    print(page.url)
-
-    html = await page.content()
-    if html.find('homeheader-signin') != -1:
-        await page.click('#homeheader-signin')
-
-        await asyncio.sleep(5)
-
-        title_elements = await page.xpath('//div[@id="homeheader-coins"]')
-        txt = await (await title_elements[0].getProperty('textContent')).jsonValue()
-        print(txt)
-    elif html.find('mobile-loading-btn-body') != -1:
+    page_url = page.url
+    print(page_url)
+    if page_url.find('mobile') != -1:
+        await page.waitForSelector('.mobile-loading-btn-body', {'visible': True})
+        print(await page.Jeval('.count', 'el => el.textContent'))
         await page.click('.mobile-loading-btn-body')
-
-        await asyncio.sleep(5)
-
-        title_elements = await page.xpath('//div[@class="count"]')
-        txt = await (await title_elements[0].getProperty('textContent')).jsonValue()
-        print(txt)
+        await asyncio.sleep(3)
+        print(await page.Jeval('.count', 'el => el.textContent'))
+    else:
+        await page.waitForSelector('#homeheader-signin', {'visible': True})
+        print(await page.Jeval('#homeheader-coins', 'el => el.textContent'))
+        await page.click('#homeheader-signin')
+        await asyncio.sleep(3)
+        print(await page.Jeval('#homeheader-coins', 'el => el.textContent'))
 
     await page.close()
     await browser.close()

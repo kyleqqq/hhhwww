@@ -1,11 +1,11 @@
 import asyncio
-import codecs
 
 from pyppeteer import launch
 
 
 async def main():
-    browser = await launch(ignorehttpserrrors=True, headless=False, args=['--disable-infobars', '--no-sandbox'])
+    browser = await launch(ignorehttpserrrors=True, headless=False,
+                           args=['--disable-infobars', '--no-sandbox'])
     page = await browser.newPage()
     await page.goto('https://drive.google.com/u/0', {'waitUntil': 'load'})
     page_url = page.url
@@ -32,21 +32,8 @@ async def main():
     await page.waitForSelector('.outputview iframe', {'visible': True})
 
     q = await page.xpath('//div[@class="outputview"]/iframe')
-    f = q[0].contentFrame()
-    print(f)
-    # nodeInfo = await q._client.send('DOM.describeNode', {
-    #     'objectId': q._remoteObject.get('objectId'),
-    # })
-    # node_obj = nodeInfo.get('node', {})
-
-    # print(frame.title)
-    print('')
-    for i, frame in enumerate(page.frames):
-        with codecs.open('{}.txt'.format(i), 'w') as f:
-            f.write(await frame.content())
-
-    # link = await page.Jeval('#output-footer a', 'el => el.href')
-    # await page.type('#output-footer .raw_input', 'hack3321')
+    f = await q[0].contentFrame()
+    print(await f.querySelector('#output-body'))
 
     await asyncio.sleep(200)
 
