@@ -15,6 +15,7 @@ async def main():
     await page.type('#personalAccountInputId .tiny-input-text', 'caoyufei')
     await page.type('#personalPasswordInputId .tiny-input-text', 'hack3321')
     await page.click('#btn_submit')
+    await asyncio.sleep(3)
 
     page_url = page.url
     print(page_url)
