@@ -55,7 +55,7 @@ def generate(subscribe_link, port, config_file):
     config = get_default_config()
     config['inbounds'][0]['port'] = port
     config['outbounds'][0]['settings']['vnext'][0]['address'] = node['add']
-    config['outbounds'][0]['settings']['vnext'][0]['port'] = node['port']
+    config['outbounds'][0]['settings']['vnext'][0]['port'] = int(node['port'])
     config['outbounds'][0]['settings']['vnext'][0]['users'][0]['id'] = node['id']
     with codecs.open(config_file, 'w', 'utf-8') as f:
         f.write(json.dumps(config))
