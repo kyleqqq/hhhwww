@@ -121,7 +121,6 @@ def main(user_name, port):
             cookies = f.read()
         sess.cookies = cookiejar_from_dict(json.loads(cookies))
         print(user_info(user_name))
-        exit()
 
     config_file = os.path.join(DATA_PATH, '{}.json'.format(user_name))
     now_date = to_date(time.time())
