@@ -19,7 +19,7 @@ BASE_URL = 'https://cnplus.xyz'
 USER_URL = '{}/user'.format(BASE_URL)
 ROOT_PATH = dirname(realpath(__file__))
 DATA_PATH = os.path.join(ROOT_PATH, 'data')
-ACCOUNT_LIST = {'haha@dmeo666.cn': 1081, 'atcaoyufei+2@gmail.com': 1082, 'liuming@demo666.cn': 1083}
+ACCOUNT_LIST = {'haha@dmeo666.cn': 1081, 'atcaoyufei+2@gmail.com': 1082, 'liuming@demo666.cn': 1083, 'atcaoyufei@alumni.albany.edu': 1084}
 sess = requests.session()
 
 
