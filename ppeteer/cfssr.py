@@ -3,6 +3,7 @@ import base64
 import codecs
 import json
 import os
+import platform
 import random
 import time
 from os.path import dirname, realpath
@@ -85,7 +86,8 @@ def main(user_name, port):
 
 async def get_link(user_name):
     subscribe_link = ''
-    browser = await launch(ignorehttpserrrors=True, headless=False,
+    headless = False if platform.system() == 'Windows' else True
+    browser = await launch(ignorehttpserrrors=True, headless=headless,
                            args=['--disable-infobars', '--no-sandbox'])
     page = await browser.newPage()
     try:
