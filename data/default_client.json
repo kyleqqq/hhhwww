@@ -1,0 +1,107 @@
+{
+  "log": {
+    "error": "",
+    "loglevel": "info",
+    "access": ""
+  },
+  "inbounds": [
+    {
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "tls",
+          "http"
+        ]
+      },
+      "listen": "127.0.0.1",
+      "protocol": "socks",
+      "settings": {
+        "udp": true,
+        "auth": "noauth"
+      },
+      "port": "1080"
+    }
+  ],
+  "outbounds": [
+    {
+      "mux": {
+        "enabled": false,
+        "concurrency": 8
+      },
+      "protocol": "vmess",
+      "streamSettings": {
+        "wsSettings": {
+          "path": "/panel",
+          "headers": {
+            "host": "s251.wewall.top"
+          }
+        },
+        "tlsSettings": {
+          "allowInsecure": true
+        },
+        "security": "tls",
+        "network": "ws"
+      },
+      "tag": "proxy",
+      "settings": {
+        "vnext": [
+          {
+            "address": "s251.wewall.top",
+            "users": [
+              {
+                "id": "17fc638b-c15b-3e9d-8b1c-42050b27f368",
+                "alterId": 1,
+                "level": 0,
+                "security": "aes-128-gcm"
+              }
+            ],
+            "port": 443
+          }
+        ]
+      }
+    },
+    {
+      "tag": "direct",
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "AsIs",
+        "redirect": "",
+        "userLevel": 0
+      }
+    },
+    {
+      "tag": "block",
+      "protocol": "blackhole",
+      "settings": {
+        "response": {
+          "type": "none"
+        }
+      }
+    }
+  ],
+  "dns": {},
+  "routing": {
+    "settings": {
+      "domainStrategy": "IPIfNonMatch",
+      "rules": [
+        {
+          "type": "field",
+          "outboundTag": "direct",
+          "domain": [
+            "localhost",
+            "geosite:cn"
+          ]
+        },
+        {
+          "type": "field",
+          "ip": [
+            "geoip:private",
+            "geoip:cn"
+          ],
+          "outboundTag": "direct"
+        }
+      ]
+    }
+  },
+  "transport": {}
+}

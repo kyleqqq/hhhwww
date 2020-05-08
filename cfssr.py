@@ -14,8 +14,9 @@ from pyppeteer import launch
 from requests.cookies import cookiejar_from_dict
 
 BIN_URL = 'https://ioflood.com/100mbtest.bin'
-USER_URL = 'https://cfssr.xyz/user'
-ROOT_PATH = dirname(dirname(realpath(__file__)))
+BASE_URL = 'https://cnplus.xyz'
+USER_URL = '{}/user'.format(BASE_URL)
+ROOT_PATH = dirname(realpath(__file__))
 DATA_PATH = os.path.join(ROOT_PATH, 'data')
 ACCOUNT_LIST = {'haha@dmeo666.cn': 1081}
 sess = requests.session()
@@ -62,7 +63,7 @@ def generate(subscribe_link, port, config_file):
 
 
 def get_default_config():
-    with codecs.open(os.path.join(DATA_PATH, 'client.json')) as f:
+    with codecs.open(os.path.join(DATA_PATH, 'default_client.json')) as f:
         return json.loads(f.read())
 
 
@@ -88,7 +89,10 @@ def start_v2ray(config_file, port):
     os.popen(_cmd)
     time.sleep(2)
 
-    print(download(port))
+    try:
+        print(download(port))
+    except Exception as e:
+        print(e)
 
     cmd = "kill -9 $(ps -ef |grep '%s' |grep -v grep | awk '{print $2}')" % config_file
     os.system(cmd)
@@ -150,7 +154,7 @@ async def get_link(user_name):
     page = await browser.newPage()
     try:
         page.on('dialog', lambda dialog: asyncio.ensure_future(close_dialog(dialog)))
-        await page.goto('https://cfssr.xyz/auth/login', {'waitUntil': 'load'})
+        await page.goto('{}/auth/login'.format(BASE_URL), {'waitUntil': 'load'})
         await page.type('#email', user_name)
         await page.type('#passwd', 'hack3321')
         await page.click('#login')
@@ -163,7 +167,7 @@ async def get_link(user_name):
         user_level = str(user_level).strip()
         print('{}: {}'.format(user_name, user_level))
         if user_level.find('普通') != -1:
-            await page.goto('https://cfssr.xyz/user/shop', {'waitUntil': 'load'})
+            await page.goto('{}/user/shop'.format(BASE_URL), {'waitUntil': 'load'})
             shop_btn = await page.xpath('//a[@class="btn btn-brand-accent shop-btn"]')
             await shop_btn[1].click()
             await asyncio.sleep(1)
@@ -171,7 +175,7 @@ async def get_link(user_name):
             await asyncio.sleep(1)
             await page.click('#order_input')
             await asyncio.sleep(3)
-            await page.goto('https://cfssr.xyz/user', {'waitUntil': 'load'})
+            await page.goto(USER_URL, {'waitUntil': 'load'})
             user_level = await page.Jeval('.nodetype', 'el => el.innerText')
             user_level = str(user_level).strip()
             print('{}: {}'.format(user_name, user_level))
