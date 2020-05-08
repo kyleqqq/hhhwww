@@ -83,6 +83,8 @@ def download(port):
 
 def start_v2ray(config_file, port):
     _cmd = 'nohup /usr/bin/v2ray/v2ray -config {} > /dev/null 2>&1 &'.format(config_file)
+    print(_cmd)
+
     os.popen(_cmd)
     time.sleep(2)
 
