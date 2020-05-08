@@ -18,7 +18,7 @@ BASE_URL = 'https://cnplus.xyz'
 USER_URL = '{}/user'.format(BASE_URL)
 ROOT_PATH = dirname(realpath(__file__))
 DATA_PATH = os.path.join(ROOT_PATH, 'data')
-ACCOUNT_LIST = {'haha@dmeo666.cn': 1081}
+ACCOUNT_LIST = {'haha@dmeo666.cn': 1081, 'atcaoyufei+2@gmail.com': 1082}
 sess = requests.session()
 
 
@@ -75,7 +75,7 @@ def download(port):
         'https': 'socks5://127.0.0.1:%s' % port,
     }
     n = 0
-    t = (random.randint(2048, 8192)) * 10000
+    t = (random.randint(1024, 8192)) * 1024
     with requests.get(BIN_URL, stream=True, proxies=_PROXIES, timeout=10) as res:
         for chunk in res.iter_content(1024):
             n += len(chunk)
