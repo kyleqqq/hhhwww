@@ -6,6 +6,7 @@ import os
 import platform
 import random
 import time
+from concurrent import futures
 from os.path import dirname, realpath
 
 import pyquery
@@ -13,12 +14,12 @@ import requests
 from pyppeteer import launch
 from requests.cookies import cookiejar_from_dict
 
-BIN_URL = 'https://ioflood.com/100mbtest.bin'
+BIN_URL = 'http://soft.vpser.net/lnmp/lnmp0.1.tar.gz'
 BASE_URL = 'https://cnplus.xyz'
 USER_URL = '{}/user'.format(BASE_URL)
 ROOT_PATH = dirname(realpath(__file__))
 DATA_PATH = os.path.join(ROOT_PATH, 'data')
-ACCOUNT_LIST = {'haha@dmeo666.cn': 1081, 'atcaoyufei+2@gmail.com': 1082}
+ACCOUNT_LIST = {'haha@dmeo666.cn': 1081, 'atcaoyufei+2@gmail.com': 1082, 'liuming@demo666.cn': 1083}
 sess = requests.session()
 
 
@@ -75,7 +76,7 @@ def download(port):
         'https': 'socks5://127.0.0.1:%s' % port,
     }
     n = 0
-    t = (random.randint(1024, 8192)) * 1024
+    t = (random.randint(1024, 2048)) * 1024
     with requests.get(BIN_URL, stream=True, proxies=_PROXIES, timeout=10) as res:
         for chunk in res.iter_content(1024):
             n += len(chunk)
@@ -215,7 +216,16 @@ def test():
 
 if __name__ == '__main__':
     # test()
-    for _user_name, _port in ACCOUNT_LIST.items():
-        main(_user_name, _port)
+
+    n = min(int(len(ACCOUNT_LIST) / 2), 5)
+    try:
+        with futures.ThreadPoolExecutor(n) as executor:
+            for _user_name, _port in ACCOUNT_LIST.items():
+                executor.submit(main, _user_name, _port)
+    except Exception as e:
+        print(e)
+
+    # for _user_name, _port in ACCOUNT_LIST.items():
+    #     main(_user_name, _port)
     # tasks = [main(user_name, port) for user_name, port in ACCOUNT_LIST.items()]
     # asyncio.get_event_loop().run_until_complete(asyncio.wait(tasks))
