@@ -34,12 +34,7 @@ def to_date(timestamp):
     return time.strftime('%Y-%m-%d', time_struct)
 
 
-def generate(subscribe_link, user_name, port):
-    file = os.path.join(DATA_PATH, '{}.json'.format(user_name))
-    if os.path.exists(file):
-        t = os.path.getctime(file)
-        print(to_date(t))
-
+def generate(subscribe_link, port, config_file):
     html = requests.get(subscribe_link, timeout=5).text
     string = decode(html)
     lines = string.split('\n')
@@ -50,7 +45,14 @@ def generate(subscribe_link, user_name, port):
         if not vmess:
             continue
         nodes.append(json.loads(vmess))
-    return random.choice(nodes)
+    node = random.choice(nodes)
+    config = get_default_config()
+    config['inbounds'][0]['port'] = port
+    config['outbounds'][0]['settings']['vnext'][0]['address'] = node['add']
+    config['outbounds'][0]['settings']['vnext'][0]['port'] = node['port']
+    config['outbounds'][0]['settings']['vnext'][0]['users'][0]['id'] = node['id']
+    with codecs.open(config_file, 'w', 'utf-8') as f:
+        f.write(json.dumps(config))
 
 
 def get_default_config():
@@ -58,7 +60,31 @@ def get_default_config():
         return json.loads(f.read())
 
 
-async def main(user_name, port):
+async def start_v2ray(config_file):
+    _bin = '/usr/bin/v2ray/v2ray -config {}'.format(config_file)
+    print(_bin)
+
+
+def main(user_name, port):
+    config_file = os.path.join(DATA_PATH, '{}.json'.format(user_name))
+    now_date = to_date(time.time())
+    if os.path.exists(config_file):
+        t = os.path.getctime(config_file)
+        if to_date(t) == now_date:
+            start_v2ray(config_file)
+            return
+
+    loop = asyncio.get_event_loop()
+    future = asyncio.ensure_future(get_link(user_name))
+    # future.add_done_callback(callback)
+    loop.run_until_complete(future)
+    subscribe_link = future.result()
+    generate(subscribe_link, port, config_file)
+    start_v2ray(config_file)
+
+
+async def get_link(user_name):
+    subscribe_link = ''
     browser = await launch(ignorehttpserrrors=True, headless=False,
                            args=['--disable-infobars', '--no-sandbox'])
     page = await browser.newPage()
@@ -99,19 +125,26 @@ async def main(user_name, port):
             await asyncio.sleep(3)
             await page.click('#result_ok')
 
+        with codecs.open(os.path.join(DATA_PATH, '{}.cookie'.format(user_name)), 'w', 'utf-8') as f:
+            f.write(json.dumps(await page.cookies()))
+
         subscribe_link = await page.Jeval('#all_v2ray_windows input', 'el => el.value')
-        print(subscribe_link)
-
-        print(generate(subscribe_link, user_name, port))
-
-        await asyncio.sleep(200)
     except Exception as e:
         print(e)
 
     await page.close()
     await browser.close()
 
+    return subscribe_link
+
+
+def test():
+    generate('https://rss.cnrss.xyz/link/mQq0c3R9qfD7n16F?mu=2', 'haha@dmeo666.cn', 1081)
+
 
 if __name__ == '__main__':
-    tasks = [main(user_name, port) for user_name, port in ACCOUNT_LIST.items()]
-    asyncio.get_event_loop().run_until_complete(asyncio.wait(tasks))
+    # test()
+    for _user_name, _port in ACCOUNT_LIST.items():
+        main(_user_name, _port)
+    # tasks = [main(user_name, port) for user_name, port in ACCOUNT_LIST.items()]
+    # asyncio.get_event_loop().run_until_complete(asyncio.wait(tasks))
