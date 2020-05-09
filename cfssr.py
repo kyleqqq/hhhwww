@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import base64
 import codecs
@@ -71,6 +72,7 @@ def generate_config(subscribe_link, port, config_file):
     config['outbounds'][0]['settings']['vnext'][0]['users'][0]['id'] = node['id']
     with codecs.open(config_file, 'w', 'utf-8') as f:
         f.write(json.dumps(config))
+    return nodes
 
 
 def get_default_config():
@@ -204,7 +206,9 @@ async def get_subscribe_link(user_name):
 
 
 def test():
-    generate_config('https://rss.cnrss.xyz/link/mQq0c3R9qfD7n16F?mu=2', 'haha@dmeo666.cn', 1081)
+    nodes = generate_config('https://rss.cnrss.xyz/link/iLebuiG9PURb6dDK?mu=2', 1081, os.path.join(DATA_PATH, 'hah.json'))
+    for node in nodes:
+        print(node)
 
 
 def check_run():
@@ -229,5 +233,6 @@ def script_main():
 
 
 if __name__ == '__main__':
+    # test()
     if check_run():
         script_main()
