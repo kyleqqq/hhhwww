@@ -239,6 +239,6 @@ def script_main():
 
 
 if __name__ == '__main__':
-    test()
-    # if check_run():
-    #     script_main()
+    # test()
+    if check_run():
+        script_main()
