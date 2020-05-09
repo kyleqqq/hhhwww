@@ -214,7 +214,7 @@ def check_run():
         if not os.path.exists(config_file) or to_date(os.path.getctime(config_file)) != now_date:
             loop = asyncio.get_event_loop()
             res = loop.run_until_complete(get_subscribe_link(_user_name))
-            generate_config(res, _user_name, _port)
+            generate_config(res, _port, config_file)
     return True
 
 
