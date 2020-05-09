@@ -1,4 +1,3 @@
-import argparse
 import asyncio
 import base64
 import codecs
@@ -7,6 +6,7 @@ import logging
 import os
 import platform
 import random
+import re
 import threading
 import time
 from concurrent import futures
@@ -59,10 +59,15 @@ def generate_config(subscribe_link, port, config_file):
     for line in lines:
         line = line.replace('vmess://', '')
         vmess = decode(line)
-        if not vmess:
+        if not vmess or vmess.find('倍率0|') != -1:
             continue
-        nodes.append(json.loads(vmess))
-    node = random.choice(nodes)
+        rate = re.search(r'倍率([0-9.]+)', vmess)
+        nodes.append((rate.group(1), json.loads(vmess)))
+    if not len(nodes):
+        raise Exception(f'find node fail. {subscribe_link}')
+
+    nodes.sort(key=lambda k: k[0])
+    node = nodes[-1][1]
     config = get_default_config()
     config['inbounds'][0]['port'] = port
     config['outbounds'][0]['settings']['vnext'][0]['address'] = node['add']
@@ -76,7 +81,7 @@ def generate_config(subscribe_link, port, config_file):
 
 
 def get_default_config():
-    with codecs.open(os.path.join(DATA_PATH, 'default_client.json')) as f:
+    with codecs.open(os.path.join(DATA_PATH, 'defaults', 'default_client.json')) as f:
         return json.loads(f.read())
 
 
@@ -206,7 +211,8 @@ async def get_subscribe_link(user_name):
 
 
 def test():
-    nodes = generate_config('https://rss.cnrss.xyz/link/iLebuiG9PURb6dDK?mu=2', 1081, os.path.join(DATA_PATH, 'hah.json'))
+    nodes = generate_config('https://rss.cnrss.xyz/link/iLebuiG9PURb6dDK?mu=2', 1081,
+                            os.path.join(DATA_PATH, 'hah.json'))
     for node in nodes:
         print(node)
 
@@ -233,6 +239,6 @@ def script_main():
 
 
 if __name__ == '__main__':
-    # test()
-    if check_run():
-        script_main()
+    test()
+    # if check_run():
+    #     script_main()
