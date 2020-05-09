@@ -27,6 +27,7 @@ DATA_PATH = os.path.join(ROOT_PATH, 'data')
 ACCOUNT_LIST = {'haha@dmeo666.cn': 1081, 'atcaoyufei+2@gmail.com': 1082, 'liuming@demo666.cn': 1083,
                 'atcaoyufei@alumni.albany.edu': 1084}
 sess = requests.session()
+
 lock = threading.Lock()
 
 
@@ -128,17 +129,8 @@ def user_info(username):
 
 
 def main(user_name, port):
-    now_date = to_date(time.time())
     cookie_file = os.path.join(DATA_PATH, '{}.cookie'.format(user_name))
     config_file = os.path.join(DATA_PATH, '{}.json'.format(user_name))
-    file_date = to_date(os.path.getctime(config_file))
-
-    if file_date != now_date:
-        with lock:
-            loop = asyncio.get_event_loop()
-            subscribe_link = loop.run_until_complete(get_subscribe_link(user_name))
-            loop.close()
-            generate_config(subscribe_link, port, config_file)
 
     if os.path.exists(cookie_file):
         with codecs.open(cookie_file, 'r', 'utf-8') as f:
@@ -146,7 +138,8 @@ def main(user_name, port):
         sess.cookies = cookiejar_from_dict(json.loads(cookies))
         print(user_info(user_name))
 
-    start_v2ray(config_file, port)
+    if os.path.exists(config_file):
+        start_v2ray(config_file, port)
 
 
 async def get_subscribe_link(user_name):
@@ -201,8 +194,8 @@ async def get_subscribe_link(user_name):
             f.write(json.dumps(new_cookies))
 
         subscribe_link = await page.Jeval('#all_v2ray_windows input', 'el => el.value')
-    except Exception as e:
-        print(e)
+    except Exception as e1:
+        logging.exception(e1)
 
     await page.close()
     await browser.close()
@@ -214,11 +207,27 @@ def test():
     generate_config('https://rss.cnrss.xyz/link/mQq0c3R9qfD7n16F?mu=2', 'haha@dmeo666.cn', 1081)
 
 
-if __name__ == '__main__':
+def check_run():
+    now_date = to_date(time.time())
+    for _user_name, _port in ACCOUNT_LIST.items():
+        config_file = os.path.join(DATA_PATH, '{}.json'.format(_user_name))
+        if not os.path.exists(config_file) or to_date(os.path.getctime(config_file)) != now_date:
+            loop = asyncio.get_event_loop()
+            res = loop.run_until_complete(get_subscribe_link(_user_name))
+            generate_config(res, _user_name, _port)
+    return True
+
+
+def script_main():
     n = min(2, int(len(ACCOUNT_LIST)))
-    try:
-        with futures.ThreadPoolExecutor(n) as executor:
-            for _user_name, _port in ACCOUNT_LIST.items():
+    with futures.ThreadPoolExecutor(n) as executor:
+        for _user_name, _port in ACCOUNT_LIST.items():
+            try:
                 executor.submit(main, _user_name, _port)
-    except Exception as e:
-        logging.exception(e)
+            except Exception as e:
+                logging.exception(e)
+
+
+if __name__ == '__main__':
+    if check_run():
+        script_main()
