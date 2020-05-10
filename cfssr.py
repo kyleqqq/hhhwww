@@ -107,7 +107,7 @@ def start_v2ray(config_file, port):
     os.popen(_cmd)
     time.sleep(2)
 
-    download(port)
+    print(download(port))
 
     cmd = "kill -9 $(ps -ef |grep '%s' |grep -v grep | awk '{print $2}')" % config_file
     os.system(cmd)
