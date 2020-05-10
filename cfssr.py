@@ -26,7 +26,7 @@ USER_URL = '{}/user'.format(BASE_URL)
 ROOT_PATH = dirname(realpath(__file__))
 DATA_PATH = os.path.join(ROOT_PATH, 'data')
 ACCOUNT_LIST = {'haha@dmeo666.cn': 1081, 'atcaoyufei+2@gmail.com': 1082, 'liuming@demo666.cn': 1083,
-                'atcaoyufei@alumni.albany.edu': 1084, '20130444229@mail.sdufe.edu.cn': 1085}
+                'atcaoyufei@alumni.albany.edu': 1084, '20130444229@mail.sdufe.edu.cn': 1085, 'neeyuese@163.com': 1086}
 sess = requests.session()
 
 lock = threading.Lock()
