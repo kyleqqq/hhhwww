@@ -1,12 +1,14 @@
 import asyncio
 import base64
 import codecs
+import datetime
 import json
 import logging
 import os
 import platform
 import random
 import re
+import sched
 import threading
 import time
 from concurrent import futures
@@ -30,6 +32,9 @@ ACCOUNT_LIST = {'haha@dmeo666.cn': 1081, 'atcaoyufei+2@gmail.com': 1082, 'liumin
 sess = requests.session()
 
 lock = threading.Lock()
+
+_scheduler = sched.scheduler(time.time, time.sleep)
+_USER_NODE = {}
 
 
 async def close_dialog(dialog):
@@ -63,6 +68,7 @@ def generate_config(subscribe_link, port, config_file):
             continue
         rate = re.search(r'倍率([0-9.]+)', vmess)
         nodes.append((rate.group(1), json.loads(vmess)))
+
     if not len(nodes):
         raise Exception(f'find node fail. {subscribe_link}')
 
@@ -77,7 +83,7 @@ def generate_config(subscribe_link, port, config_file):
     config['outbounds'][0]['settings']['vnext'][0]['users'][0]['id'] = node['id']
     with codecs.open(config_file, 'w', 'utf-8') as f:
         f.write(json.dumps(config))
-    return nodes
+    return node
 
 
 def get_default_config():
@@ -101,16 +107,20 @@ def download(port):
 
 
 def start_v2ray(config_file, port):
+    data = []
     _cmd = 'nohup /usr/bin/v2ray/v2ray -config {} > /dev/null 2>&1 &'.format(config_file)
-    # print(_cmd)
+    data.append(_cmd)
 
     os.popen(_cmd)
     time.sleep(2)
 
-    print(download(port))
+    info = download(port)
+    data.append(info)
 
     cmd = "kill -9 $(ps -ef |grep '%s' |grep -v grep | awk '{print $2}')" % config_file
     os.system(cmd)
+
+    return data
 
 
 def user_info(username):
@@ -136,17 +146,21 @@ def user_info(username):
 
 
 def main(user_name, port):
+    t = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
     cookie_file = os.path.join(DATA_PATH, '{}.cookie'.format(user_name))
     config_file = os.path.join(DATA_PATH, '{}.json'.format(user_name))
 
+    data = [t, user_name, _USER_NODE[user_name]]
     if os.path.exists(cookie_file):
         with codecs.open(cookie_file, 'r', 'utf-8') as f:
             cookies = f.read()
         sess.cookies = cookiejar_from_dict(json.loads(cookies))
-        print(user_info(user_name))
+        data.extend(user_info(user_name))
 
     if os.path.exists(config_file):
-        start_v2ray(config_file, port)
+        data.extend(start_v2ray(config_file, port))
+    return data
 
 
 async def get_subscribe_link(user_name):
@@ -217,28 +231,37 @@ def test():
         print(node)
 
 
-def check_run():
-    now_date = to_date(time.time())
+def init_config():
+    os.popen('rm -f {}/*'.format(DATA_PATH))
     for _user_name, _port in ACCOUNT_LIST.items():
         config_file = os.path.join(DATA_PATH, '{}.json'.format(_user_name))
-        if not os.path.exists(config_file) or to_date(os.path.getctime(config_file)) != now_date:
-            loop = asyncio.get_event_loop()
-            res = loop.run_until_complete(get_subscribe_link(_user_name))
-            generate_config(res, _port, config_file)
-    return True
+        loop = asyncio.get_event_loop()
+        res = loop.run_until_complete(get_subscribe_link(_user_name))
+        node = generate_config(res, _port, config_file)
+        _USER_NODE[_user_name] = node['ps']
+
+
+def callback(future):
+    result = future.result()
+    print(result)
 
 
 def script_main():
-    n = min(2, int(len(ACCOUNT_LIST)))
+    n = len(ACCOUNT_LIST)
     with futures.ThreadPoolExecutor(n) as executor:
         for _user_name, _port in ACCOUNT_LIST.items():
             try:
-                executor.submit(main, _user_name, _port)
+                future = executor.submit(main, _user_name, _port)
+                future.add_done_callback(callback)
             except Exception as e:
                 logging.exception(e)
+
+    _scheduler.enter(300, 0, script_main)
 
 
 if __name__ == '__main__':
     # test()
-    if check_run():
-        script_main()
+    _scheduler.enter(0, 0, init_config)
+
+    _scheduler.enter(300, 0, script_main)
+    _scheduler.run()
