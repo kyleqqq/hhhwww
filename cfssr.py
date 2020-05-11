@@ -259,6 +259,7 @@ def script_main():
         try:
             for result in executor.map(main, tasks, chunksize=n):
                 print(result)
+                print()
         except Exception as e:
             logging.exception(e)
 
