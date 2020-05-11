@@ -119,9 +119,9 @@ def start_v2ray(config_file, port):
     except Exception as e:
         data.append(str(e))
 
-    time.sleep(2)
-    cmd = "kill -9 $(ps -ef |grep '%s' |grep -v grep | awk '{print $2}')" % config_file
-    os.popen(cmd)
+    # time.sleep(2)
+    # cmd = "kill -9 $(ps -ef |grep '%s' |grep -v grep | awk '{print $2}')" % config_file
+    # os.popen(cmd)
     return data
 
 
@@ -261,6 +261,9 @@ def script_main():
                 print()
         except Exception as e:
             logging.exception(e)
+
+    cmd = "kill -9 $(ps -ef |grep '%s' |grep -v grep | awk '{print $2}')" % DATA_PATH
+    os.popen(cmd)
 
     if _run_count < _max_count:
         _scheduler.enter(300, 0, script_main)
