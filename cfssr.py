@@ -24,7 +24,7 @@ from requests.cookies import cookiejar_from_dict
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s[%(filename)s:%(lineno)d][%(levelname)s]:%(message)s')
 
-BIN_URL = 'https://github.com/rclone/rclone/releases/download/v1.51.0/rclone-v1.51.0-linux-amd64.zip'
+BIN_URL = 'http://soft.vpser.net/lnmp/lnmp0.6-full.tar.gz'
 BASE_URL = 'https://cnplus.xyz'
 USER_URL = '{}/user'.format(BASE_URL)
 ROOT_PATH = dirname(realpath(__file__))
@@ -125,6 +125,7 @@ def start_v2ray(config_file, port):
     except Exception as e:
         data.append(str(e))
 
+    time.sleep(2)
     cmd = "kill -9 $(ps -ef |grep '%s' |grep -v grep | awk '{print $2}')" % config_file
     os.system(cmd)
 
