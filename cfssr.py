@@ -266,7 +266,7 @@ def script_main():
     os.popen(cmd)
 
     if _run_count < _max_count:
-        _scheduler.enter(300, 0, script_main)
+        _scheduler.enter(100, 0, script_main)
 
 
 if __name__ == '__main__':
