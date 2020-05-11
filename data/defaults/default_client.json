@@ -30,26 +30,26 @@
       "protocol": "vmess",
       "streamSettings": {
         "wsSettings": {
-          "path": "",
+          "path": "/panel",
           "headers": {
-            "host": ""
+            "host": "s95.snode.xyz"
           }
         },
         "tlsSettings": {
           "allowInsecure": true
         },
-        "security": "none",
+        "security": "tls",
         "network": "ws"
       },
       "tag": "proxy",
       "settings": {
         "vnext": [
           {
-            "address": "132.145.95.22",
+            "address": "s95.snode.xyz",
             "users": [
               {
-                "id": "178ca615-5f7f-4d15-b349-35f5fcb33050",
-                "alterId": 233,
+                "id": "8e38ab2e-dd96-344d-aa30-a6cfa056e7d4",
+                "alterId": 1,
                 "level": 0,
                 "security": "aes-128-gcm"
               }

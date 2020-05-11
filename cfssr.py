@@ -3,6 +3,7 @@ import asyncio
 import base64
 import codecs
 import datetime
+import functools
 import json
 import logging
 import os
@@ -81,8 +82,8 @@ def generate_config(subscribe_link, port, config_file):
     config = get_default_config()
     config['inbounds'][0]['port'] = port
     config['outbounds'][0]['settings']['vnext'][0]['address'] = node['add']
+    config['outbounds'][0]['streamSettings']['wsSettings']['path'] = node['path']
     config['outbounds'][0]['streamSettings']['wsSettings']['headers']['host'] = node['add']
-
     config['outbounds'][0]['settings']['vnext'][0]['port'] = int(node['port'])
     config['outbounds'][0]['settings']['vnext'][0]['users'][0]['id'] = node['id']
     with codecs.open(config_file, 'w', 'utf-8') as f:
@@ -234,8 +235,7 @@ async def get_subscribe_link(user_name):
 def test():
     nodes = generate_config('https://rss.cnrss.xyz/link/iLebuiG9PURb6dDK?mu=2', 1081,
                             os.path.join(DATA_PATH, 'hah.json'))
-    for node in nodes:
-        print(node)
+    print(nodes)
 
 
 def init_config():
@@ -281,7 +281,7 @@ if __name__ == '__main__':
     _max_count = params.get('max')
     _action = params.get('action')
     if _action:
-        _action()
+        eval(_action)()
     elif params.get('init'):
         _scheduler.enter(0, 0, init_config)
         _scheduler.enter(100, 0, script_main)
