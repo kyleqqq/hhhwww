@@ -35,6 +35,8 @@ lock = threading.Lock()
 
 _scheduler = sched.scheduler(time.time, time.sleep)
 _USER_NODE = {}
+_run_count = 0
+_max_count = 50
 
 
 async def close_dialog(dialog):
@@ -247,6 +249,8 @@ def callback(future):
 
 
 def script_main():
+    global _run_count
+    _run_count += 1
     n = len(ACCOUNT_LIST)
     with futures.ThreadPoolExecutor(n) as executor:
         for _user_name, _port in ACCOUNT_LIST.items():
@@ -256,7 +260,8 @@ def script_main():
             except Exception as e:
                 logging.exception(e)
 
-    _scheduler.enter(300, 0, script_main)
+    if _run_count < _max_count:
+        _scheduler.enter(300, 0, script_main)
 
 
 if __name__ == '__main__':
