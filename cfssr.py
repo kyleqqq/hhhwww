@@ -2,8 +2,6 @@ import argparse
 import asyncio
 import base64
 import codecs
-import datetime
-import functools
 import json
 import logging
 import os
@@ -20,9 +18,6 @@ import pyquery
 import requests
 from pyppeteer import launch
 from requests.cookies import cookiejar_from_dict
-
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s[%(filename)s:%(lineno)d][%(levelname)s]:%(message)s')
 
 BIN_URL = 'http://soft.vpser.net/lnmp/lnmp0.6-full.tar.gz'
 BASE_URL = 'https://cnplus.xyz'
@@ -78,7 +73,6 @@ def generate_config(subscribe_link, port, config_file):
 
     nodes.sort(key=lambda k: k[0])
     node = nodes[-1][1]
-    print(node)
     config = get_default_config()
     config['inbounds'][0]['port'] = port
     config['outbounds'][0]['settings']['vnext'][0]['address'] = node['add']
@@ -127,12 +121,12 @@ def start_v2ray(config_file, port):
 
     time.sleep(2)
     cmd = "kill -9 $(ps -ef |grep '%s' |grep -v grep | awk '{print $2}')" % config_file
-    os.system(cmd)
-
+    os.popen(cmd)
     return data
 
 
-def user_info(username):
+def user_info(username, cookies):
+    sess.cookies = cookies
     html = sess.get(USER_URL).text
     doc = pyquery.PyQuery(html)
     elements = doc('.la-top')
@@ -154,9 +148,9 @@ def user_info(username):
     return data
 
 
-def main(user_name, port):
+def main(param):
     t = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-
+    user_name, port = param
     cookie_file = os.path.join(DATA_PATH, '{}.cookie'.format(user_name))
     config_file = os.path.join(DATA_PATH, '{}.json'.format(user_name))
 
@@ -164,8 +158,8 @@ def main(user_name, port):
     if os.path.exists(cookie_file):
         with codecs.open(cookie_file, 'r', 'utf-8') as f:
             cookies = f.read()
-        sess.cookies = cookiejar_from_dict(json.loads(cookies))
-        data.extend(user_info(user_name))
+        cookies = cookiejar_from_dict(json.loads(cookies))
+        data.extend(user_info(user_name, cookies))
 
     if os.path.exists(config_file):
         data.extend(start_v2ray(config_file, port))
@@ -245,26 +239,28 @@ def init_config():
         config_file = os.path.join(DATA_PATH, '{}.json'.format(_user_name))
         loop = asyncio.get_event_loop()
         res = loop.run_until_complete(get_subscribe_link(_user_name))
+        print('')
         node = generate_config(res, _port, config_file)
+        print(node)
         _USER_NODE[_user_name] = node['ps']
-
-
-def callback(future):
-    result = future.result()
-    print(result)
 
 
 def script_main():
     global _run_count
     _run_count += 1
-    n = len(ACCOUNT_LIST)
+
+    tasks = []
+    for k, v in ACCOUNT_LIST.items():
+        tasks.append([k, v])
+
+    n = int(len(tasks) / 2)
     with futures.ThreadPoolExecutor(n) as executor:
-        for _user_name, _port in ACCOUNT_LIST.items():
-            try:
-                future = executor.submit(main, _user_name, _port)
-                future.add_done_callback(callback)
-            except Exception as e:
-                logging.exception(e)
+        try:
+            for result in executor.map(main, tasks, chunksize=n):
+                print(result)
+                print()
+        except Exception as e:
+            logging.exception(e)
 
     if _run_count < _max_count:
         _scheduler.enter(300, 0, script_main)
@@ -273,7 +269,7 @@ def script_main():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('action', nargs='?')
-    parser.add_argument('--max', default=20, type=int)
+    parser.add_argument('--max', default=30, type=int)
     parser.add_argument('--init', action='store_true', default=False)
 
     args = parser.parse_args()
@@ -281,6 +277,7 @@ if __name__ == '__main__':
 
     _max_count = params.get('max')
     _action = params.get('action')
+
     if _action:
         eval(_action)()
     elif params.get('init'):
