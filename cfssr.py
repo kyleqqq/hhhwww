@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import base64
 import codecs
@@ -117,8 +118,11 @@ def start_v2ray(config_file, port):
     os.popen(_cmd)
     time.sleep(2)
 
-    info = download(port)
-    data.append(info)
+    try:
+        info = download(port)
+        data.append(info)
+    except Exception as e:
+        data.append(str(e))
 
     cmd = "kill -9 $(ps -ef |grep '%s' |grep -v grep | awk '{print $2}')" % config_file
     os.system(cmd)
@@ -266,8 +270,22 @@ def script_main():
 
 
 if __name__ == '__main__':
-    # test()
-    _scheduler.enter(0, 0, init_config)
+    global _max_count
+    parser = argparse.ArgumentParser()
+    parser.add_argument('action', nargs='?')
+    parser.add_argument('--max', default=_max_count, type=int)
+    parser.add_argument('--init', action='store_true', default=False)
 
-    _scheduler.enter(120, 0, script_main)
-    _scheduler.run()
+    args = parser.parse_args()
+    params = vars(args)
+
+    _max_count = params.get('max')
+    _action = params.get('action')
+    if _action:
+        _action()
+    elif params.get('init'):
+        _scheduler.enter(0, 0, init_config)
+        _scheduler.enter(100, 0, script_main)
+    else:
+        _scheduler.enter(0, 0, script_main)
+        _scheduler.run()
