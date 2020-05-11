@@ -76,6 +76,7 @@ def generate_config(subscribe_link, port, config_file):
 
     nodes.sort(key=lambda k: k[0])
     node = nodes[-1][1]
+    print(node)
     config = get_default_config()
     config['inbounds'][0]['port'] = port
     config['outbounds'][0]['settings']['vnext'][0]['address'] = node['add']
@@ -153,7 +154,7 @@ def main(user_name, port):
     cookie_file = os.path.join(DATA_PATH, '{}.cookie'.format(user_name))
     config_file = os.path.join(DATA_PATH, '{}.json'.format(user_name))
 
-    data = [t, user_name, _USER_NODE[user_name]]
+    data = [t, user_name, _USER_NODE.get(user_name)]
     if os.path.exists(cookie_file):
         with codecs.open(cookie_file, 'r', 'utf-8') as f:
             cookies = f.read()
@@ -268,5 +269,5 @@ if __name__ == '__main__':
     # test()
     _scheduler.enter(0, 0, init_config)
 
-    _scheduler.enter(300, 0, script_main)
+    _scheduler.enter(120, 0, script_main)
     _scheduler.run()
