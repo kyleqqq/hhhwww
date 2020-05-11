@@ -117,7 +117,7 @@ def start_v2ray(config_file, port):
         info = download(port)
         data.append(info)
     except Exception as e:
-        data.append(str(e))
+        pass
 
     # time.sleep(2)
     # cmd = "kill -9 $(ps -ef |grep '%s' |grep -v grep | awk '{print $2}')" % config_file
@@ -254,11 +254,11 @@ def script_main():
         tasks.append([k, v])
 
     n = int(len(tasks) / 2)
+    print('------------------------------------------------')
     with futures.ThreadPoolExecutor(n) as executor:
         try:
             for result in executor.map(main, tasks, chunksize=n):
                 print(result)
-                print()
         except Exception as e:
             logging.exception(e)
 
