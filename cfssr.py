@@ -285,6 +285,7 @@ if __name__ == '__main__':
     elif params.get('init'):
         _scheduler.enter(0, 0, init_config)
         _scheduler.enter(100, 0, script_main)
+        _scheduler.run()
     else:
         _scheduler.enter(0, 0, script_main)
         _scheduler.run()
