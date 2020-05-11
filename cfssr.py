@@ -23,7 +23,7 @@ from requests.cookies import cookiejar_from_dict
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s[%(filename)s:%(lineno)d][%(levelname)s]:%(message)s')
 
-BIN_URL = 'http://soft.vpser.net/lnmp/lnmp0.1.tar.gz'
+BIN_URL = 'https://github.com/rclone/rclone/releases/download/v1.51.0/rclone-v1.51.0-linux-amd64.zip'
 BASE_URL = 'https://cnplus.xyz'
 USER_URL = '{}/user'.format(BASE_URL)
 ROOT_PATH = dirname(realpath(__file__))
@@ -97,8 +97,8 @@ def get_default_config():
 
 def download(port):
     _PROXIES = {
-        'http': 'socks5://127.0.0.1:%s' % port,
-        'https': 'socks5://127.0.0.1:%s' % port,
+        'http': 'http://127.0.0.1:%s' % port,
+        'https': 'http://127.0.0.1:%s' % port,
     }
     n = 0
     t = (random.randint(1024, 2048)) * 1024

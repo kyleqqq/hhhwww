@@ -14,12 +14,11 @@
         ]
       },
       "listen": "127.0.0.1",
-      "protocol": "socks",
+      "protocol": "http",
       "settings": {
-        "udp": true,
-        "auth": "noauth"
+        "timeout": 360
       },
-      "port": "1080"
+      "port": "1081"
     }
   ],
   "outbounds": [
@@ -31,26 +30,26 @@
       "protocol": "vmess",
       "streamSettings": {
         "wsSettings": {
-          "path": "/panel",
+          "path": "",
           "headers": {
-            "host": "s251.wewall.top"
+            "host": ""
           }
         },
         "tlsSettings": {
           "allowInsecure": true
         },
-        "security": "tls",
+        "security": "none",
         "network": "ws"
       },
       "tag": "proxy",
       "settings": {
         "vnext": [
           {
-            "address": "s251.wewall.top",
+            "address": "132.145.95.22",
             "users": [
               {
-                "id": "17fc638b-c15b-3e9d-8b1c-42050b27f368",
-                "alterId": 1,
+                "id": "178ca615-5f7f-4d15-b349-35f5fcb33050",
+                "alterId": 233,
                 "level": 0,
                 "security": "aes-128-gcm"
               }
