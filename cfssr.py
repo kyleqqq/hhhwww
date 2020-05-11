@@ -270,10 +270,9 @@ def script_main():
 
 
 if __name__ == '__main__':
-    global _max_count
     parser = argparse.ArgumentParser()
     parser.add_argument('action', nargs='?')
-    parser.add_argument('--max', default=_max_count, type=int)
+    parser.add_argument('--max', default=20, type=int)
     parser.add_argument('--init', action='store_true', default=False)
 
     args = parser.parse_args()
