@@ -72,7 +72,9 @@ def generate_config(subscribe_link, port, config_file):
         raise Exception(f'find node fail. {subscribe_link}')
 
     nodes.sort(key=lambda k: k[0])
-    node = nodes[-1][1]
+    node = random.choice(nodes)
+    node = node[1]
+    # node = nodes[-1][1]
     config = get_default_config()
     config['inbounds'][0]['port'] = port
     config['outbounds'][0]['settings']['vnext'][0]['address'] = node['add']
@@ -108,7 +110,6 @@ def download(port):
 def start_v2ray(config_file, port):
     data = []
     _cmd = 'nohup /usr/bin/v2ray/v2ray -config {} > /dev/null 2>&1 &'.format(config_file)
-    data.append(_cmd)
 
     os.popen(_cmd)
     time.sleep(2)
@@ -117,7 +118,7 @@ def start_v2ray(config_file, port):
         info = download(port)
         data.append(info)
     except Exception as e:
-        pass
+        data.append(_cmd)
 
     # time.sleep(2)
     # cmd = "kill -9 $(ps -ef |grep '%s' |grep -v grep | awk '{print $2}')" % config_file
@@ -159,6 +160,9 @@ def main(param):
         with codecs.open(cookie_file, 'r', 'utf-8') as f:
             cookies = f.read()
         cookies = cookiejar_from_dict(json.loads(cookies))
+        _user_info = user_info(user_name, cookies)
+        if str(_user_info).find('普通') != -1:
+            get_subscribe_link(user_name)
         data.extend(user_info(user_name, cookies))
 
     if os.path.exists(config_file):
@@ -273,7 +277,7 @@ def script_main():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('action', nargs='?')
-    parser.add_argument('--max', default=30, type=int)
+    parser.add_argument('--max', default=300, type=int)
     parser.add_argument('--init', action='store_true', default=False)
 
     args = parser.parse_args()
