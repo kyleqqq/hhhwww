@@ -72,6 +72,8 @@ def generate_config(subscribe_link, port, config_file):
         raise Exception(f'find node fail. {subscribe_link}')
 
     nodes.sort(key=lambda k: k[0])
+    if len(nodes) > 3:
+        nodes = nodes[-3:]
     node = random.choice(nodes)
     node = node[1]
     # node = nodes[-1][1]
