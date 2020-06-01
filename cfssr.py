@@ -12,6 +12,7 @@ import sched
 import threading
 import time
 from concurrent import futures
+from importlib import import_module
 from os.path import dirname, realpath
 
 import pyquery
@@ -34,6 +35,8 @@ _scheduler = sched.scheduler(time.time, time.sleep)
 _USER_NODE = {}
 _run_count = 0
 _max_count = 50
+
+params_data = {}
 
 
 async def close_dialog(dialog):
@@ -71,12 +74,25 @@ def generate_config(subscribe_link, port, config_file):
     if not len(nodes):
         raise Exception(f'find node fail. {subscribe_link}')
 
-    nodes.sort(key=lambda k: k[0])
-    if len(nodes) > 3:
-        nodes = nodes[-3:]
-    node = random.choice(nodes)
-    node = node[1]
+    node = None
+    if params_data.get('host'):
+        for _node in nodes:
+            if _node[1].get('host').find(params_data['host']) != -1:
+                node = _node[1]
+                break
+        if params_data.get('action') == 'test':
+            return [node]
+    else:
+        if params_data.get('action') == 'test':
+            return nodes
+
+        nodes.sort(key=lambda k: k[0])
+        if len(nodes) > 3:
+            nodes = nodes[-3:]
+        node = random.choice(nodes)
+        node = node[1]
     # node = nodes[-1][1]
+
     config = get_default_config()
     config['inbounds'][0]['port'] = port
     config['outbounds'][0]['settings']['vnext'][0]['address'] = node['add']
@@ -277,16 +293,16 @@ def script_main():
         _scheduler.enter(100, 0, script_main)
 
 
-if __name__ == '__main__':
+def cli():
+    global params_data
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', nargs='?', default='')
+    parser.add_argument('action', nargs='?', default='test')
     parser.add_argument('--max', default=300, type=int)
     parser.add_argument('--init', action='store_true', default=False)
+    parser.add_argument('--host', default='s183')
 
     args = parser.parse_args()
-    params = vars(args)
-
-    _max_count = params.get('max')
+    params_data = params = vars(args)
     _action = params.get('action')
 
     if _action:
@@ -298,3 +314,7 @@ if __name__ == '__main__':
     else:
         _scheduler.enter(0, 0, script_main)
         _scheduler.run()
+
+
+if __name__ == '__main__':
+    cli()
