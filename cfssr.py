@@ -86,7 +86,7 @@ def generate_config(subscribe_link, port, config_file):
     config['outbounds'][0]['settings']['vnext'][0]['users'][0]['id'] = node['id']
     with codecs.open(config_file, 'w', 'utf-8') as f:
         f.write(json.dumps(config))
-    return nodes
+    return node
 
 
 def get_default_config():
