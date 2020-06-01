@@ -296,10 +296,10 @@ def script_main():
 def cli():
     global params_data
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', nargs='?', default='test')
+    parser.add_argument('action', nargs='?', default='')
     parser.add_argument('--max', default=300, type=int)
     parser.add_argument('--init', action='store_true', default=False)
-    parser.add_argument('--host', default='s183')
+    parser.add_argument('--host', default='')
 
     args = parser.parse_args()
     params_data = params = vars(args)
