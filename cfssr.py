@@ -63,7 +63,7 @@ def generate_config(subscribe_link, port, config_file):
     for line in lines:
         line = line.replace('vmess://', '')
         vmess = decode(line)
-        if not vmess or vmess.find('倍率0|') != -1:
+        if not vmess or vmess.find('倍率0|') != -1 or vmess.find('|0G|') != -1:
             continue
         rate = re.search(r'倍率([0-9.]+)', vmess)
         nodes.append((rate.group(1), json.loads(vmess)))
@@ -86,7 +86,7 @@ def generate_config(subscribe_link, port, config_file):
     config['outbounds'][0]['settings']['vnext'][0]['users'][0]['id'] = node['id']
     with codecs.open(config_file, 'w', 'utf-8') as f:
         f.write(json.dumps(config))
-    return node
+    return nodes
 
 
 def get_default_config():
@@ -236,7 +236,8 @@ async def get_subscribe_link(user_name):
 def test():
     nodes = generate_config('https://rss.cnrss.xyz/link/iLebuiG9PURb6dDK?mu=2', 1081,
                             os.path.join(DATA_PATH, 'hah.json'))
-    print(nodes)
+    for i in nodes:
+        print(i)
 
 
 def init_config():
@@ -278,7 +279,7 @@ def script_main():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', nargs='?')
+    parser.add_argument('action', nargs='?', default='')
     parser.add_argument('--max', default=300, type=int)
     parser.add_argument('--init', action='store_true', default=False)
 
