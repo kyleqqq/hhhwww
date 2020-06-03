@@ -67,13 +67,15 @@ def generate_config(subscribe_link, port, config_file):
     for line in lines:
         line = line.replace('vmess://', '')
         vmess = decode(line)
-        if not vmess or vmess.find('倍率0|') != -1 or vmess.find('|0G|') != -1:
+        if not vmess or vmess.find('倍率0|') != -1 or vmess.find('|0G|') != -1 or vmess.find('香港') != -1:
             continue
         rate = re.search(r'倍率([0-9.]+)', vmess)
         nodes.append((rate.group(1), json.loads(vmess)))
 
     if not len(nodes):
         raise Exception(f'find node fail. {subscribe_link}')
+
+    nodes.sort(key=lambda k: k[0])
 
     node = None
     if params_data.get('host'):
@@ -87,7 +89,6 @@ def generate_config(subscribe_link, port, config_file):
         if params_data.get('action') == 'test':
             return nodes
 
-        nodes.sort(key=lambda k: k[0])
         if len(nodes) > 3:
             nodes = nodes[-3:]
         node = random.choice(nodes)
