@@ -24,11 +24,17 @@ BASE_URL = 'https://cnplus.xyz'
 USER_URL = '{}/user'.format(BASE_URL)
 ROOT_PATH = dirname(realpath(__file__))
 DATA_PATH = os.path.join(ROOT_PATH, 'data')
-ACCOUNT_LIST = {'haha@dmeo666.cn': 1081, 'atcaoyufei+2@gmail.com': 1082, 'liuming@demo666.cn': 1083,
-                'atcaoyufei@alumni.albany.edu': 1084, '20130444229@mail.sdufe.edu.cn': 1085, 'neeyuese@163.com': 1086,
-                'root@yibaitech.onmicrosoft.com': 1087, '0001@jetbrains01.art': 1088, 'taotu@linbing01.onmicrosoft.com': 1099}
-sess = requests.session()
+# 'haha@dmeo666.cn': 1081, 'atcaoyufei+2@gmail.com': 1082, 'liuming@demo666.cn': 1083, 'atcaoyufei@alumni.albany.edu': 1084,
+ACCOUNT_LIST = {
+    '20130444229@mail.sdufe.edu.cn': 1085,
+    'neeyuese@163.com': 1086,
+    'root@yibaitech.onmicrosoft.com': 1087,
+    '0001@jetbrains01.art': 1088,
+    'taotu@linbing01.onmicrosoft.com': 1089,
+    'abcd@jetbrains01.art': 1090
+}
 
+sess = requests.session()
 lock = threading.Lock()
 
 _scheduler = sched.scheduler(time.time, time.sleep)
@@ -66,8 +72,9 @@ def generate_config(subscribe_link, port, config_file):
     for line in lines:
         line = line.replace('vmess://', '')
         vmess = decode(line)
-        if not vmess or vmess.find('倍率0|') != -1 or vmess.find('|0G|') != -1 or vmess.find('香港') != -1:
+        if not vmess or vmess.find('倍率0|') != -1 or vmess.find('|0G|') != -1 or vmess.find('新加坡') == -1:
             continue
+
         rate = re.search(r'倍率([0-9.]+)', vmess)
         nodes.append((rate.group(1), json.loads(vmess)))
 
@@ -88,10 +95,10 @@ def generate_config(subscribe_link, port, config_file):
         if params_data.get('action') == 'test':
             return nodes
 
-        if len(nodes) > 3:
-            nodes = nodes[-3:]
-        node = random.choice(nodes)
-        node = node[1]
+        # if len(nodes) > 3:
+        #     nodes = nodes[-3:]
+        # node = random.choice(nodes)
+        node = nodes[-1][1]
     # node = nodes[-1][1]
 
     config = get_default_config()
