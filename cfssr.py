@@ -32,7 +32,8 @@ ACCOUNT_LIST = {
     '0001@jetbrains01.art': 1088,
     'taotu@linbing01.onmicrosoft.com': 1089,
     'abcd@jetbrains01.art': 1090,
-    'wangbo@zzcworld.com': 1091
+    'wangbo@zzcworld.com': 1091,
+    'yangpeng@zzcworld.com': 1092
 }
 
 sess = requests.session()
