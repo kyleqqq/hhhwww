@@ -24,16 +24,27 @@ BASE_URL = 'https://cnplus.xyz'
 USER_URL = '{}/user'.format(BASE_URL)
 ROOT_PATH = dirname(realpath(__file__))
 DATA_PATH = os.path.join(ROOT_PATH, 'data')
-ACCOUNT_LIST = {'haha@dmeo666.cn': 1081, 'atcaoyufei+2@gmail.com': 1082, 'liuming@demo666.cn': 1083,
-                'atcaoyufei@alumni.albany.edu': 1084, '20130444229@mail.sdufe.edu.cn': 1085, 'neeyuese@163.com': 1086}
-sess = requests.session()
+# 'haha@dmeo666.cn': 1081, 'atcaoyufei+2@gmail.com': 1082, 'liuming@demo666.cn': 1083, 'atcaoyufei@alumni.albany.edu': 1084,
+ACCOUNT_LIST = {
+    '20130444229@mail.sdufe.edu.cn': 1085,
+    'neeyuese@163.com': 1086,
+    'root@yibaitech.onmicrosoft.com': 1087,
+    '0001@jetbrains01.art': 1088,
+    'taotu@linbing01.onmicrosoft.com': 1089,
+    'abcd@jetbrains01.art': 1090,
+    'wangbo@zzcworld.com': 1091,
+    'yangpeng@zzcworld.com': 1092
+}
 
+sess = requests.session()
 lock = threading.Lock()
 
 _scheduler = sched.scheduler(time.time, time.sleep)
 _USER_NODE = {}
 _run_count = 0
 _max_count = 50
+
+params_data = {}
 
 
 async def close_dialog(dialog):
@@ -63,8 +74,9 @@ def generate_config(subscribe_link, port, config_file):
     for line in lines:
         line = line.replace('vmess://', '')
         vmess = decode(line)
-        if not vmess or vmess.find('倍率0|') != -1:
+        if not vmess or vmess.find('xiaojiao.org.cn') != -1 or vmess.find('倍率0|') != -1 or vmess.find('|0G|') != -1 or vmess.find('新加坡') == -1:
             continue
+
         rate = re.search(r'倍率([0-9.]+)', vmess)
         nodes.append((rate.group(1), json.loads(vmess)))
 
@@ -72,7 +84,25 @@ def generate_config(subscribe_link, port, config_file):
         raise Exception(f'find node fail. {subscribe_link}')
 
     nodes.sort(key=lambda k: k[0])
-    node = nodes[-1][1]
+
+    node = None
+    if params_data.get('host'):
+        for _node in nodes:
+            if _node[1].get('host').find(params_data['host']) != -1:
+                node = _node[1]
+                break
+        if params_data.get('action') == 'test':
+            return [node]
+    else:
+        if params_data.get('action') == 'test':
+            return nodes
+
+        # if len(nodes) > 3:
+        #     nodes = nodes[-3:]
+        # node = random.choice(nodes)
+        node = nodes[-1][1]
+    # node = nodes[-1][1]
+
     config = get_default_config()
     config['inbounds'][0]['port'] = port
     config['outbounds'][0]['settings']['vnext'][0]['address'] = node['add']
@@ -108,7 +138,6 @@ def download(port):
 def start_v2ray(config_file, port):
     data = []
     _cmd = 'nohup /usr/bin/v2ray/v2ray -config {} > /dev/null 2>&1 &'.format(config_file)
-    data.append(_cmd)
 
     os.popen(_cmd)
     time.sleep(2)
@@ -117,7 +146,7 @@ def start_v2ray(config_file, port):
         info = download(port)
         data.append(info)
     except Exception as e:
-        pass
+        data.append(_cmd)
 
     # time.sleep(2)
     # cmd = "kill -9 $(ps -ef |grep '%s' |grep -v grep | awk '{print $2}')" % config_file
@@ -159,6 +188,9 @@ def main(param):
         with codecs.open(cookie_file, 'r', 'utf-8') as f:
             cookies = f.read()
         cookies = cookiejar_from_dict(json.loads(cookies))
+        _user_info = user_info(user_name, cookies)
+        if str(_user_info).find('普通') != -1:
+            get_subscribe_link(user_name)
         data.extend(user_info(user_name, cookies))
 
     if os.path.exists(config_file):
@@ -230,7 +262,8 @@ async def get_subscribe_link(user_name):
 def test():
     nodes = generate_config('https://rss.cnrss.xyz/link/iLebuiG9PURb6dDK?mu=2', 1081,
                             os.path.join(DATA_PATH, 'hah.json'))
-    print(nodes)
+    for i in nodes:
+        print(i)
 
 
 def init_config():
@@ -270,16 +303,16 @@ def script_main():
         _scheduler.enter(100, 0, script_main)
 
 
-if __name__ == '__main__':
+def cli():
+    global params_data
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', nargs='?')
-    parser.add_argument('--max', default=30, type=int)
+    parser.add_argument('action', nargs='?', default='')
+    parser.add_argument('--max', default=300, type=int)
     parser.add_argument('--init', action='store_true', default=False)
+    parser.add_argument('--host', default='')
 
     args = parser.parse_args()
-    params = vars(args)
-
-    _max_count = params.get('max')
+    params_data = params = vars(args)
     _action = params.get('action')
 
     if _action:
@@ -291,3 +324,7 @@ if __name__ == '__main__':
     else:
         _scheduler.enter(0, 0, script_main)
         _scheduler.run()
+
+
+if __name__ == '__main__':
+    cli()
