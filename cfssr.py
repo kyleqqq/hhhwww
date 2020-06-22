@@ -260,7 +260,7 @@ async def get_subscribe_link(user_name):
 
 
 def test():
-    nodes = generate_config('https://rss.cnrss.xyz/link/iLebuiG9PURb6dDK?mu=2', 1081,
+    nodes = generate_config('https://rss.cnrss.xyz/link/PCJa1pwgEmgv4so1?mu=2', 1081,
                             os.path.join(DATA_PATH, 'hah.json'))
     for i in nodes:
         print(i)
