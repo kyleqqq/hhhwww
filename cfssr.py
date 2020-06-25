@@ -59,7 +59,7 @@ async def accept_dialog(dialog):
 def decode(s):
     s = str(s).strip()
     try:
-        return base64.b64decode(s)
+        return str(base64.b64decode(s), 'utf-8')
     except Exception:
         padding = len(s) % 4
         if padding == 1:
@@ -68,7 +68,7 @@ def decode(s):
             s += '=='
         elif padding == 3:
             s += '='
-        return base64.b64decode(s)
+        return str(base64.b64decode(s), 'utf-8')
 
 
 def to_date(timestamp):
