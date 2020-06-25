@@ -87,7 +87,7 @@ def generate_config(subscribe_link, port, config_file):
         nodes.append((rate.group(1), json.loads(vmess)))
 
     if not len(nodes):
-        raise Exception(f'find node fail. {subscribe_link}')
+        raise Exception(f'find node fail. {subscribe_link}\n{html}')
 
     nodes.sort(key=lambda k: k[0])
 
@@ -278,11 +278,14 @@ def init_config():
         config_file = os.path.join(DATA_PATH, '{}.json'.format(_user_name))
         loop = asyncio.get_event_loop()
         res = loop.run_until_complete(get_subscribe_link(_user_name))
-        print('')
-        node = generate_config(res, _port, config_file)
-        if node:
-            print(node)
-            _USER_NODE[_user_name] = node['ps']
+        try:
+            print('')
+            node = generate_config(res, _port, config_file)
+            if node:
+                print(node)
+                _USER_NODE[_user_name] = node['ps']
+        except Exception as e:
+            print(e)
 
 
 def script_main():
