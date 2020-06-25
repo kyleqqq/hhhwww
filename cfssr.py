@@ -97,7 +97,7 @@ def generate_config(subscribe_link, port, config_file):
         nodes.append((rate.group(1), json.loads(vmess)))
 
     if not len(nodes):
-        raise Exception(f'find node fail. {subscribe_link}\n{html}')
+        raise Exception(f'find node fail. {subscribe_link}\n{string}')
 
     nodes.sort(key=lambda k: k[0])
 
