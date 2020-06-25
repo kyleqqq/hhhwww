@@ -67,14 +67,20 @@ def to_date(timestamp):
 
 
 def generate_config(subscribe_link, port, config_file):
-    html = requests.get(subscribe_link, timeout=5).text
+    try:
+        html = requests.get(subscribe_link, timeout=20).text
+    except Exception as e:
+        print(e)
+        return None
+
     string = decode(html)
     lines = string.split('\n')
     nodes = []
     for line in lines:
         line = line.replace('vmess://', '')
         vmess = decode(line)
-        if not vmess or vmess.find('xiaojiao.org.cn') != -1 or vmess.find('倍率0|') != -1 or vmess.find('|0G|') != -1 or vmess.find('新加坡') == -1:
+        if not vmess or vmess.find('xiaojiao.org.cn') != -1 or vmess.find('倍率0|') != -1 or vmess.find(
+                '|0G|') != -1 or vmess.find('新加坡') == -1:
             continue
 
         rate = re.search(r'倍率([0-9.]+)', vmess)
@@ -274,8 +280,9 @@ def init_config():
         res = loop.run_until_complete(get_subscribe_link(_user_name))
         print('')
         node = generate_config(res, _port, config_file)
-        print(node)
-        _USER_NODE[_user_name] = node['ps']
+        if node:
+            print(node)
+            _USER_NODE[_user_name] = node['ps']
 
 
 def script_main():
