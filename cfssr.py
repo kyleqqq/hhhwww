@@ -4,6 +4,7 @@ import base64
 import codecs
 import json
 import logging
+import math
 import os
 import platform
 import random
@@ -55,10 +56,19 @@ async def accept_dialog(dialog):
     await dialog.accept()
 
 
-def decode(string):
-    if len(string) % 4 != 0:
-        string = string + (4 - len(string) % 4) * '='
-    return str(base64.urlsafe_b64decode(string.encode()), 'UTF-8')
+def decode(s):
+    s = str(s).strip()
+    try:
+        return base64.b64decode(s)
+    except Exception:
+        padding = len(s) % 4
+        if padding == 1:
+            return ''
+        elif padding == 2:
+            s += '=='
+        elif padding == 3:
+            s += '='
+        return base64.b64decode(s)
 
 
 def to_date(timestamp):
