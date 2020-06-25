@@ -90,7 +90,7 @@ def generate_config(subscribe_link, port, config_file):
         line = line.replace('vmess://', '')
         vmess = decode(line)
         if not vmess or vmess.find('xiaojiao.org.cn') != -1 or vmess.find('倍率0|') != -1 or vmess.find(
-                '|0G|') != -1 or vmess.find('新加坡') == -1:
+                '|0G|') != -1:
             continue
 
         rate = re.search(r'倍率([0-9.]+)', vmess)
