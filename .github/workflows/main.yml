@@ -25,3 +25,7 @@ jobs:
     - name: Run sign by caoyufei
       run: |
         python3 huawei.py --username ${{ secrets.CAOYUFEI_USERNAME }} --password ${{ secrets.CAOYUFEI_PASSWORD }}
+
+    - name: Run sign by hua
+      run: |
+        python3 huawei.py --username ${{ secrets.HUA_USERNAME }} --password ${{ secrets.HUA_PASSWORD }}
