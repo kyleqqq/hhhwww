@@ -32,6 +32,8 @@ async def main(username, password):
             await asyncio.sleep(3)
             new_credit = str(await page.Jeval('.count', 'el => el.textContent')).replace('码豆', '').strip()
             print(f'签到后码豆: {new_credit}')
+        else:
+            print(sign_txt)
 
     else:
         await page.waitForSelector('#homeheader-signin, #homeheader-signined', {'visible': True})
@@ -46,6 +48,8 @@ async def main(username, password):
             await asyncio.sleep(3)
             new_credit = str(await page.Jeval('#homeheader-coins', 'el => el.textContent')).strip()
             print(f'签到后码豆: {new_credit}')
+        else:
+            print(sign_txt)
 
     await asyncio.sleep(3)
     await page.close()
