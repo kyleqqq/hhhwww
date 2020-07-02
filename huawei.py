@@ -5,7 +5,7 @@ from pyppeteer import launch
 
 
 async def main(username, password):
-    browser = await launch(ignorehttpserrrors=True, headless=False,
+    browser = await launch(ignorehttpserrrors=True, headless=True,
                            args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
     page = await browser.newPage()
 
