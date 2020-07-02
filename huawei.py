@@ -5,11 +5,12 @@ from pyppeteer import launch
 
 
 async def main(username, password):
+    browser = await launch(ignorehttpserrrors=True, headless=False,
+                           args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
+    page = await browser.newPage()
+
     for i in range(3):
         try:
-            browser = await launch(ignorehttpserrrors=True, headless=True,
-                                   args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
-            page = await browser.newPage()
             await page.setViewport({'width': 1200, 'height': 768})
             await page.goto('https://devcloud.huaweicloud.com/bonususer/mobile/home', {'waitUntil': 'load'})
 
@@ -26,6 +27,7 @@ async def main(username, password):
             await page.waitForSelector('.mobile-loading-btn-body', {'visible': True})
             sign_txt = str(await page.Jeval('.mobile-loading-btn-body', 'el => el.textContent')).strip()
             credit = str(await page.Jeval('.count', 'el => el.textContent')).replace('码豆', '').strip()
+            print(sign_txt)
             print(f'签到前码豆: {credit}')
 
             if sign_txt.find('今日已签到') == -1:
@@ -33,16 +35,16 @@ async def main(username, password):
                 await asyncio.sleep(5)
                 new_credit = str(await page.Jeval('.count', 'el => el.textContent')).replace('码豆', '').strip()
                 print(f'签到后码豆: {new_credit}')
-            else:
-                print(sign_txt)
 
             await asyncio.sleep(3)
-            await page.close()
-            await browser.close()
 
             break
         except Exception as e:
             print(e)
+            await page.close()
+
+    await page.close()
+    await browser.close()
 
 
 if __name__ == '__main__':
