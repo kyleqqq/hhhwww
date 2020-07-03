@@ -26,6 +26,8 @@ async def main(username, password):
             page_url = page.url
             print(page_url)
             await page.waitForSelector('.mobile-loading-btn-body', {'visible': True})
+            await asyncio.sleep(5)
+
             sign_txt = await page.Jeval('.mobile-loading-btn-body', 'el => el.textContent')
             credit = await page.Jeval('.count', 'el => el.textContent')
             print(sign_txt, credit)
