@@ -26,16 +26,15 @@ async def main(username, password):
             page_url = page.url
             print(page_url)
             await page.waitForSelector('.mobile-loading-btn-body', {'visible': True})
-            sign_txt = str(await page.Jeval('.mobile-loading-btn-body', 'el => el.textContent')).strip()
-            credit = str(await page.Jeval('.count', 'el => el.textContent')).strip()
-            print(sign_txt)
-            print(f'签到前码豆: {credit}')
+            sign_txt = await page.Jeval('.mobile-loading-btn-body', 'el => el.textContent')
+            credit = await page.Jeval('.count', 'el => el.textContent')
+            print(sign_txt, credit)
 
             if sign_txt.find('今日已签到') == -1:
                 await page.click('.mobile-loading-btn-body')
                 await asyncio.sleep(5)
-                new_credit = str(await page.Jeval('.count', 'el => el.textContent')).strip()
-                print(f'签到后码豆: {new_credit}')
+                new_credit = await page.Jeval('.count', 'el => el.textContent')
+                print(new_credit)
 
             await asyncio.sleep(3)
 
