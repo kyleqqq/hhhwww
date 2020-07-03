@@ -1,5 +1,6 @@
 import argparse
 import asyncio
+import time
 
 from pyppeteer import launch
 
@@ -8,7 +9,7 @@ async def main(username, password):
     browser = await launch(ignorehttpserrrors=True, headless=True,
                            args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
     page = await browser.newPage()
-
+    print(time.strftime('%Y-%m-%d %H:%M:%S'))
     for i in range(3):
         try:
             await page.setViewport({'width': 1200, 'height': 768})
