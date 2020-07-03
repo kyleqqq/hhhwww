@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ master ]
   schedule:
-    - cron: '55 9 * * *'
+    - cron: '55 9, 15 * * *'
 
 jobs:
   build:
@@ -22,7 +22,7 @@ jobs:
       run: |
         pip3 install -r requirements.txt
 
-    - name: Run sign by caoyufei
+    - name: Run sign by yufei
       run: |
         python3 huawei.py --username ${{ secrets.CAOYUFEI_USERNAME }} --password ${{ secrets.CAOYUFEI_PASSWORD }}
 
