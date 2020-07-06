@@ -1,0 +1,29 @@
+name: TextNow
+
+on:
+  push:
+    branches: [ master ]
+  schedule:
+    - cron: '50 0,3 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.6'
+
+    - name: requirements
+      run: |
+        pip3 install -r requirements.txt
+
+    - name: Run textnow cooc123
+      run: |
+        python3 textnow.py --username ${{ secrets.TEXT_NOW_COOC123_USERNAME }} --password ${{ secrets.TEXT_NOW_COOC123_PASSWORD }}
+
+    - name: Run textnow caoyufei
+      run: |
+        python3 textnow.py --username ${{ secrets.TEXT_NOW_CAOYUFEI_USERNAME }} --password ${{ secrets.TEXT_NOW_CAOYUFEI_PASSWORD }}
