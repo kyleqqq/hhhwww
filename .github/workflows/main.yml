@@ -1,12 +1,10 @@
 name: HuaWeiSign
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+#  push:
+#    branches: [ master ]
   schedule:
-    - cron: '50 0,2 * * *'
+    - cron: '50 0,3 * * *'
 
 jobs:
   build:
@@ -29,3 +27,11 @@ jobs:
     - name: Run sign by hua
       run: |
         python3 huawei.py --username ${{ secrets.HUA_USERNAME }} --password ${{ secrets.HUA_PASSWORD }}
+
+    - name: Run textnow cooc123
+      run: |
+        python3 textnow.py --username ${{ secrets.TEXT_NOW_COOC123_USERNAME }} --password ${{ secrets.TEXT_NOW_COOC123_PASSWORD }}
+
+    - name: Run textnow caoyufei
+      run: |
+        python3 textnow.py --username ${{ secrets.TEXT_NOW_CAOYUFEI_USERNAME }} --password ${{ secrets.TEXT_NOW_CAOYUFEI_PASSWORD }}
