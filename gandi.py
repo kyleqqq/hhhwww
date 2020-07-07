@@ -12,12 +12,12 @@ async def main(username, password):
     browser = await launch(ignorehttpserrrors=True, headless=True,
                            args=['--disable-infobars', '--no-sandbox', '--window-size=1920,1080'])
 
-    for i in range(100):
+    for i in range(1000):
         print(time.strftime('%Y-%m-%d %H:%M:%S'))
         page = await browser.newPage()
 
         try:
-            email_suffix = ['demo666.cn', 'zzcworld.com']
+            email_suffix = ['demo666.cn', 'zzcworld.com', 'mail01.eu.org']
             name = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
             email = f'{name}@{random.choice(email_suffix)}'
 
