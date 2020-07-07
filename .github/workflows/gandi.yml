@@ -3,8 +3,8 @@ name: Gandi
 on:
   push:
     branches: [ master ]
-#  schedule:
-#    - cron: '*/1 * * * *'
+  schedule:
+    - cron: '0 */1 * * *'
 
 jobs:
   build:

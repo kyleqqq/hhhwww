@@ -12,7 +12,7 @@ async def main(username, password):
     browser = await launch(ignorehttpserrrors=True, headless=True,
                            args=['--disable-infobars', '--no-sandbox', '--window-size=1920,1080'])
 
-    for i in range(1000):
+    for i in range(20):
         print(time.strftime('%Y-%m-%d %H:%M:%S'))
         page = await browser.newPage()
 
