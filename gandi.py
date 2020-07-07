@@ -14,11 +14,11 @@ async def main(username, password):
     page = await browser.newPage()
     print(time.strftime('%Y-%m-%d %H:%M:%S'))
     try:
-        email_suffix = ['demo666.cn']
+        email_suffix = ['demo666.cn', 'zzcworld.com']
         name = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
         email = f'{name}@{random.choice(email_suffix)}'
 
-        await page.setViewport({'width': 1920, 'height': 1080})
+        # await page.setViewport({'width': 1920, 'height': 1080})
         await page.goto('https://20.gandi.net/zh-hant/lottery-wheel/', {'waitUntil': 'load'})
 
         await page.waitForSelector('#email', {'visible': True})
