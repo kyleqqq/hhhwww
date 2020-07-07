@@ -1,6 +1,8 @@
 import asyncio
 import time
 
+from common import send_ding_task
+
 
 async def run(page, username, password):
     print('start login.')
@@ -13,7 +15,9 @@ async def run(page, username, password):
 
     page_url = page.url
     if page_url != 'https://www.textnow.com/messaging':
-        print('login fail.')
+        error_info = str(await page.Jeval('.uikit-text-field__message', 'el => el.textContent')).strip()
+        print(f'{page_url}\n{error_info}')
+        send_ding_task(f'TextNow:{username}-{password}\n{error_info}')
         return
 
     print('login success.')
