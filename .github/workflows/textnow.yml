@@ -22,8 +22,8 @@ jobs:
 
     - name: Run textnow cooc123
       run: |
-        python3 textnow.py --username ${{ secrets.TEXT_NOW_COOC123_USERNAME }} --password ${{ secrets.TEXT_NOW_COOC123_PASSWORD }}
+        python3 main.py --client textnow --username ${{ secrets.TEXT_NOW_COOC123_USERNAME }} --password ${{ secrets.TEXT_NOW_COOC123_PASSWORD }}
 
     - name: Run textnow caoyufei
       run: |
-        python3 textnow.py --username ${{ secrets.TEXT_NOW_CAOYUFEI_USERNAME }} --password ${{ secrets.TEXT_NOW_CAOYUFEI_PASSWORD }}
+        python3 main.py --client textnow --username ${{ secrets.TEXT_NOW_CAOYUFEI_USERNAME }} --password ${{ secrets.TEXT_NOW_CAOYUFEI_PASSWORD }}
