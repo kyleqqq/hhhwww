@@ -5,18 +5,6 @@ import time
 from pyppeteer import launch
 
 
-def patch_pyppeteer():
-    import pyppeteer.connection
-    original_method = pyppeteer.connection.websockets.client.connect
-
-    def new_method(*args, **kwargs):
-        kwargs['ping_interval'] = None
-        kwargs['ping_timeout'] = None
-        return original_method(*args, **kwargs)
-
-    pyppeteer.connection.websockets.client.connect = new_method
-
-
 async def main(username, password):
     browser = await launch(ignorehttpserrrors=True, headless=True,
                            args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
@@ -68,7 +56,5 @@ if __name__ == '__main__':
     parser.add_argument('--password')
     args = parser.parse_args()
     params = vars(args)
-
-    patch_pyppeteer()
 
     asyncio.get_event_loop().run_until_complete(main(params.get('username'), params.get('password')))

@@ -4,8 +4,6 @@ import time
 
 from pyppeteer import launch
 
-from common import patch_pyppeteer
-
 
 async def main(username, password):
     browser = await launch(ignorehttpserrrors=True, headless=True,
@@ -59,7 +57,5 @@ if __name__ == '__main__':
     parser.add_argument('--password')
     args = parser.parse_args()
     params = vars(args)
-
-    patch_pyppeteer()
 
     asyncio.get_event_loop().run_until_complete(main(params.get('username'), params.get('password')))
