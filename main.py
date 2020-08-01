@@ -1,36 +1,25 @@
 import argparse
 import asyncio
+import inspect
 import logging
 from importlib import import_module
 
-from pyppeteer import launch
-
-
-async def _run(m, **kwargs):
-    browser = await launch(ignorehttpserrrors=True, headless=True,
-                           args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
-    page = await browser.newPage()
-    try:
-        await page.setViewport({'width': 1200, 'height': 768})
-        await page.goto('https://www.textnow.com/login', {'waitUntil': 'load'})
-
-        await page.waitForSelector('#txt-username', {'visible': True})
-
-        await page.evaluate(
-            '''() =>{ Object.defineProperties(navigator,{ webdriver:{ get: () => false } }) }''')
-
-        await m.run(page, kwargs.get('username'), kwargs.get('password'))
-    except Exception as e:
-        print(e)
-    finally:
-        await page.close()
-        await browser.close()
+DEFAULT_FORMATTER = '%(asctime)s[%(filename)s:%(lineno)d][%(levelname)s]:%(message)s'
+logging.basicConfig(format=DEFAULT_FORMATTER, level=logging.INFO)
 
 
 def script_main(params):
     client = params.get('client')
-    m = import_module('.'.join(['clients', client]))
-    asyncio.get_event_loop().run_until_complete(_run(m, **params))
+    module = import_module('.'.join(['clients', client]))
+    for name, obj in inspect.getmembers(module):
+        if inspect.isclass(obj) and obj.__bases__[0].__name__ == 'BaseClient':
+            instance = obj()
+            func = getattr(instance, 'run')
+            try:
+                asyncio.get_event_loop().run_until_complete(func(**params))
+            except Exception as e:
+                logging.warning(e)
+            break
 
 
 def main():
@@ -38,9 +27,11 @@ def main():
     parser.add_argument('--client', required=True)
     parser.add_argument('-u', '--username')
     parser.add_argument('-p', '--password')
-    parser.add_argument('--cookie')
+    parser.add_argument('--headless', action='store_true')
     args = parser.parse_args()
-    return script_main(vars(args))
+    params = vars(args)
+    params['headless'] = True if not params['headless'] else False
+    script_main(params)
 
 
 if __name__ == '__main__':
