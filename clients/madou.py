@@ -20,6 +20,10 @@ class MaDou(BaseClient):
         await asyncio.sleep(3)
 
         if self.page.url != self.url:
+            await self.page.goto(self.url, {'waitUntil': 'load'})
+            self.logger.warning(self.page.url)
+
+        if self.page.url != self.url:
             self.logger.warning(self.page.url)
             return
 

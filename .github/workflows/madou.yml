@@ -19,10 +19,6 @@ jobs:
       with:
         python-version: '3.6'
 
-    - name: git
-      run: |
-        curl -I 'https://devcloud.huaweicloud.com/bonususer/home/makebonus'
-
     - name: requirements
       run: |
         pip3 install -r requirements.txt
