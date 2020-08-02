@@ -19,9 +19,9 @@ class MaDou(BaseClient):
         await self.page.click('#btn_submit')
         await asyncio.sleep(3)
 
+        await self.page.goto(self.url, {'waitUntil': 'load'})
         self.logger.info(self.page.url)
         self.logger.info(await self.page.title())
-        # await self.page.goto(self.url, {'waitUntil': 'load'})
 
         # element = await self.page.querySelector(
         #     '#daily-mission-wrapper > div.ng-star-inserted:nth-child(1) .devui-tab-content li:nth-child(2)')

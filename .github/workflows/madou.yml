@@ -19,10 +19,6 @@ jobs:
       with:
         python-version: '3.6'
 
-    - name: git
-      run: |
-        git --version
-
     - name: requirements
       run: |
         pip3 install -r requirements.txt
