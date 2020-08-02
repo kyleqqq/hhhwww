@@ -22,11 +22,11 @@ jobs:
 
     - name: Run HUAWEI yufei
       run: |
-        python3 main.py --username ${{ secrets.CAOYUFEI_USERNAME }} --password ${{ secrets.CAOYUFEI_PASSWORD }}
+        python3 main.py --client huawei --username ${{ secrets.CAOYUFEI_USERNAME }} --password ${{ secrets.CAOYUFEI_PASSWORD }}
 
     - name: Run HUAWEI hua
       run: |
-        python3 main.py --username ${{ secrets.HUA_USERNAME }} --password ${{ secrets.HUA_PASSWORD }}
+        python3 main.py --client huawei --username ${{ secrets.HUA_USERNAME }} --password ${{ secrets.HUA_PASSWORD }}
 
     - name: Run TEXTNOW ZOUHUA
       run: |
