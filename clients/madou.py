@@ -23,7 +23,7 @@ class MaDou(BaseClient):
             await self.page.goto(self.url, {'waitUntil': 'load'})
 
         if self.page.url != self.url:
-            self.logger.warning(self.page.content())
+            self.logger.warning(await self.page.content())
             return
 
         # await self.page.goto(self.url, {'waitUntil': 'load'})
