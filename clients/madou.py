@@ -20,6 +20,7 @@ class MaDou(BaseClient):
         await asyncio.sleep(3)
 
         self.logger.info(self.page.url)
+        self.logger.info(await self.page.title())
         # await self.page.goto(self.url, {'waitUntil': 'load'})
 
         # element = await self.page.querySelector(
