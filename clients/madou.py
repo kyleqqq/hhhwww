@@ -23,12 +23,10 @@ class MaDou(BaseClient):
             await self.page.goto(self.url, {'waitUntil': 'load'})
 
         if self.page.url != self.url:
-            self.logger.warning(await self.page.content())
+            self.logger.warning(self.page.url)
             return
 
         # await self.page.goto(self.url, {'waitUntil': 'load'})
-        self.logger.info(self.page.url)
-
         # element = await self.page.querySelector(
         #     '#daily-mission-wrapper > div.ng-star-inserted:nth-child(1) .devui-tab-content li:nth-child(2)')
         # self.logger.info(element)
