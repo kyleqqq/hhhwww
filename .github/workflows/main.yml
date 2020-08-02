@@ -1,8 +1,8 @@
 name: HuaWei
 
 on:
-#  push:
-#    branches: [ master ]
+  push:
+    branches: [ master ]
   schedule:
     - cron: '50 0,3 * * *'
 
@@ -20,10 +20,18 @@ jobs:
       run: |
         pip3 install -r requirements.txt
 
-    - name: Run sign by yufei
+    - name: Run HUAWEI yufei
       run: |
-        python3 huawei.py --username ${{ secrets.CAOYUFEI_USERNAME }} --password ${{ secrets.CAOYUFEI_PASSWORD }}
+        python3 main.py --username ${{ secrets.CAOYUFEI_USERNAME }} --password ${{ secrets.CAOYUFEI_PASSWORD }}
 
-    - name: Run sign by hua
+    - name: Run HUAWEI hua
       run: |
-        python3 huawei.py --username ${{ secrets.HUA_USERNAME }} --password ${{ secrets.HUA_PASSWORD }}
+        python3 main.py --username ${{ secrets.HUA_USERNAME }} --password ${{ secrets.HUA_PASSWORD }}
+
+    - name: Run TEXTNOW ZOUHUA
+      run: |
+        python3 main.py --client textnow --username ${{ secrets.TEXT_NOW_ZOUHUA_USERNAME }} --password ${{ secrets.TEXT_NOW_ZOUHUA_PASSWORD }}
+
+    - name: Run TEXTNOW CAOYUFEI
+      run: |
+        python3 main.py --client textnow --username ${{ secrets.TEXT_NOW_CAOYUFEI_USERNAME }} --password ${{ secrets.TEXT_NOW_CAOYUFEI_PASSWORD }}
