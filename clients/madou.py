@@ -21,10 +21,9 @@ class MaDou(BaseClient):
 
         if self.page.url != self.url:
             await self.page.goto(self.url, {'waitUntil': 'load'})
-            self.logger.warning(self.page.url)
 
         if self.page.url != self.url:
-            self.logger.warning(self.page.url)
+            self.logger.warning(self.page.content())
             return
 
         # await self.page.goto(self.url, {'waitUntil': 'load'})
@@ -46,7 +45,10 @@ class MaDou(BaseClient):
         await asyncio.sleep(2)
 
     async def get_new_page(self, a=2, b=1):
-        await self.page.waitForSelector('#daily-mission-wrapper', {'visible': True})
+        try:
+            await self.page.waitForSelector('#daily-mission-wrapper', {'visible': True})
+        except:
+            self.logger.warning(self.browser.g)
 
         await self.page.click(
             f'#daily-mission-wrapper > div.ng-star-inserted:nth-child(1) ul li.ng-star-inserted:nth-child({a})')
