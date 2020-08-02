@@ -19,9 +19,12 @@ class MaDou(BaseClient):
         await self.page.click('#btn_submit')
         await asyncio.sleep(3)
 
-        await self.page.goto(self.url, {'waitUntil': 'load'})
+        if self.page.url != self.url:
+            self.logger.warning(self.page.url)
+            return
+
+        # await self.page.goto(self.url, {'waitUntil': 'load'})
         self.logger.info(self.page.url)
-        self.logger.info(await self.page.title())
 
         # element = await self.page.querySelector(
         #     '#daily-mission-wrapper > div.ng-star-inserted:nth-child(1) .devui-tab-content li:nth-child(2)')
@@ -76,9 +79,10 @@ class MaDou(BaseClient):
         cmd = [
             'cd /tmp',
             'git config --global user.name "caoyufei" && git config --global user.email "atcaoyufei@gmail.com"',
-            'git clone https://codehub.devcloud.huaweicloud.com/python00020/crawler.git',
+            'git clone git@codehub.devcloud.cn-north-4.huaweicloud.com:scylla00001/crawler.git',
             'cd /tmp/crawler',
             f'echo "{now_time}" >> time.txt',
+            "git add .",
             "git commit -am 'time'",
             "git push origin master",
             "rm -rf /tmp/crawler"

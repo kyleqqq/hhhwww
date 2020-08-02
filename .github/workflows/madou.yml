@@ -1,8 +1,8 @@
 name: HuaWeiMadou
 
 on:
-#  push:
-#    branches: [ master ]
+  push:
+    branches: [ master ]
   schedule:
     - cron: '58 0 * * *'
 
