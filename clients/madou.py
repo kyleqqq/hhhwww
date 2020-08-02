@@ -80,7 +80,8 @@ class MaDou(BaseClient):
             'cd /tmp/crawler',
             f'echo "{now_time}" >> time.txt',
             "git commit -am 'time'",
-            "git push origin master"
+            "git push origin master",
+            "rm -rf /tmp/crawler"
         ]
         id_rsa = os.environ.get('id_rsa')
         ssh_dir = Path.home() / '.ssh'
