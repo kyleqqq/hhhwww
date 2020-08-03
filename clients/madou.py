@@ -32,9 +32,9 @@ class MaDou(BaseClient):
         # self.logger.info(element)
         # self.logger.info(await (await element.getProperty('textContent')).jsonValue())
 
-        await self.open_ide_task()
-        await asyncio.sleep(3)
         await self.open_code_task()
+        await asyncio.sleep(3)
+        await self.open_ide_task()
         # await self.push_code_task()
 
         # print(len(page_list))
@@ -44,10 +44,7 @@ class MaDou(BaseClient):
         await asyncio.sleep(2)
 
     async def get_new_page(self, a=2, b=1):
-        try:
-            await self.page.waitForSelector('#daily-mission-wrapper', {'visible': True})
-        except:
-            self.logger.warning(await self.page.content())
+        await self.page.waitForSelector('#daily-mission-wrapper', {'visible': True})
 
         await self.page.click(
             f'#daily-mission-wrapper > div.ng-star-inserted:nth-child(1) ul li.ng-star-inserted:nth-child({a})')
@@ -64,18 +61,24 @@ class MaDou(BaseClient):
         return page_list[-1]
 
     async def open_code_task(self):
-        new_page = await self.get_new_page()
-        await new_page.waitForSelector('.btn_cloudide', {'visible': True})
-        await new_page.click('.btn_cloudide')
-        await asyncio.sleep(20)
-        await new_page.close()
+        try:
+            new_page = await self.get_new_page()
+            await new_page.waitForSelector('.btn_cloudide', {'visible': True})
+            await new_page.click('.btn_cloudide')
+            await asyncio.sleep(20)
+            await new_page.close()
+        except Exception as e:
+            self.logger.warning(e)
 
     async def open_ide_task(self):
-        new_page = await self.get_new_page(3, 0)
-        await new_page.waitForSelector('.trial-stack-info', {'visible': True})
-        await new_page.click('.trial-stack-info .stack-content .stack-position .devui-btn')
-        await asyncio.sleep(20)
-        await new_page.close()
+        try:
+            new_page = await self.get_new_page(3, 0)
+            await new_page.waitForSelector('.trial-stack-info', {'visible': True})
+            await new_page.click('.trial-stack-info .stack-content .stack-position .devui-btn')
+            await asyncio.sleep(20)
+            await new_page.close()
+        except Exception as e:
+            self.logger.warning(e)
 
     async def push_code_task(self):
         await self.get_new_page(2, 2)
