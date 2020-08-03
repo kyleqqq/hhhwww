@@ -27,6 +27,7 @@ def main():
     parser.add_argument('--client', required=True)
     parser.add_argument('-u', '--username')
     parser.add_argument('-p', '--password')
+    parser.add_argument('--git-url')
     parser.add_argument('--headless', action='store_true')
     args = parser.parse_args()
     params = vars(args)

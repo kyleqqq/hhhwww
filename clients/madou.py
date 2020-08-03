@@ -34,8 +34,16 @@ class MaDou(BaseClient):
 
         await self.open_code_task()
         await asyncio.sleep(3)
+
+        await self.page.goto(self.url, {'waitUntil': 'load'})
+
         await self.open_ide_task()
-        # await self.push_code_task()
+
+        await asyncio.sleep(3)
+
+        await self.page.goto(self.url, {'waitUntil': 'load'})
+
+        await self.push_code_task(kwargs.get('git_url'))
 
         # print(len(page_list))
         # for page in page_list:
@@ -80,29 +88,24 @@ class MaDou(BaseClient):
         except Exception as e:
             self.logger.warning(e)
 
-    async def push_code_task(self):
+    async def push_code_task(self, git_url):
+        if not git_url:
+            return
+
         await self.get_new_page(2, 2)
 
         now_time = time.strftime('%Y-%m-%d %H:%M:%S')
         cmd = [
             'cd /tmp',
             'git config --global user.name "caoyufei" && git config --global user.email "atcaoyufei@gmail.com"',
-            'git clone git@codehub.devcloud.cn-north-4.huaweicloud.com:scylla00001/crawler.git',
+            f'git clone {git_url}',
             'cd /tmp/crawler',
             f'echo "{now_time}" >> time.txt',
             "git add .",
             "git commit -am 'time'",
             "git push origin master",
-            "rm -rf /tmp/crawler",
-            "rm -rf ~/.ssh"
         ]
-        id_rsa = os.environ.get('id_rsa')
-        ssh_dir = Path.home() / '.ssh'
-        ssh_dir.mkdir()
-        file = ssh_dir / 'id_rsa'
-        file.write_text(id_rsa)
-
         os.system(' && '.join(cmd))
-        os.system('rm -rf /tmp/crawler && rm -rf ~/.ssh')
+        os.system('rm -rf /tmp/crawler')
 
         await asyncio.sleep(3)
