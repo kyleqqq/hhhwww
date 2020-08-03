@@ -46,7 +46,7 @@ class MaDou(BaseClient):
         try:
             await self.page.waitForSelector('#daily-mission-wrapper', {'visible': True})
         except:
-            self.logger.warning(self.browser.g)
+            self.logger.warning(await self.page.content())
 
         await self.page.click(
             f'#daily-mission-wrapper > div.ng-star-inserted:nth-child(1) ul li.ng-star-inserted:nth-child({a})')
