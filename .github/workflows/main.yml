@@ -28,9 +28,9 @@ jobs:
       run: |
         python3 main.py --client huawei --username ${{ secrets.HUA_USERNAME }} --password ${{ secrets.HUA_PASSWORD }}
 
-    - name: Run HUAWEI 186
+    - name: Run HUAWEI hua123
       run: |
-        python3 main.py --client huawei --username ${{ secrets.USERNAME_186 }} --password ${{ secrets.HUA_PASSWORD }}
+        python3 main.py --client huawei --username ${{ secrets.HUA123_USERNAME }} --password ${{ secrets.HUA_PASSWORD }}
 
 
     - name: Run TEXTNOW ZOUHUA
