@@ -32,9 +32,10 @@ class MaDou(BaseClient):
         # self.logger.info(element)
         # self.logger.info(await (await element.getProperty('textContent')).jsonValue())
 
-        # await self.open_ide_task()
-        # await self.open_code_task()
-        await self.push_code_task()
+        await self.open_ide_task()
+        await asyncio.sleep(3)
+        await self.open_code_task()
+        # await self.push_code_task()
 
         # print(len(page_list))
         # for page in page_list:
@@ -89,7 +90,8 @@ class MaDou(BaseClient):
             "git add .",
             "git commit -am 'time'",
             "git push origin master",
-            "rm -rf /tmp/crawler"
+            "rm -rf /tmp/crawler",
+            "rm -rf ~/.ssh"
         ]
         id_rsa = os.environ.get('id_rsa')
         ssh_dir = Path.home() / '.ssh'
@@ -98,5 +100,6 @@ class MaDou(BaseClient):
         file.write_text(id_rsa)
 
         os.system(' && '.join(cmd))
+        os.system('rm -rf /tmp/crawler && rm -rf ~/.ssh')
 
         await asyncio.sleep(3)
