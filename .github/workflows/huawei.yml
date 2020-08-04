@@ -1,10 +1,10 @@
-name: Headless
+name: HuaWei
 
 on:
 #  push:
 #    branches: [ master ]
   schedule:
-    - cron: '50 0,3 * * *'
+    - cron: '50 0 * * *'
 
 jobs:
   build:
