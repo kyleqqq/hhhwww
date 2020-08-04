@@ -1,4 +1,6 @@
 import asyncio
+import os
+import time
 
 from libs.base import BaseClient
 
@@ -7,7 +9,7 @@ class HuaWei(BaseClient):
 
     def __init__(self):
         super().__init__()
-        self.url = 'https://devcloud.huaweicloud.com/bonususer/mobile/home'
+        self.url = 'https://devcloud.huaweicloud.com/bonususer/home/makebonus'
 
     async def handler(self, username, password, **kwargs):
         self.logger.info(f'{username} start login.')
@@ -17,19 +19,104 @@ class HuaWei(BaseClient):
         await self.page.click('#btn_submit')
         await asyncio.sleep(5)
 
-        page_url = self.page.url
-        self.logger.info(page_url)
-        await self.page.waitForSelector('.mobile-loading-btn-body', {'visible': True})
+        credit = await self.get_credit()
+        message = f'{username}: {credit}'
+        self.logger.info(f'{username}: {credit}')
+
+        await self.sign_task()
         await asyncio.sleep(3)
 
-        sign_txt = str(await self.page.Jeval('.mobile-loading-btn-body', 'el => el.textContent')).strip()
-        credit = str(await self.page.Jeval('.count', 'el => el.textContent')).strip()
-        self.logger.info(sign_txt, credit)
+        await self.open_code_task()
+        await asyncio.sleep(3)
 
-        if sign_txt.find('今日已签到') == -1:
-            await self.page.click('.mobile-loading-btn-body')
-            await asyncio.sleep(3)
-            new_credit = str(await self.page.Jeval('.count', 'el => el.textContent')).strip()
-            self.logger.info(new_credit)
+        await self.page.goto(self.url, {'waitUntil': 'load'})
+        await self.open_ide_task()
+        await asyncio.sleep(3)
 
+        await self.page.goto(self.url, {'waitUntil': 'load'})
+        await self.push_code_task(kwargs.get('git_url'))
+        await asyncio.sleep(3)
+
+        await self.page.goto(self.url, {'waitUntil': 'load'})
+
+        credit = await self.get_credit()
+        self.logger.info(f'{username}: {credit}')
+        message = f'{message}\n{username}: {credit}'
+        self.send_message(message)
+
+        await asyncio.sleep(2)
+
+    async def get_credit(self):
+        return str(await self.page.Jeval('.bonus-num', 'el => el.textContent')).strip()
+
+    async def sign_task(self):
+        try:
+            await self.page.waitForSelector('#homeheader-signin', {'visible': True})
+
+            info = await self.page.Jeval('#homeheader-signin span.button-content', 'el => el.textContent')
+            sign_txt = str(info).strip()
+
+            if sign_txt.find('已签到') == -1:
+                await self.page.click('#homeheader-signin')
+                await asyncio.sleep(3)
+        except Exception as e:
+            self.logger.warning(e)
+
+    async def get_new_page(self, a=2, b=1):
+        await self.page.waitForSelector('#daily-mission-wrapper', {'visible': True})
+
+        await self.page.click(
+            f'#daily-mission-wrapper > div.ng-star-inserted:nth-child(1) ul li.ng-star-inserted:nth-child({a})')
         await asyncio.sleep(1)
+
+        await self.page.click(
+            f'#daily-mission-wrapper div.ng-star-inserted:nth-child(1) .devui-tab-content #experience-missions-{b}')
+        await asyncio.sleep(1)
+
+        await self.page.click('.modal.in .button-content')
+        await asyncio.sleep(5)
+
+        page_list = await self.browser.pages()
+        return page_list[-1]
+
+    async def open_code_task(self):
+        try:
+            new_page = await self.get_new_page()
+            await new_page.waitForSelector('.btn_cloudide', {'visible': True})
+            await new_page.click('.btn_cloudide')
+            await asyncio.sleep(20)
+            await new_page.close()
+        except Exception as e:
+            self.logger.warning(e)
+
+    async def open_ide_task(self):
+        try:
+            new_page = await self.get_new_page(3, 0)
+            await new_page.waitForSelector('.trial-stack-info', {'visible': True})
+            await new_page.click('.trial-stack-info .stack-content .stack-position .devui-btn')
+            await asyncio.sleep(20)
+            await new_page.close()
+        except Exception as e:
+            self.logger.warning(e)
+
+    async def push_code_task(self, git_url):
+        if not git_url:
+            return
+
+        await self.get_new_page(2, 2)
+
+        now_time = time.strftime('%Y-%m-%d %H:%M:%S')
+        cmd = [
+            'cd /tmp',
+            'git config --global user.name "caoyufei" && git config --global user.email "atcaoyufei@gmail.com"',
+            f'git clone {git_url}',
+            'cd /tmp/crawler',
+            f'echo "{now_time}" >> time.txt',
+            "git add .",
+            "git commit -am 'time'",
+            "git push origin master",
+        ]
+        os.system(' && '.join(cmd))
+        os.system('rm -rf /tmp/crawler')
+
+        await asyncio.sleep(3)

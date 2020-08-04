@@ -1,0 +1,37 @@
+name: Headless
+
+on:
+#  push:
+#    branches: [ master ]
+  schedule:
+    - cron: '50 0,3 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.6'
+
+    - name: requirements
+      run: |
+        pip3 install -r requirements.txt
+
+    - name: Run HUAWEI yufei
+      run: |
+        python3 main.py --client huawei --username ${{ secrets.CAOYUFEI_USERNAME }} --password ${{ secrets.CAOYUFEI_PASSWORD }} --git-url ${{ secrets.CAOYUFEI_GIT }}
+
+    - name: Run HUAWEI hua
+      run: |
+        python3 main.py --client huawei --username ${{ secrets.HUA_USERNAME }} --password ${{ secrets.HUA_PASSWORD }} --git-url ${{ secrets.HUA_GIT }}
+
+    - name: Run HUAWEI hua123
+      run: |
+        python3 main.py --client huawei --username ${{ secrets.HUA123_USERNAME }} --password ${{ secrets.HUA_PASSWORD }} --git-url ${{ secrets.HUA123_GIT }}
+
+    - name: Run HUAWEI caoyufei123
+      run: |
+        python3 main.py --client huawei --username ${{ secrets.CAOYUFEI123_USERNAME }} --password ${{ secrets.HUA_PASSWORD }} --git-url ${{ secrets.CAOYUFEI_123_GIT }}
