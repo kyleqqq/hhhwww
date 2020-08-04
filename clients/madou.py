@@ -1,7 +1,6 @@
 import asyncio
 import os
 import time
-from pathlib import Path
 
 from libs.base import BaseClient
 
@@ -26,6 +25,10 @@ class MaDou(BaseClient):
             self.logger.warning(self.page.url)
             return
 
+        credit = str(await self.page.Jeval('.bonus-num', 'el => el.textContent')).strip()
+        message = f'{username}: {credit}'
+        self.logger.info(f'{username}: {credit}')
+
         # await self.page.goto(self.url, {'waitUntil': 'load'})
         # element = await self.page.querySelector(
         #     '#daily-mission-wrapper > div.ng-star-inserted:nth-child(1) .devui-tab-content li:nth-child(2)')
@@ -48,6 +51,13 @@ class MaDou(BaseClient):
         # print(len(page_list))
         # for page in page_list:
         #     print(page.url)
+
+        await self.page.goto(self.url, {'waitUntil': 'load'})
+
+        credit = str(await self.page.Jeval('.bonus-num', 'el => el.textContent')).strip()
+        self.logger.info(f'{username}: {credit}')
+        message = f'{message}\n{username}: {credit}'
+        self.send_message(message)
 
         await asyncio.sleep(2)
 

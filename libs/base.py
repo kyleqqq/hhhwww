@@ -1,6 +1,12 @@
+import base64
+import hashlib
+import hmac
 import logging
+import os
+import time
 from typing import Optional
 
+import requests
 from pyppeteer import launch
 from pyppeteer.browser import Browser
 from pyppeteer.page import Page
@@ -42,3 +48,17 @@ class BaseClient:
     @staticmethod
     async def accept_dialog(dialog):
         await dialog.accept()
+
+    @staticmethod
+    def send_message(text, title='Notice'):
+        ding_url = 'https://oapi.dingtalk.com/robot/send'
+        access_token = os.environ.get('DING_TOKEN')
+        _timestamp = str(round(time.time() * 1000))
+        secret = 'SEC25b6b9851cc21443c8b020dc03562a199e3cfecd502062861fc3d2c1ae226a8d'
+        secret_enc = secret.encode('utf-8')
+        string_to_sign_enc = '{}\n{}'.format(_timestamp, secret).encode('utf-8')
+        hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
+        sign = base64.b64encode(hmac_code)
+        json_data = {'msgtype': 'markdown', 'markdown': {'text': text, 'title': title}}
+        params = {'access_token': access_token, 'timestamp': _timestamp, 'sign': sign}
+        return requests.post(ding_url, params=params, json=json_data).json()
