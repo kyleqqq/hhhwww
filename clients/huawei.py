@@ -21,28 +21,28 @@ class HuaWei(BaseClient):
 
         credit = await self.get_credit()
         message = f'{username}: {credit}'
-        self.logger.info(f'{username}: {credit}')
+        self.logger.info(f'码豆: {credit}')
 
-        await self.sign_task()
-        await asyncio.sleep(3)
+        # await self.sign_task()
+        # await asyncio.sleep(3)
 
         await self.open_code_task()
         await asyncio.sleep(3)
 
-        await self.page.goto(self.url, {'waitUntil': 'load'})
-        await self.open_ide_task()
-        await asyncio.sleep(3)
-
-        await self.page.goto(self.url, {'waitUntil': 'load'})
-        await self.push_code_task(kwargs.get('git_url'))
-        await asyncio.sleep(3)
+        # await self.page.goto(self.url, {'waitUntil': 'load'})
+        # await self.open_ide_task()
+        # await asyncio.sleep(3)
+        #
+        # await self.page.goto(self.url, {'waitUntil': 'load'})
+        # await self.push_code_task(kwargs.get('git_url'))
+        # await asyncio.sleep(3)
 
         await self.page.goto(self.url, {'waitUntil': 'load'})
 
         credit = await self.get_credit()
-        self.logger.info(f'{username}: {credit}')
+        self.logger.info(f'码豆: {credit}')
         message = f'{message}\n{username}: {credit}'
-        self.send_message(message)
+        self.logger.info(self.send_message(message))
 
         await asyncio.sleep(2)
 
@@ -80,14 +80,17 @@ class HuaWei(BaseClient):
         return page_list[-1]
 
     async def open_code_task(self):
-        try:
-            new_page = await self.get_new_page()
-            await new_page.waitForSelector('.btn_cloudide', {'visible': True})
-            await new_page.click('.btn_cloudide')
-            await asyncio.sleep(20)
-            await new_page.close()
-        except Exception as e:
-            self.logger.warning(e)
+        for i in range(4):
+            try:
+                new_page = await self.get_new_page()
+                self.logger.info(new_page.url)
+                if new_page.url != self.url:
+                    await new_page.waitForSelector('.btn_cloudide', {'visible': True})
+                    await new_page.click('.btn_cloudide')
+                    await asyncio.sleep(20)
+                    await new_page.close()
+            except Exception as e:
+                self.logger.warning(e)
 
     async def open_ide_task(self):
         try:
