@@ -73,11 +73,22 @@ class HuaWei(BaseClient):
             f'#daily-mission-wrapper div.ng-star-inserted:nth-child(1) .devui-tab-content #experience-missions-{b}')
         await asyncio.sleep(1)
 
-        await self.page.click('.modal.in .button-content')
-        await asyncio.sleep(5)
+        # await self.page.click('.modal.in .button-content'),
+        # await asyncio.sleep(5)
+        # await self.page.waitForNavigation()
+
+        await asyncio.wait([
+            self.page.click('.modal.in .button-content'),
+            self.page.waitForNavigation(),
+        ])
 
         page_list = await self.browser.pages()
         return page_list[-1]
+
+    async def close_page(self):
+        page_list = await self.browser.pages()
+        if len(page_list) > 1:
+            await page_list[-1].close()
 
     async def open_code_task(self):
         for i in range(4):
@@ -86,11 +97,18 @@ class HuaWei(BaseClient):
                 self.logger.info(new_page.url)
                 if new_page.url != self.url:
                     await new_page.waitForSelector('.btn_cloudide', {'visible': True})
-                    await new_page.click('.btn_cloudide')
-                    await asyncio.sleep(20)
+                    # await new_page.click('.btn_cloudide')
+                    # await asyncio.sleep(20)
+                    await asyncio.wait([
+                        new_page.click('.btn_cloudide'),
+                        new_page.waitForNavigation(),
+                    ])
                     await new_page.close()
+                    break
             except Exception as e:
                 self.logger.warning(e)
+
+        await self.close_page()
 
     async def open_ide_task(self):
         try:
