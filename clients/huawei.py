@@ -23,19 +23,19 @@ class HuaWei(BaseClient):
         message = f'{username}: {credit}'
         self.logger.info(f'码豆: {credit}')
 
-        # await self.sign_task()
-        # await asyncio.sleep(3)
+        await self.sign_task()
+        await asyncio.sleep(3)
 
         await self.open_code_task()
         await asyncio.sleep(3)
 
-        # await self.page.goto(self.url, {'waitUntil': 'load'})
-        # await self.open_ide_task()
-        # await asyncio.sleep(3)
-        #
-        # await self.page.goto(self.url, {'waitUntil': 'load'})
-        # await self.push_code_task(kwargs.get('git_url'))
-        # await asyncio.sleep(3)
+        await self.page.goto(self.url, {'waitUntil': 'load'})
+        await self.open_ide_task()
+        await asyncio.sleep(3)
+
+        await self.page.goto(self.url, {'waitUntil': 'load'})
+        await self.push_code_task(kwargs.get('git_url'))
+        await asyncio.sleep(3)
 
         await self.page.goto(self.url, {'waitUntil': 'load'})
 
@@ -75,12 +75,16 @@ class HuaWei(BaseClient):
 
         # await self.page.click('.modal.in .button-content'),
         # await asyncio.sleep(5)
-        # await self.page.waitForNavigation()
 
-        await asyncio.wait([
+        # await asyncio.wait([
+        #     self.page.click('.modal.in .button-content'),
+        #     self.page.waitForNavigation(),
+        # ])
+
+        await asyncio.gather(
+            self.page.waitForNavigation({'waitUntil': 'load'}),
             self.page.click('.modal.in .button-content'),
-            self.page.waitForNavigation(),
-        ])
+        )
 
         page_list = await self.browser.pages()
         return page_list[-1]
@@ -99,10 +103,14 @@ class HuaWei(BaseClient):
                     await new_page.waitForSelector('.btn_cloudide', {'visible': True})
                     # await new_page.click('.btn_cloudide')
                     # await asyncio.sleep(20)
-                    await asyncio.wait([
-                        new_page.click('.btn_cloudide'),
-                        new_page.waitForNavigation(),
-                    ])
+                    # await asyncio.wait([
+                    #     new_page.click('.btn_cloudide'),
+                    #     new_page.waitForNavigation(),
+                    # ])
+                    await asyncio.gather(
+                        new_page.waitForNavigation({'waitUntil': 'load'}),
+                        new_page.click('.modal.in .button-content'),
+                    )
                     await new_page.close()
                     break
             except Exception as e:

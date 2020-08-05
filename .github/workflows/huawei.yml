@@ -1,10 +1,13 @@
 name: HuaWei
 
 on:
-  push:
-    branches: [ master ]
+#  push:
+#    branches: [ master ]
   schedule:
     - cron: '50 0 * * *'
+
+env:
+  DING_TOKEN: ${{ secrets.DING_TOKEN }}
 
 jobs:
   build:
@@ -20,9 +23,9 @@ jobs:
       run: |
         pip3 install -r requirements.txt
 
-#    - name: Run HUAWEI yufei
-#      run: |
-#        python3 main.py --client huawei --username ${{ secrets.CAOYUFEI_USERNAME }} --password ${{ secrets.CAOYUFEI_PASSWORD }} --git-url ${{ secrets.CAOYUFEI_GIT }}
+    - name: Run HUAWEI yufei
+      run: |
+        python3 main.py --client huawei --username ${{ secrets.CAOYUFEI_USERNAME }} --password ${{ secrets.CAOYUFEI_PASSWORD }} --git-url ${{ secrets.CAOYUFEI_GIT }}
 
     - name: Run HUAWEI hua
       run: |
