@@ -73,20 +73,21 @@ class HuaWei(BaseClient):
             f'#daily-mission-wrapper div.ng-star-inserted:nth-child(1) .devui-tab-content #experience-missions-{b}')
         await asyncio.sleep(1)
 
-        # await self.page.click('.modal.in .button-content'),
-        # await asyncio.sleep(5)
+        await self.page.click('.modal.in .button-content'),
+        await asyncio.sleep(5)
 
         # await asyncio.wait([
         #     self.page.click('.modal.in .button-content'),
         #     self.page.waitForNavigation(),
         # ])
 
-        await asyncio.gather(
-            self.page.waitForNavigation({'waitUntil': 'load'}),
-            self.page.click('.modal.in .button-content'),
-        )
+        # await asyncio.gather(
+        #     self.page.waitForNavigation({'waitUntil': 'load'}),
+        #     self.page.click('.modal.in .button-content'),
+        # )
 
         page_list = await self.browser.pages()
+        await asyncio.sleep(20)
         return page_list[-1]
 
     async def close_page(self):
@@ -95,26 +96,21 @@ class HuaWei(BaseClient):
             await page_list[-1].close()
 
     async def open_code_task(self):
-        for i in range(4):
-            try:
-                new_page = await self.get_new_page()
-                self.logger.info(new_page.url)
-                if new_page.url != self.url:
-                    await new_page.waitForSelector('.btn_cloudide', {'visible': True})
-                    # await new_page.click('.btn_cloudide')
-                    # await asyncio.sleep(20)
-                    # await asyncio.wait([
-                    #     new_page.click('.btn_cloudide'),
-                    #     new_page.waitForNavigation(),
-                    # ])
-                    await asyncio.gather(
-                        new_page.waitForNavigation({'waitUntil': 'load'}),
-                        new_page.click('.modal.in .button-content'),
-                    )
-                    await new_page.close()
-                    break
-            except Exception as e:
-                self.logger.warning(e)
+        new_page = await self.get_new_page()
+        self.logger.info(new_page.url)
+        if new_page.url != self.url:
+            await new_page.waitForSelector('.btn_cloudide', {'visible': True})
+            await new_page.click('.btn_cloudide')
+            await asyncio.sleep(20)
+            # await asyncio.wait([
+            #     new_page.click('.btn_cloudide'),
+            #     new_page.waitForNavigation(),
+            # ])
+            # await asyncio.gather(
+            #     new_page.waitForNavigation({'waitUntil': 'load'}),
+            #     new_page.click('.modal.in .button-content'),
+            # )
+            await new_page.close()
 
         await self.close_page()
 
