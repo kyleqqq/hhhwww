@@ -20,29 +20,29 @@ class HuaWei(BaseClient):
         await asyncio.sleep(5)
 
         credit = await self.get_credit()
-        message = f'{username}: {credit}'
+        message = f'#### {username} {credit}'
         self.logger.info(f'码豆: {credit}')
 
-        await self.sign_task()
-        await asyncio.sleep(3)
+        # await self.sign_task()
+        # await asyncio.sleep(2)
 
         await self.open_code_task()
-        await asyncio.sleep(3)
+        await asyncio.sleep(2)
 
         await self.page.goto(self.url, {'waitUntil': 'load'})
         await self.open_ide_task()
-        await asyncio.sleep(3)
+        await asyncio.sleep(2)
 
         await self.page.goto(self.url, {'waitUntil': 'load'})
         await self.push_code_task(kwargs.get('git_url'))
-        await asyncio.sleep(3)
+        await asyncio.sleep(2)
 
         await self.page.goto(self.url, {'waitUntil': 'load'})
 
         credit = await self.get_credit()
         self.logger.info(f'码豆: {credit}')
-        message = f'{message}\n{username}: {credit}'
-        self.logger.info(self.send_message(message))
+        message = f'{message} -> {credit}'
+        self.logger.info(self.send_message(message, '华为云码豆'))
 
         await asyncio.sleep(2)
 
@@ -76,11 +76,6 @@ class HuaWei(BaseClient):
         await self.page.click('.modal.in .button-content'),
         await asyncio.sleep(5)
 
-        # await asyncio.wait([
-        #     self.page.click('.modal.in .button-content'),
-        #     self.page.waitForNavigation(),
-        # ])
-
         # await asyncio.gather(
         #     self.page.waitForNavigation({'waitUntil': 'load'}),
         #     self.page.click('.modal.in .button-content'),
@@ -94,6 +89,7 @@ class HuaWei(BaseClient):
         page_list = await self.browser.pages()
         if len(page_list) > 1:
             await page_list[-1].close()
+            self.page = await self.browser.newPage()
 
     async def open_code_task(self):
         new_page = await self.get_new_page()
