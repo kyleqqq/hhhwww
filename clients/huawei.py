@@ -35,16 +35,17 @@ class HuaWei(BaseClient):
         await self.push_code_task(kwargs.get('git_url'))
         await asyncio.sleep(2)
 
-        await self.page.goto(self.url, {'waitUntil': 'load'})
-
-        credit = await self.get_credit()
-        self.logger.info(f'码豆: {credit}')
-        message = f'{message} -> {credit}'
+        new_credit = await self.get_credit()
+        self.logger.info(f'码豆: {new_credit}')
+        message = f'{message} -> {new_credit}'
         self.logger.info(self.send_message(message, '华为云码豆'))
 
         await asyncio.sleep(2)
 
     async def get_credit(self):
+        if self.page.url != self.url:
+            await self.page.goto(self.url, {'waitUntil': 'load'})
+
         await self.page.waitForSelector('#homeheader-coins', {'visible': True})
         return str(await self.page.Jeval('#homeheader-coins', 'el => el.textContent')).strip()
 
