@@ -61,11 +61,11 @@ class HuaWei(BaseClient):
         except Exception as e:
             self.logger.warning(e)
 
-    async def get_new_page(self, a=2, b=1):
+    async def get_new_page(self, a=2, b=1, task=None):
         if self.page.url != self.url:
             await self.page.goto(self.url, {'waitUntil': 'load'})
 
-        self.logger.info(self.page.url)
+        self.logger.info(f'{task} -> {self.page.url}')
         await self.page.waitForSelector('#daily-mission-wrapper', {'visible': True})
 
         await self.page.click(
@@ -80,7 +80,7 @@ class HuaWei(BaseClient):
             self.logger.debug(e)
 
         if is_done:
-            raise Exception('任务已完成')
+            raise Exception(f'{task} -> 任务已完成.')
 
         await self.page.click(node)
         await asyncio.sleep(1)
@@ -105,7 +105,7 @@ class HuaWei(BaseClient):
 
     async def open_code_task(self):
         try:
-            new_page = await self.get_new_page()
+            new_page = await self.get_new_page(task='open_code')
             await new_page.waitForSelector('.btn_cloudide', {'visible': True})
             await new_page.click('.btn_cloudide')
             await asyncio.sleep(20)
@@ -126,7 +126,7 @@ class HuaWei(BaseClient):
 
     async def open_ide_task(self):
         try:
-            new_page = await self.get_new_page(3, 0)
+            new_page = await self.get_new_page(3, 0, task='open_ide')
             await new_page.waitForSelector('.trial-stack-info', {'visible': True})
             await new_page.click('.trial-stack-info .stack-content .stack-position .devui-btn')
             await asyncio.sleep(20)
@@ -139,7 +139,7 @@ class HuaWei(BaseClient):
     async def push_code_task(self, git_url):
         if git_url:
             try:
-                await self.get_new_page(2, 2)
+                await self.get_new_page(2, 2, task='push_code')
 
                 now_time = time.strftime('%Y-%m-%d %H:%M:%S')
                 cmd = [
