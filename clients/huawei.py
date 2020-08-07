@@ -51,9 +51,9 @@ class HuaWei(BaseClient):
 
     async def sign_task(self):
         try:
-            await self.page.waitForSelector('#sign-wrapper', {'visible': True})
+            await self.page.waitForSelector('#homeheader-signin, #homeheader-signined', {'visible': True})
 
-            info = await self.page.Jeval('#homeheader-signin .button-content', 'el => el.textContent')
+            info = await self.page.Jeval('#homeheader-signin span.button-content, #homeheader-signined  span.button-content', 'el => el.textContent')
             sign_txt = str(info).strip()
             self.logger.info(sign_txt)
             if sign_txt.find('已签到') == -1:
