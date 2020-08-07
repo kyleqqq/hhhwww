@@ -10,6 +10,7 @@ class HuaWei(BaseClient):
     def __init__(self):
         super().__init__()
         self.url = 'https://devcloud.huaweicloud.com/bonususer/home/makebonus'
+        self.bonus_url = 'https://devcloud.huaweicloud.com/bonususer/v2/bonus_flows?page_no=1&page_size=4'
 
     async def handler(self, username, password, **kwargs):
         self.logger.info(f'{username} start login.')
@@ -19,9 +20,9 @@ class HuaWei(BaseClient):
         await self.page.click('#btn_submit')
         await asyncio.sleep(5)
 
-        credit = await self.get_credit()
-        message = f'#### {username} {credit}'
-        self.logger.info(f'码豆: {credit}')
+        # credit = await self.get_credit()
+        # message = f'#### {username} {credit}'
+        # self.logger.info(f'码豆: {credit}')
 
         await self.sign_task()
         await asyncio.sleep(2)
@@ -35,12 +36,24 @@ class HuaWei(BaseClient):
         await self.push_code_task(kwargs.get('git_url'))
         await asyncio.sleep(2)
 
-        new_credit = await self.get_credit()
-        self.logger.info(f'码豆: {new_credit}')
-        message = f'{message} -> {new_credit}'
-        self.logger.info(self.send_message(message, '华为云码豆'))
+        # new_credit = await self.get_credit()
+        # self.logger.info(f'码豆: {new_credit}')
+        # message = f'{message} -> {new_credit}'
+        # self.logger.info(self.send_message(message, '华为云码豆'))
+        try:
+            response = await self.page.waitForResponse(self.bonus_url)
+            data = await response.json()
+            message = [f'### {username}']
+            for item in data['result']['result']:
+                message.append(f"- {item['detail']} {item['beans']} {item['commit_time']}")
 
-        await asyncio.sleep(2)
+            message = '\n'.join(message)
+            self.logger.info(message)
+            self.send_message(message, '华为云码豆')
+        except Exception as e:
+            self.logger.error(e)
+
+        await asyncio.sleep(1)
 
     async def get_credit(self):
         if self.page.url != self.url:
@@ -53,7 +66,9 @@ class HuaWei(BaseClient):
         try:
             await self.page.waitForSelector('#homeheader-signin, #homeheader-signined', {'visible': True})
 
-            info = await self.page.Jeval('#homeheader-signin span.button-content, #homeheader-signined  span.button-content', 'el => el.textContent')
+            info = await self.page.Jeval(
+                '#homeheader-signin span.button-content, #homeheader-signined  span.button-content',
+                'el => el.textContent')
             sign_txt = str(info).strip()
             self.logger.info(sign_txt)
             if sign_txt.find('已签到') == -1:
