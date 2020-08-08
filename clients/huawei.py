@@ -30,7 +30,7 @@ class HuaWei(BaseClient):
         for cookie in cookies:
             new_cookies[cookie['name']] = cookie['value']
 
-        await self.get_user_credit(new_cookies)
+        self.get_user_credit(new_cookies)
 
         # credit = await self.get_credit()
         # message = f'#### {username} {credit}'
@@ -67,22 +67,18 @@ class HuaWei(BaseClient):
 
         await asyncio.sleep(1)
 
-    async def get_user_credit(self, cookie):
+    def get_user_credit(self, cookie):
         try:
-            async with aiohttp.ClientSession() as client:
-                async with client.get(self.me_url, cookies=cookie, timeout=20) as resp:
-                    assert resp.status == 200
-                    data = await resp.json()
-                    uid = data['id']
-                    self.logger.info(uid)
+            sess = requests.session()
+            data = sess.get(self.me_url, cookies=cookie, timeout=20).json()
+            uid = data['id']
+            self.logger.info(uid)
 
-                bonus_url = f'https://devcloud.huaweicloud.com/bonususer/v1/beans/{uid}'
-                async with client.get(bonus_url, cookies=cookie, timeout=20) as response:
-                    assert response.status == 200
-                    data = await response.json()
-                    self.logger.info(data['domain_beans'])
+            bonus_url = f'https://devcloud.huaweicloud.com/bonususer/v1/beans/{uid}'
+            data = sess.get(bonus_url, cookies=cookie, timeout=20).json()
+            self.logger.info(data['domain_beans'])
         except Exception as e:
-            self.logger.error(e)
+            self.logger.warning(e)
 
     async def get_credit(self):
         if self.page.url != self.url:
