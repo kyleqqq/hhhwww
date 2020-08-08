@@ -2,6 +2,9 @@ import asyncio
 import os
 import time
 
+import aiohttp
+import requests
+
 from libs.base import BaseClient
 
 
@@ -11,6 +14,8 @@ class HuaWei(BaseClient):
         super().__init__()
         self.url = 'https://devcloud.huaweicloud.com/bonususer/home/makebonus'
         self.bonus_url = 'https://devcloud.huaweicloud.com/bonususer/v2/bonus_flows?page_no=1&page_size=4'
+        self.me_url = 'https://devcloud.huaweicloud.com/bonususer/rest/me?_1596849192871'
+        self.http = requests.sessions
 
     async def handler(self, username, password, **kwargs):
         self.logger.info(f'{username} start login.')
@@ -19,6 +24,13 @@ class HuaWei(BaseClient):
         await self.page.type('#personalPasswordInputId .tiny-input-text', password)
         await self.page.click('#btn_submit')
         await asyncio.sleep(5)
+
+        cookies = await self.page.cookies()
+        new_cookies = {}
+        for cookie in cookies:
+            new_cookies[cookie['name']] = cookie['value']
+
+        await self.get_user_credit(new_cookies)
 
         # credit = await self.get_credit()
         # message = f'#### {username} {credit}'
@@ -40,20 +52,37 @@ class HuaWei(BaseClient):
         # self.logger.info(f'码豆: {new_credit}')
         # message = f'{message} -> {new_credit}'
         # self.logger.info(self.send_message(message, '华为云码豆'))
-        try:
-            response = await self.page.waitForResponse(self.bonus_url)
-            data = await response.json()
-            message = [f'### {username}']
-            for item in data['result']['result']:
-                message.append(f"- {item['detail']} {item['beans']} {item['commit_time']}")
-
-            message = '\n'.join(message)
-            self.logger.info(message)
-            self.send_message(message, '华为云码豆')
-        except Exception as e:
-            self.logger.error(e)
+        # try:
+        #     response = await self.page.waitForResponse(self.bonus_url)
+        #     data = await response.json()
+        #     message = [f'### {username}']
+        #     for item in data['result']['result']:
+        #         message.append(f"- {item['detail']} {item['beans']} {item['commit_time']}")
+        #
+        #     message = '\n'.join(message)
+        #     self.logger.info(message)
+        #     self.send_message(message, '华为云码豆')
+        # except Exception as e:
+        #     self.logger.error(e)
 
         await asyncio.sleep(1)
+
+    async def get_user_credit(self, cookie):
+        try:
+            async with aiohttp.ClientSession() as client:
+                async with client.get(self.me_url, cookies=cookie, timeout=20) as resp:
+                    assert resp.status == 200
+                    data = await resp.json()
+                    uid = data['id']
+                    self.logger.info(uid)
+
+                bonus_url = f'https://devcloud.huaweicloud.com/bonususer/v1/beans/{uid}'
+                async with client.get(bonus_url, cookies=cookie, timeout=20) as response:
+                    assert response.status == 200
+                    data = await response.json()
+                    self.logger.info(data['domain_beans'])
+        except Exception as e:
+            self.logger.error(e)
 
     async def get_credit(self):
         if self.page.url != self.url:
