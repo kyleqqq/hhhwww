@@ -37,7 +37,7 @@ class HuaWei(BaseClient):
         await asyncio.sleep(2)
 
         await self.open_code_task()
-        await asyncio.sleep(2)
+        await asyncio.sleep(20)
 
         await self.open_ide_task()
         await asyncio.sleep(2)
@@ -45,24 +45,10 @@ class HuaWei(BaseClient):
         await self.push_code_task(kwargs.get('git_url'))
         await asyncio.sleep(2)
 
-        # new_credit = await self.get_credit()
-        # self.logger.info(f'码豆: {new_credit}')
-        # message = f'{message} -> {new_credit}'
-        # self.logger.info(self.send_message(message, '华为云码豆'))
-        # try:
-        #     response = await self.page.waitForResponse(self.bonus_url)
-        #     data = await response.json()
-        #     message = [f'### {username}']
-        #     for item in data['result']['result']:
-        #         message.append(f"- {item['detail']} {item['beans']} {item['commit_time']}")
-        #
-        #     message = '\n'.join(message)
-        #     self.logger.info(message)
-        #     self.send_message(message, '华为云码豆')
-        # except Exception as e:
-        #     self.logger.error(e)
-
-        self.get_user_credit(new_cookies)
+        new_credit = await self.get_credit()
+        self.logger.info(f'码豆: {new_credit}')
+        message = f'{message} -> {new_credit}'
+        self.logger.info(self.send_message(message, '华为云码豆'))
 
         await asyncio.sleep(1)
 
@@ -111,7 +97,7 @@ class HuaWei(BaseClient):
         await self.page.waitForSelector('#daily-mission-wrapper', {'visible': True})
 
         await self.page.click(
-            f'#daily-mission-wrapper > div.ng-star-inserted:nth-child(1) ul li.ng-star-inserted:nth-child({a})')
+            f'#daily-mission-wrapper div.ng-star-inserted:nth-child(1) ul li.ng-star-inserted:nth-child({a})')
         await asyncio.sleep(1)
 
         node = f'#daily-mission-wrapper div.ng-star-inserted:nth-child(1) .devui-tab-content #experience-missions-{b}'
