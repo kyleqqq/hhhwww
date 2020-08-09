@@ -70,9 +70,8 @@ class HuaWei(BaseClient):
     def get_user_credit(self, cookie):
         try:
             sess = requests.session()
-            data = sess.get(self.me_url, cookies=cookie, timeout=20).json()
-            uid = data['id']
-            self.logger.info(uid)
+            data = sess.get(self.me_url, cookies=cookie, timeout=20).text
+            self.logger.info(data)
 
             # bonus_url = f'https://devcloud.huaweicloud.com/bonususer/v1/beans/{uid}'
             # data = sess.get(bonus_url, cookies=cookie, timeout=20).json()
