@@ -29,11 +29,10 @@ class HuaWei(BaseClient):
         for cookie in cookies:
             new_cookies[cookie['name']] = cookie['value']
 
-        self.get_user_credit(new_cookies)
 
-        # credit = await self.get_credit()
-        # message = f'#### {username} {credit}'
-        # self.logger.info(f'码豆: {credit}')
+        credit = await self.get_credit()
+        message = f'#### {username} {credit}'
+        self.logger.info(f'码豆: {credit}')
 
         await self.sign_task()
         await asyncio.sleep(2)
@@ -64,6 +63,8 @@ class HuaWei(BaseClient):
         # except Exception as e:
         #     self.logger.error(e)
 
+        self.get_user_credit(new_cookies)
+
         await asyncio.sleep(1)
 
     def get_user_credit(self, cookie):
@@ -73,9 +74,9 @@ class HuaWei(BaseClient):
             uid = data['id']
             self.logger.info(uid)
 
-            bonus_url = f'https://devcloud.huaweicloud.com/bonususer/v1/beans/{uid}'
-            data = sess.get(bonus_url, cookies=cookie, timeout=20).json()
-            self.logger.info(data['domain_beans'])
+            # bonus_url = f'https://devcloud.huaweicloud.com/bonususer/v1/beans/{uid}'
+            # data = sess.get(bonus_url, cookies=cookie, timeout=20).json()
+            # self.logger.info(data['domain_beans'])
         except Exception as e:
             self.logger.warning(e)
 
