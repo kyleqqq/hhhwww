@@ -29,7 +29,6 @@ class HuaWei(BaseClient):
         for cookie in cookies:
             new_cookies[cookie['name']] = cookie['value']
 
-
         credit = await self.get_credit()
         message = f'#### {username} {credit}'
         self.logger.info(f'码豆: {credit}')
@@ -70,7 +69,10 @@ class HuaWei(BaseClient):
     def get_user_credit(self, cookie):
         try:
             sess = requests.session()
-            data = sess.get(self.me_url, cookies=cookie, timeout=20).text
+            self.logger.info(cookie)
+            response = sess.get(self.me_url, cookies=cookie, timeout=20)
+            response.encoding = 'utf-8'
+            data = response.text
             self.logger.info(data)
 
             # bonus_url = f'https://devcloud.huaweicloud.com/bonususer/v1/beans/{uid}'
