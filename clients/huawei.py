@@ -154,7 +154,7 @@ class HuaWei(BaseClient):
 
     async def open_ide_task(self):
         try:
-            new_page = await self.get_new_page(8, 1, task='open_ide')
+            new_page = await self.get_new_page(8, 0, task='open_ide')
             await new_page.waitForSelector('.trial-stack-info', {'visible': True})
             await new_page.click('.trial-stack-info .stack-content .stack-position .devui-btn')
             await asyncio.sleep(20)
