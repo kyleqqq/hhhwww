@@ -41,7 +41,7 @@ class BaseHuaWei(BaseClient):
                 node = f'#{experience_id} #{experience_id}-{item[1]}'
                 task_name = await self.page.Jeval(f'{node} h5', 'el => el.textContent')
                 if await self.is_done(node):
-                    self.logger.warning(f'{task_name} 任务已完成.')
+                    self.logger.warning(f'{task_name} -> 任务已完成.')
                     continue
 
                 # print(await self.page.Jeval(f'{node}', 'el => el.outerHTML'))
@@ -61,13 +61,13 @@ class BaseHuaWei(BaseClient):
     async def run_task(self, node, task_name, task_fun, **kwargs):
         await self.page.click(node)
         await asyncio.sleep(5)
-        self.logger.info(f'{task_name} 任务开始.')
+        self.logger.info(f'{task_name} -> 任务开始.')
         if task_fun == 'push_code_task':
             await getattr(self, task_fun)(kwargs.get('git_url'))
         else:
             await getattr(self, task_fun)()
 
-        self.logger.warning(f'{task_name} 任务结束.')
+        self.logger.warning(f'{task_name} -> 任务结束.')
         await asyncio.sleep(2)
 
     async def get_credit(self):
