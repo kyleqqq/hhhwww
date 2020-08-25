@@ -2,10 +2,10 @@ import asyncio
 import random
 import string
 
-from clients.huawei import HuaWei
+from libs.base_huawei import BaseHuaWei
 
 
-class HuaWeiIam(HuaWei):
+class HuaWeiIam(BaseHuaWei):
 
     def __init__(self):
         super().__init__()
@@ -22,13 +22,17 @@ class HuaWeiIam(HuaWei):
         await self.page.click('#loginBtn #btn_submit')
         await asyncio.sleep(6)
 
-        await self.new_api_test()
+        await self.sign_task()
+
+        await self.experience(**kwargs)
+
+        await self.print_credit(username)
 
         await asyncio.sleep(1)
 
     async def new_project(self):
         try:
-            new_page = await self.get_new_page(9, 0, task='体验DevOps全流程样例项目')
+            new_page = await self.get_new_page()
             await new_page.waitForSelector('.modal.in', {'visible': True})
             await new_page.click('.modal.in .devui-btn:nth-child(1)')
             await asyncio.sleep(5)
@@ -40,7 +44,7 @@ class HuaWeiIam(HuaWei):
 
     async def new_test(self):
         try:
-            new_page = await self.get_new_page(5, 0, task='创建测试用例')
+            new_page = await self.get_new_page()
             await asyncio.sleep(2)
             await new_page.click('#global-guidelines .icon-close')
             await asyncio.sleep(1)
@@ -60,7 +64,7 @@ class HuaWeiIam(HuaWei):
 
     async def new_api_test(self):
         try:
-            new_page = await self.get_new_page(6, 0, task='创建接口测试用例')
+            new_page = await self.get_new_page()
             await asyncio.sleep(2)
             await new_page.click('#global-guidelines .icon-close')
             await asyncio.sleep(1)

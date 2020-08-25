@@ -12,7 +12,7 @@ def script_main(params):
     client = params.get('client')
     module = import_module('.'.join(['clients', client]))
     for name, obj in inspect.getmembers(module):
-        if inspect.isclass(obj) and obj.__bases__[0].__name__ == 'BaseClient':
+        if inspect.isclass(obj) and str(obj).find('clients') != -1:
             instance = obj()
             func = getattr(instance, 'run')
             try:
