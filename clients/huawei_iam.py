@@ -16,6 +16,8 @@ class HuaWeiIam(BaseHuaWei):
         await self.page.click('#subUserLogin')
         await asyncio.sleep(1)
 
+        await self.page.waitForSelector('#IAMAccountInputId .tiny-input-text', {'visible': True})
+
         await self.page.type('#IAMAccountInputId .tiny-input-text', 'caoyufei')
         await self.page.type('#IAMUsernameInputId .tiny-input-text', username)
         await self.page.type('#IAMPasswordInputId .tiny-input-text', password)

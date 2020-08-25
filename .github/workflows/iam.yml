@@ -1,8 +1,8 @@
 name: HuaWeiIam
 
 on:
-#  push:
-#    branches: [ master ]
+  push:
+    branches: [ master ]
   schedule:
     - cron: '50 0,2 * * *'
 
@@ -23,6 +23,6 @@ jobs:
       run: |
         pip3 install -r requirements.txt
 
-    - name: Run HUAWEI hua123
+    - name: Run 001
       run: |
         python3 main.py --client huawei_iam --username ${{ secrets.IAM_001_USERNAME }} --password ${{ secrets.IAM_001_PASSWORD }} --git-url ${{ secrets.IAM_001_GIT }}
