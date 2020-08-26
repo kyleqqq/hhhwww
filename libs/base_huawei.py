@@ -71,7 +71,8 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(2)
 
     async def get_credit(self):
-        await self.page.goto(self.url, {'waitUntil': 'load'})
+        if self.page.url != self.url:
+            await self.page.goto(self.url, {'waitUntil': 'load'})
         await self.page.waitForSelector('#homeheader-coins', {'visible': True})
         return str(await self.page.Jeval('#homeheader-coins', 'el => el.textContent')).strip()
 
