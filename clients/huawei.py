@@ -18,7 +18,7 @@ class HuaWei(BaseHuaWei):
 
         await self.sign_task()
 
-        await self.experience(**kwargs)
+        await self.start(**kwargs)
 
         await self.print_credit(username)
 
