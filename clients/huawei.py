@@ -12,6 +12,7 @@ class HuaWei(BaseHuaWei):
         self.logger.info(f'{username} start login.')
         await self.page.waitForSelector('#personalAccountInputId .tiny-input-text', {'visible': True})
         await self.page.type('#personalAccountInputId .tiny-input-text', username)
+        await asyncio.sleep(0.5)
         await self.page.type('#personalPasswordInputId .tiny-input-text', password)
         await self.page.click('#btn_submit')
         await asyncio.sleep(5)

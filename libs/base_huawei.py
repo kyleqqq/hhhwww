@@ -7,15 +7,17 @@ import time
 from libs.base import BaseClient
 
 name_map = {
-    # '发布': [['week_upload_task', 0]],
+    '项目管理': [['week_new_project', 0]],
+    '代码托管': [['week_new_git', 0], ['open_code_task', 1], ['push_code_task', 2]],
     'CloudIDE': [['open_ide_task', 0]],
-    '接口测试': [['api_test_task', 1]],
+    '代码检查': [['week_new_code_check', 0], ['check_code_task', 1]],
     '部署': [['deploy_task', 1]],
+    '发布': [['week_upload_task', 0]],
     '流水线': [['pipeline_task', 1]],
-    '代码检查': [['check_code_task', 1]],
-    '代码托管': [['open_code_task', 1], ['push_code_task', 2]],
-    # 'APIG网关': [['week_run_api_task', 1]],
-    # '函数工作流': [['week_new_fun_task', 0]],
+    '接口测试': [['week_new_api_test_task', 0], ['api_test_task', 1]],
+    '测试管理': [['week_new_test_task', 0]],
+    'APIG网关': [['week_new_api_task', 0], ['week_run_api_task', 1]],
+    '函数工作流': [['week_new_fun_task', 0]],
 }
 
 
@@ -31,7 +33,7 @@ class BaseHuaWei(BaseClient):
         if self.page.url != self.url:
             await self.page.goto(self.url, {'waitUntil': 'load'})
 
-        id_list = ['experience-missions']  # 'middleware-missions', 'experience-missions'
+        id_list = ['experience-missions', 'middleware-missions']  # 'middleware-missions', 'experience-missions'
         for _id in id_list:
             await self.page.waitForSelector(f'#{_id}', {'visible': True})
             elements = await self.page.querySelectorAll(f'#{_id} ul.devui-nav li.ng-star-inserted')
@@ -48,13 +50,13 @@ class BaseHuaWei(BaseClient):
                     node = f'#{_id} #{_id}-{item[1]}'
                     task_name = await self.page.Jeval(f'{node} h5', 'el => el.textContent')
                     if await self.is_done(node):
-                        self.logger.warning(f'{task_name} -> 任务已完成.')
+                        self.logger.warning(f'{task_name} -> DONE.')
                         continue
 
                     # print(await self.page.Jeval(f'{node}', 'el => el.outerHTML'))
                     await self.run_task(node, task_name, item[0], **kwargs)
 
-            await asyncio.sleep(5)
+            await asyncio.sleep(2)
 
     async def is_done(self, node):
         try:
@@ -67,22 +69,21 @@ class BaseHuaWei(BaseClient):
 
     async def run_task(self, node, task_name, task_fun, **kwargs):
         await self.page.click(node)
-        await asyncio.sleep(5)
-        self.logger.info(f'{task_name} -> 任务开始.')
+        await asyncio.sleep(2)
+        self.logger.info(f'{task_name}')
         self.task_page = await self.get_new_page()
 
         try:
             if task_fun == 'push_code_task':
                 self.git_url = kwargs.get('git_url')
             await getattr(self, task_fun)()
-            await self.task_page.close()
         except Exception as e:
             self.logger.warning(e)
         finally:
             await self.close_page()
 
         await asyncio.sleep(1)
-        self.logger.warning(f'{task_name} -> 任务结束.')
+        self.logger.warning(f'{task_name} -> DONE.')
         await asyncio.sleep(1)
 
     async def get_credit(self):
@@ -135,7 +136,7 @@ class BaseHuaWei(BaseClient):
             self.logger.debug(e)
 
         if is_done:
-            raise Exception(f'{task} -> 任务已完成.')
+            raise Exception(f'{task} -> DONE.')
 
         await self.page.click(node)
         await asyncio.sleep(1)
@@ -152,9 +153,10 @@ class BaseHuaWei(BaseClient):
         return page_list[-1]
 
     async def get_new_page(self):
-        await self.page.click('.modal.in .button-content')
-        await asyncio.sleep(5)
+        await self.page.click('.modal.in .modal-footer .devui-btn')
+        await asyncio.sleep(2)
         page_list = await self.browser.pages()
+        await page_list[-1].setViewport({'width': 1200, 'height': 768})
         return page_list[-1]
 
     async def close_page(self):
@@ -239,16 +241,23 @@ class BaseHuaWei(BaseClient):
         await self.task_page.click('.modal.in .devui-btn-stress')
         await asyncio.sleep(5)
 
-    async def week_project(self):
-        try:
-            await self.task_page.waitForSelector('.modal.in', {'visible': True})
-            await self.task_page.click('.modal.in .devui-btn:nth-child(1)')
-            await asyncio.sleep(5)
-            await self.task_page.close()
-        except Exception as e:
-            self.logger.warning(e)
-        finally:
-            await self.close_page()
+    async def week_new_project(self):
+        await self.task_page.waitForSelector('.modal.in', {'visible': True})
+        await self.task_page.click('.modal.in .devui-btn:nth-child(1)')
+        await asyncio.sleep(5)
+
+    async def week_new_git(self):
+        await self.task_page.waitForSelector('.pull-right', {'visible': True})
+        await self.task_page.click('.pull-right .devui-btn-primary')
+        await asyncio.sleep(2)
+        await self.task_page.type('#rname', ''.join(random.choices(string.ascii_letters, k=6)))
+        await self.task_page.click('#newAddRepoBtn')
+        await asyncio.sleep(5)
+
+    async def week_new_code_check(self):
+        await self.task_page.waitForSelector('.pull-right', {'visible': True})
+        await self.task_page.click('.pull-right .devui-btn-primary')
+        await asyncio.sleep(5)
 
     async def week_upload_task(self):
         await self.task_page.waitForSelector('#releasemanUploadDrop', {'visible': True})
@@ -261,27 +270,22 @@ class BaseHuaWei(BaseClient):
         await self.task_page.waitForSelector('#upload_file', {'visible': True})
         f = await self.task_page.querySelector('#releaseman-file-select')
         await f.uploadFile(__file__)
+        await asyncio.sleep(3)
 
-    async def week_test(self):
-        try:
-            await asyncio.sleep(2)
-            await self.task_page.click('#global-guidelines .icon-close')
-            await asyncio.sleep(1)
-            await self.task_page.click('.guide-container .icon-close')
-            await asyncio.sleep(1)
-            await self.task_page.waitForSelector('div.create-case', {'visible': True})
-            await self.task_page.click('div.create-case')
-            await asyncio.sleep(5)
-            await self.task_page.type('#caseName', ''.join(random.choices(string.ascii_letters, k=6)))
-            await self.task_page.click('div.footer .devui-btn-stress')
-            await asyncio.sleep(5)
-            await self.task_page.close()
-        except Exception as e:
-            self.logger.warning(e)
-        finally:
-            await self.close_page()
+    async def week_new_test_task(self):
+        await asyncio.sleep(2)
+        await self.task_page.click('#global-guidelines .icon-close')
+        await asyncio.sleep(1)
+        await self.task_page.click('.guide-container .icon-close')
+        await asyncio.sleep(1)
+        await self.task_page.waitForSelector('div.create-case', {'visible': True})
+        await self.task_page.click('div.create-case')
+        await asyncio.sleep(5)
+        await self.task_page.type('#caseName', ''.join(random.choices(string.ascii_letters, k=6)))
+        await self.task_page.click('div.footer .devui-btn-stress')
+        await asyncio.sleep(5)
 
-    async def week_api_test(self):
+    async def week_new_api_test_task(self):
         await self._close_test()
         await self._tab_api_test()
         await self.task_page.waitForSelector('div.create-case', {'visible': True})
@@ -292,12 +296,12 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(3)
 
     async def week_new_api_task(self):
-        await asyncio.sleep(5)
+        await asyncio.sleep(2)
         await self.task_page.waitForSelector('div.ti-intro-modal', {'visible': True})
         await asyncio.sleep(10)
 
     async def week_run_api_task(self):
-        await asyncio.sleep(5)
+        await asyncio.sleep(2)
         await self.task_page.waitForSelector('div.ti-intro-modal', {'visible': True})
         await self.task_page.click('div.ti-intro-modal .ti-btn-danger')
         await asyncio.sleep(2)
@@ -311,20 +315,30 @@ class BaseHuaWei(BaseClient):
         await self.task_page.click('.ti-btn-danger.ml10.ng-binding')
 
     async def week_new_fun_task(self):
-        await asyncio.sleep(3)
+        url = self.task_page.url
+        if url.find('serverless/dashboard') == -1:
+            url = f'{url}#/serverless/dashboard'
+            await self.task_page.goto(url, {'waitUntil': 'load'})
+
+        self.logger.info(self.task_page.url)
+        await asyncio.sleep(2)
         await self.task_page.waitForSelector('#rightWrap', {'visible': True})
         await self.task_page.click('#rightWrap .ant-row .ant-btn')
-        await asyncio.sleep(2)
+        await asyncio.sleep(1)
         await self.task_page.type('#name', ''.join(random.choices(string.ascii_letters, k=6)))
+        await self.task_page.waitForSelector('.preview', {'visible': True})
         await self.task_page.click('.preview .ant-btn-primary')
-        await asyncio.sleep(15)
+        await asyncio.sleep(5)
 
     async def _close_test(self):
-        await asyncio.sleep(2)
-        await self.task_page.click('#global-guidelines .icon-close')
-        await asyncio.sleep(1)
-        await self.task_page.click('.guide-container .icon-close')
-        await asyncio.sleep(1)
+        try:
+            await asyncio.sleep(1)
+            await self.task_page.click('#global-guidelines .icon-close')
+            await asyncio.sleep(2)
+            await self.task_page.click('.guide-container .icon-close')
+            await asyncio.sleep(1)
+        except Exception as e:
+            self.logger.debug(e)
 
     async def _tab_api_test(self):
         await self.task_page.click('#testtype_1')
