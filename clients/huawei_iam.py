@@ -21,13 +21,20 @@ class HuaWeiIam(BaseHuaWei):
         parent_user = 'caoyufei' if username.find('yufei') != -1 else 'atzouhua'
         await self.page.type('#IAMAccountInputId .tiny-input-text', parent_user)
         await self.page.type('#IAMUsernameInputId .tiny-input-text', username)
+        await asyncio.sleep(0.5)
         await self.page.type('#IAMPasswordInputId .tiny-input-text', password)
         await self.page.click('#loginBtn #btn_submit')
-        await asyncio.sleep(6)
+        await asyncio.sleep(5)
 
         await self.sign_task()
 
+        await self.delete_project()
+        await self.delete_api()
+        await self.delete_api_group()
+
         await self.start(**kwargs)
+
+        await self.regular()
 
         await self.print_credit(username)
 

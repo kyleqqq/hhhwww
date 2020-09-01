@@ -19,7 +19,13 @@ class HuaWei(BaseHuaWei):
 
         await self.sign_task()
 
+        await self.delete_project()
+        await self.delete_api()
+        await self.delete_api_group()
+
         await self.start(**kwargs)
+
+        await self.regular()
 
         await self.print_credit(username)
 

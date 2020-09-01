@@ -18,6 +18,9 @@ name_map = {
     '测试管理': [['week_new_test_task', 0]],
     'APIG网关': [['week_new_api_task', 0], ['week_run_api_task', 1]],
     '函数工作流': [['week_new_fun_task', 0]],
+    '使用API Explorer在线调试': 'api_explorer_task',
+    '使用Devstar生成代码工程': 'dev_star_task',
+    '浏览Codelabs代码示例': 'view_code_task'
 }
 
 
@@ -58,6 +61,23 @@ class BaseHuaWei(BaseClient):
 
             await asyncio.sleep(2)
 
+    async def regular(self):
+        _id = 'regular-missions'
+        await self.page.waitForSelector(f'#{_id}', {'visible': True})
+        elements = await self.page.querySelectorAll(f'#{_id} .daily-list li')
+        for i, element in enumerate(elements):
+            node = f'#{_id} #feedback-{i}'
+            task_name = await self.page.Jeval(f'{node} h5', 'el => el.textContent')
+            if not name_map.get(task_name):
+                continue
+
+            if await self.is_done(node):
+                self.logger.warning(f'{task_name} -> DONE.')
+                continue
+
+            await self.run_task(node, task_name, name_map.get(task_name))
+            await asyncio.sleep(1)
+
     async def is_done(self, node):
         try:
             is_done = await self.page.querySelector(f"{node} .complate-img")
@@ -72,19 +92,17 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(2)
         self.logger.info(f'{task_name}')
         self.task_page = await self.get_new_page()
-
         try:
             if task_fun == 'push_code_task':
                 self.git_url = kwargs.get('git_url')
             await getattr(self, task_fun)()
+            await asyncio.sleep(1)
+            self.logger.warning(f'{task_name} -> DONE.')
         except Exception as e:
             self.logger.warning(e)
         finally:
             await self.close_page()
-
-        await asyncio.sleep(1)
-        self.logger.warning(f'{task_name} -> DONE.')
-        await asyncio.sleep(1)
+            await asyncio.sleep(1)
 
     async def get_credit(self):
         if self.page.url != self.url:
@@ -166,6 +184,23 @@ class BaseHuaWei(BaseClient):
             if page.url != self.url:
                 await page.close()
 
+    async def api_explorer_task(self):
+        _url = 'https://apiexplorer.developer.huaweicloud.com/apiexplorer/doc?product=APIExplorer&api=ListProductsV3'
+        await self.task_page.goto(_url, {'waitUntil': 'load'})
+        await self.task_page.waitForSelector('#debug', {'visible': True})
+        await self.task_page.click('#debug')
+        await asyncio.sleep(3)
+
+    async def dev_star_task(self):
+        await self.task_page.waitForSelector('#confirm-download-btn', {'visible': True})
+        await self.task_page.click('#confirm-download-btn')
+        await asyncio.sleep(5)
+
+    async def view_code_task(self):
+        await self.task_page.waitForSelector('#code-template-list', {'visible': True})
+        await self.task_page.click('#code-template-card0')
+        await asyncio.sleep(5)
+
     async def open_code_task(self):
         await self.task_page.waitForSelector('.btn_cloudide', {'visible': True})
         await self.task_page.click('.btn_cloudide')
@@ -181,7 +216,14 @@ class BaseHuaWei(BaseClient):
 
     async def open_ide_task(self):
         await self.task_page.waitForSelector('.trial-stack-info', {'visible': True})
-        await self.task_page.click('.trial-stack-info .stack-content .stack-position .devui-btn')
+        try:
+            await self.task_page.click('.region-modal-button-content .region-modal-button-common')
+            await asyncio.sleep(1)
+        except Exception as e:
+            self.logger.debug(e)
+
+        await self.task_page.click(
+            '.trial-stack-info .trial-stack:nth-child(1) .stack-content .stack-position .devui-btn')
         await asyncio.sleep(20)
 
     async def push_code_task(self):
@@ -329,6 +371,91 @@ class BaseHuaWei(BaseClient):
         await self.task_page.waitForSelector('.preview', {'visible': True})
         await self.task_page.click('.preview .ant-btn-primary')
         await asyncio.sleep(5)
+
+    async def delete_project(self):
+        page = await self.browser.newPage()
+        domains = ['https://devcloud.huaweicloud.com', 'https://devcloud.cn-north-4.huaweicloud.com',
+                   'https://devcloud.cn-east-3.huaweicloud.com']
+
+        try:
+            for domain in domains:
+                url = f'{domain}/projects/v2/project/list?sort=&search=&page_no=1&page_size=40&project_type=&archive=1'
+                res = await page.goto(url, {'waitUntil': 'load'})
+                data = await res.json()
+                if data.get('error'):
+                    continue
+
+                for item in data['result']['project_info_list']:
+                    if item['name'].find('DevOps') != -1:
+                        self.logger.warning(f"delete {item['name']}")
+                        delete_url = f"{domain}/projects/project/{item['project_id']}/config/info"
+                        await page.goto(delete_url, {'waitUntil': 'load'})
+                        await asyncio.sleep(2)
+                        await page.click('.form-container .margin-right-s .devui-btn:nth-child(1)')
+                        await asyncio.sleep(2)
+                        await page.type('#deleteProject .projectInput', item['name'])
+                        await asyncio.sleep(0.5)
+                        await page.click('.dialog-footer .devui-btn-primary')
+                        await asyncio.sleep(1)
+                        break
+                return domain
+        finally:
+            await page.close()
+
+    async def delete_api(self):
+        page = await self.browser.newPage()
+        try:
+            await page.goto('https://console.huaweicloud.com/apig/?region=cn-north-4#/apig/multiLogical/openapi/list',
+                            {'waitUntil': 'load'})
+            await page.setViewport({'width': 1200, 'height': 768})
+            await page.waitForSelector('#openapi_list')
+            await asyncio.sleep(10)
+            elements = await page.querySelectorAll('#openapi_list tr')
+            if len(elements) < 2:
+                return
+
+            # 下线
+            await page.click('#openapi_list tr:nth-child(1) th:nth-child(1)')
+            await asyncio.sleep(0.5)
+            await page.click('.apiList-groups .cti-button:nth-child(3) .cti-btn-container')
+            await asyncio.sleep(1)
+            await page.click('.ti-modal-dialog .cti-button:nth-child(1) .cti-btn-container')
+            await asyncio.sleep(2)
+
+            # 删除
+            await page.click('#openapi_list tr:nth-child(1) th:nth-child(1)')
+            await asyncio.sleep(0.5)
+            await page.click('.apiList-groups .cti-button:nth-child(4) .cti-btn-container')
+            await asyncio.sleep(3)
+            await page.type('#deleteContent-text', 'DELETE')
+            await asyncio.sleep(0.5)
+            await page.click('.ti-modal-dialog .cti-button:nth-child(1) .cti-btn-container')
+            await asyncio.sleep(2)
+        finally:
+            await page.close()
+
+    async def delete_api_group(self):
+        page = await self.browser.newPage()
+        try:
+            await page.goto('https://console.huaweicloud.com/apig/?region=cn-north-4#/apig/multiLogical/openapi/group',
+                            {'waitUntil': 'load'})
+            await page.setViewport({'width': 1200, 'height': 768})
+            await page.waitForSelector('#openapi_group')
+            await asyncio.sleep(5)
+            elements = await page.querySelectorAll('#openapi_group tbody tr')
+            if len(elements) < 1:
+                return
+
+            await page.click('#openapi_group tbody tr:nth-child(1) td:nth-child(1) a')
+            await asyncio.sleep(2)
+            await page.click('.cti-fl-right .cti-button:nth-child(4) .cti-btn-container')
+            await asyncio.sleep(1)
+            await page.type('#tiny-text', 'DELETE')
+            await asyncio.sleep(0.5)
+            await page.click('#delG')
+            await asyncio.sleep(2)
+        finally:
+            await page.close()
 
     async def _close_test(self):
         try:
