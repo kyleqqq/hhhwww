@@ -19,7 +19,7 @@ name_map = {
     'APIG网关': [['week_new_api_task', 0], ['week_run_api_task', 1]],
     '函数工作流': [['week_new_fun_task', 0]],
     '使用API Explorer在线调试': 'api_explorer_task',
-    '使用Devstar生成代码工程': 'dev_star_task',
+    # '使用Devstar生成代码工程': 'dev_star_task',
     '浏览Codelabs代码示例': 'view_code_task'
 }
 
@@ -192,14 +192,15 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(3)
 
     async def dev_star_task(self):
+        await asyncio.sleep(2)
         await self.task_page.waitForSelector('#confirm-download-btn', {'visible': True})
         await self.task_page.click('#confirm-download-btn')
-        await asyncio.sleep(5)
+        await asyncio.sleep(3)
 
     async def view_code_task(self):
-        await self.task_page.waitForSelector('#code-template-list', {'visible': True})
-        await self.task_page.click('#code-template-card0')
-        await asyncio.sleep(5)
+        await asyncio.sleep(10)
+        await self.task_page.click('#code-template-cards .code-template-card:nth-child(1) .code-template-card-title')
+        await asyncio.sleep(2)
 
     async def open_code_task(self):
         await self.task_page.waitForSelector('.btn_cloudide', {'visible': True})
@@ -258,9 +259,9 @@ class BaseHuaWei(BaseClient):
     async def run_test(self):
         await self._close_test()
         await self.task_page.waitForSelector('div.devui-table-view', {'visible': True})
-        string = await self.task_page.Jeval('div.devui-table-view tbody tr:nth-child(1) td:nth-child(12)',
-                                            'el => el.outerHTML')
-        print(string)
+        # string = await self.task_page.Jeval('div.devui-table-view tbody tr:nth-child(1) td:nth-child(12)',
+        #                                     'el => el.outerHTML')
+        # print(string)
 
         await self.task_page.evaluate(
             '''() =>{ document.querySelector('div.devui-table-view tbody tr:nth-child(1) td:nth-child(12) i.icon-run').click(); }''')
@@ -362,7 +363,6 @@ class BaseHuaWei(BaseClient):
             url = f'{url}#/serverless/dashboard'
             await self.task_page.goto(url, {'waitUntil': 'load'})
 
-        self.logger.info(self.task_page.url)
         await asyncio.sleep(2)
         await self.task_page.waitForSelector('#rightWrap', {'visible': True})
         await self.task_page.click('#rightWrap .ant-row .ant-btn')
@@ -376,7 +376,6 @@ class BaseHuaWei(BaseClient):
         page = await self.browser.newPage()
         domains = ['https://devcloud.huaweicloud.com', 'https://devcloud.cn-north-4.huaweicloud.com',
                    'https://devcloud.cn-east-3.huaweicloud.com']
-
         try:
             for domain in domains:
                 url = f'{domain}/projects/v2/project/list?sort=&search=&page_no=1&page_size=40&project_type=&archive=1'
