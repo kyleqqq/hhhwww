@@ -19,7 +19,7 @@ name_map = {
     'APIG网关': [['week_new_api_task', 0], ['week_run_api_task', 1]],
     '函数工作流': [['week_new_fun_task', 0]],
     '使用API Explorer在线调试': 'api_explorer_task',
-    # '使用Devstar生成代码工程': 'dev_star_task',
+    '使用Devstar生成代码工程': 'dev_star_task',
     '浏览Codelabs代码示例': 'view_code_task'
 }
 
@@ -194,12 +194,14 @@ class BaseHuaWei(BaseClient):
     async def dev_star_task(self):
         await asyncio.sleep(2)
         await self.task_page.waitForSelector('#confirm-download-btn', {'visible': True})
-        await self.task_page.click('#confirm-download-btn')
+        await self.task_page.click('.template-dynamic-paramter-title .devui-btn')
+        await asyncio.sleep(2)
+        await self.task_page.click('#confirm-upload-btn')
         await asyncio.sleep(3)
 
     async def view_code_task(self):
         await asyncio.sleep(10)
-        await self.task_page.click('#code-template-cards .code-template-card:nth-child(1) .code-template-card-title')
+        await self.task_page.click('#code-template-cards .code-template-card:nth-child(2) .code-template-card-title')
         await asyncio.sleep(2)
 
     async def open_code_task(self):
