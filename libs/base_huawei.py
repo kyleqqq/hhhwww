@@ -273,6 +273,7 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(5)
 
     async def api_test_task(self):
+        await asyncio.sleep(2)
         await self._close_test()
         await self._tab_api_test()
         await self.task_page.evaluate(
@@ -332,6 +333,7 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(5)
 
     async def week_new_api_test_task(self):
+        await asyncio.sleep(2)
         await self._close_test()
         await self._tab_api_test()
         await self.task_page.waitForSelector('div.create-case', {'visible': True})
@@ -470,6 +472,8 @@ class BaseHuaWei(BaseClient):
             self.logger.debug(e)
 
     async def _tab_api_test(self):
+        await asyncio.sleep(1)
+        await self.task_page.waitForSelector('#testtype_1')
         await self.task_page.click('#testtype_1')
         await asyncio.sleep(1)
 
