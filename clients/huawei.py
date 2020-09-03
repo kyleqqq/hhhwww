@@ -1,4 +1,6 @@
 import asyncio
+import time
+from datetime import datetime, timezone, timedelta
 
 from libs.base_huawei import BaseHuaWei
 
@@ -28,5 +30,10 @@ class HuaWei(BaseHuaWei):
         await self.regular()
 
         await self.print_credit(username)
+
+        utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
+        bj_dt = utc_dt.astimezone(timezone(timedelta(hours=8))).strftime('%Y-%m-%d')
+        if bj_dt <= '2020-09-21':
+            await self.post_reply()
 
         await asyncio.sleep(1)

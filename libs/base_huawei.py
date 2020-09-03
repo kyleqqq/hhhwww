@@ -110,7 +110,7 @@ class BaseHuaWei(BaseClient):
         else:
             await self.page.reload({'waitUntil': 'load'})
 
-        await asyncio.sleep(2)
+        await asyncio.sleep(5)
         await self.page.waitForSelector('#homeheader-coins', {'visible': True})
         return str(await self.page.Jeval('#homeheader-coins', 'el => el.textContent')).strip()
 
@@ -225,6 +225,7 @@ class BaseHuaWei(BaseClient):
         except Exception as e:
             self.logger.debug(e)
 
+        await asyncio.sleep(3)
         await self.task_page.click(
             '.trial-stack-info .trial-stack:nth-child(1) .stack-content .stack-position .devui-btn')
         await asyncio.sleep(20)
@@ -471,3 +472,14 @@ class BaseHuaWei(BaseClient):
     async def _tab_api_test(self):
         await self.task_page.click('#testtype_1')
         await asyncio.sleep(1)
+
+    async def post_reply(self):
+        await self.page.goto('https://bbs.huaweicloud.com/forum/thread-73903-1-1.html', {'waitUntil': 'load'})
+        await self.page.waitForSelector('#fastpostsubmit')
+        content = random.choice(['#HC，我来了#我很期待这次大会，祝大会圆满成功！满满的幸福感', '#HC，我来了#我很期待这次大会，祝大会圆满成功！祝华为越来越强大',
+                                 '#HC，我来了#我很期待这次大会，祝大会圆满成功！希望能学到新的知识'])
+        await self.page.evaluate(
+            '''() =>{ ue.setContent('<p>%s</p>'); }''' % content)
+        await asyncio.sleep(1)
+        await self.page.click('#fastpostsubmit')
+        await asyncio.sleep(5)
