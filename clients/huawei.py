@@ -33,7 +33,8 @@ class HuaWei(BaseHuaWei):
 
         utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
         bj_dt = utc_dt.astimezone(timezone(timedelta(hours=8))).strftime('%Y-%m-%d')
-        if bj_dt <= '2020-09-21':
+        bj_h = utc_dt.astimezone(timezone(timedelta(hours=8))).strftime('%H')
+        if bj_dt <= '2020-09-21' and int(bj_h) < 9:
             await self.post_reply()
 
         await asyncio.sleep(1)
