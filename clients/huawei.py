@@ -1,6 +1,8 @@
 import asyncio
+import os
 import time
-from datetime import datetime, timezone, timedelta
+
+import redis
 
 from libs.base_huawei import BaseHuaWei
 
@@ -31,10 +33,13 @@ class HuaWei(BaseHuaWei):
 
         await self.print_credit(username)
 
-        utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
-        bj_dt = utc_dt.astimezone(timezone(timedelta(hours=8))).strftime('%Y-%m-%d')
-        bj_h = utc_dt.astimezone(timezone(timedelta(hours=8))).strftime('%H')
-        if bj_dt <= '2020-09-21' and int(bj_h) < 9:
+        redis_password = os.environ.get('REDIS_PASSWORD')
+        k = f'{username}_post_reply'
+        r = redis.Redis(host='redis-10036.c1.asia-northeast1-1.gce.cloud.redislabs.com', port=10036,
+                        password=redis_password)
+        if not r.get(k):
+            self.logger.info('post reply.')
             await self.post_reply()
+            r.set(k, time.strftime('%Y-%m-%d %H:%M:%S'), 3600 * 6)
 
         await asyncio.sleep(1)

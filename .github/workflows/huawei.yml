@@ -4,10 +4,11 @@ on:
 #  push:
 #    branches: [ master ]
   schedule:
-    - cron: '20 0-2 * * *'
+    - cron: '10 0,1,2 * * *'
 
 env:
   DING_TOKEN: ${{ secrets.DING_TOKEN }}
+  REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
 
 jobs:
   build:
