@@ -1,14 +1,15 @@
-name: HuaWeiIam
+name: HuaWeiIamYuFei
 
 on:
-#  push:
-#    branches: [ master ]
+  push:
+    branches: [ master ]
   schedule:
     - cron: '50 0-2 * * *'
 
 env:
   DING_TOKEN: ${{ secrets.DING_TOKEN }}
   REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+  PARENT_USER: caoyufei
 
 jobs:
   build:
@@ -24,18 +25,7 @@ jobs:
       run: |
         pip3 install -r requirements.txt
 
-    - name: Run 001
+    - name: Run
       run: |
-        python3 main.py --client huawei_iam --username ${{ secrets.IAM_001_USERNAME }} --password ${{ secrets.IAM_001_PASSWORD }} --git-url ${{ secrets.IAM_001_GIT }}
-
-    - name: Run 002
-      run: |
-        python3 main.py --client huawei_iam --username ${{ secrets.IAM_002_USERNAME }} --password ${{ secrets.IAM_001_PASSWORD }} --git-url ${{ secrets.IAM_002_GIT }}
-
-    - name: Run 003
-      run: |
-        python3 main.py --client huawei_iam --username ${{ secrets.HUA_001_USERNAME }} --password ${{ secrets.IAM_001_PASSWORD }} --git-url ${{ secrets.HUA_001_GIT }}
-
-    - name: Run 004
-      run: |
-        python3 main.py --client huawei_iam --username ${{ secrets.HUA_002_USERNAME }} --password ${{ secrets.IAM_001_PASSWORD }} --git-url ${{ secrets.HUA_002_GIT }}
+        echo ${{ secrets.YUFEI_GIT }}
+        # python3 main.py --client huawei_iam --username ${{ secrets.YUFEI_USERNAME }} --password ${{ secrets.PASSWORD }} --git-url ${{ secrets.YUFEI_GIT }}
