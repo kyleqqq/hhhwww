@@ -26,4 +26,4 @@ jobs:
 
     - name: Run
       run: |
-        python3 main.py --client huawei --username ${{ secrets.USERNAME }} --password ${{ secrets.PASSWORD }} --git-url ${{ secrets.GIT }}
+        python3 main.py --client huawei --username ${{ secrets.USERNAME }} --password ${{ secrets.PASSWORD }} --git ${{ secrets.GIT }}

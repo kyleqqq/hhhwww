@@ -31,4 +31,4 @@ jobs:
 
     - name: Run
       run: |
-        python3 main.py --client huawei_iam --username ${{ secrets.YUFEI_USERNAME }} --password ${{ secrets.PASSWORD }} --git-url ${{ secrets.YUFEI_GIT }}
+        python3 main.py --client huawei_iam --username ${{ secrets.YUFEI_USERNAME }} --password ${{ secrets.PASSWORD }} --git ${{ secrets.YUFEI_GIT }}
