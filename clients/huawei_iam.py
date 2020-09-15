@@ -1,4 +1,5 @@
 import asyncio
+import os
 import random
 import string
 
@@ -18,7 +19,7 @@ class HuaWeiIam(BaseHuaWei):
 
         await self.page.waitForSelector('#IAMAccountInputId .tiny-input-text', {'visible': True})
 
-        parent_user = 'caoyufei' if username.find('yufei') != -1 else 'atzouhua'
+        parent_user = os.environ.get('PARENT_USER')
         await self.page.type('#IAMAccountInputId .tiny-input-text', parent_user)
         await self.page.type('#IAMUsernameInputId .tiny-input-text', username)
         await asyncio.sleep(0.5)

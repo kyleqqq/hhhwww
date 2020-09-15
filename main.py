@@ -1,7 +1,9 @@
 import argparse
 import asyncio
 import inspect
+import json
 import logging
+import os
 from importlib import import_module
 
 DEFAULT_FORMATTER = '%(asctime)s[%(filename)s:%(lineno)d][%(levelname)s]:%(message)s'
@@ -24,15 +26,16 @@ def script_main(params):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--client', required=True)
-    parser.add_argument('-u', '--username')
-    parser.add_argument('-p', '--password')
-    parser.add_argument('--git-url')
+    parser.add_argument('--client')
+    parser.add_argument('--username')
+    parser.add_argument('--password')
+    parser.add_argument('--git')
     parser.add_argument('--headless', action='store_true')
     args = parser.parse_args()
     params = vars(args)
     params['headless'] = True if not params['headless'] else False
-    script_main(params)
+    # script_main(params)
+    print(json.dumps(dict(os.environ), indent=4))
 
 
 if __name__ == '__main__':

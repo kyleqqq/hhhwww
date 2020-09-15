@@ -27,12 +27,21 @@ class BaseClient:
         await self.page.setUserAgent(self.ua)
         await self.page.setViewport({'width': 1200, 'height': 768})
         await self.page.goto(self.url, {'waitUntil': 'load'})
-        try:
-            await self.handler(**kwargs)
-        except Exception as e:
-            self.logger.warning(e)
-        finally:
-            await self.close()
+
+        username_list = kwargs.get('username').split(',')
+        git_list = kwargs.get('git').split(',')
+        password_list = kwargs.get('password').split(',')
+
+        self.logger.warning(username_list)
+        for i, username in enumerate(username_list):
+            git = git_list[i]
+            password = password_list[0] if len(password_list) == 1 else password_list[i]
+            try:
+                await self.handler(username=username, password=password, git=git)
+            except Exception as e:
+                self.logger.warning(e)
+
+        await self.close()
 
     async def handler(self, **kwargs):
         raise RuntimeError

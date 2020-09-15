@@ -24,10 +24,6 @@ jobs:
       run: |
         pip3 install -r requirements.txt
 
-    - name: Run HUAWEI yufei
+    - name: Run
       run: |
-        python3 main.py --client huawei --username ${{ secrets.CAOYUFEI_USERNAME }} --password ${{ secrets.CAOYUFEI_PASSWORD }} --git-url ${{ secrets.CAOYUFEI_GIT }}
-
-    - name: Run HUAWEI hua
-      run: |
-        python3 main.py --client huawei --username ${{ secrets.HUA_USERNAME }} --password ${{ secrets.HUA_PASSWORD }} --git-url ${{ secrets.HUA_GIT }}
+        python3 main.py --client huawei --username ${{ secrets.USERNAME }} --password ${{ secrets.PASSWORD }} --git-url ${{ secrets.GIT }}
