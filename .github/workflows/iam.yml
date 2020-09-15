@@ -1,23 +1,15 @@
-name: HuaWeiIamYuFei
+name: IamYuFei
 
 on:
-  push:
-    branches: [ master ]
+#  push:
+#    branches: [ master ]
   schedule:
-    - cron: '50 0-2 * * *'
+    - cron: '40 0-2 * * *'
 
 env:
   DING_TOKEN: ${{ secrets.DING_TOKEN }}
   REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
   PARENT_USER: caoyufei
-  GIT_A: ${{ secrets.IAM_001_GIT }}
-  GIT_B: ${{ secrets.IAM_002_GIT }}
-  GIT_C: ${{ secrets.YUFEI003_GIT }}
-  GIT_D: ${{ secrets.YUFEI004_GIT }}
-  HUA_GIT_A: ${{ secrets.HUA_001_GIT }}
-  HUA_GIT_B: ${{ secrets.HUA_002_GIT }}
-  HUA_GIT_C: ${{ secrets.HUA003_GIT }}
-  HUA_GIT_D: ${{ secrets.HUA004_GIT }}
 
 jobs:
   build:

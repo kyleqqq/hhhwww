@@ -1,15 +1,15 @@
-name: IamHua
+name: IamMaYun
 
 on:
 #  push:
 #    branches: [ master ]
   schedule:
-    - cron: '5 3-5 * * *'
+    - cron: '45 3-5 * * *'
 
 env:
   DING_TOKEN: ${{ secrets.DING_TOKEN }}
   REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
-  PARENT_USER: atzouhua
+  PARENT_USER: atmayun
 
 jobs:
   build:
@@ -27,4 +27,4 @@ jobs:
 
     - name: Run
       run: |
-        python3 main.py --client huawei_iam --username ${{ secrets.HUA_USERNAME }} --password ${{ secrets.PASSWORD }} --git ${{ secrets.HUA_GIT }}
+        python3 main.py --client huawei_iam --username ${{ secrets.MAYUN_USERNAME }} --password ${{ secrets.PASSWORD }} --git ${{ secrets.MAYUN_GIT }}
