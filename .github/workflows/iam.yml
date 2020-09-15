@@ -10,6 +10,10 @@ env:
   DING_TOKEN: ${{ secrets.DING_TOKEN }}
   REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
   PARENT_USER: caoyufei
+  GIT_A: ${{ secrets.IAM_001_GIT }}
+  GIT_B: ${{ secrets.IAM_002_GIT }}
+  GIT_C: ${{ secrets.YUFEI003_GIT }}
+  GIT_D: ${{ secrets.YUFEI004_GIT }}
 
 jobs:
   build:
@@ -27,5 +31,7 @@ jobs:
 
     - name: Run
       run: |
-        echo ${{ secrets.YUFEI_GIT }}
+        import os
+        import json
+        print(json.dumps(dict(os.environ), indent=4))
         # python3 main.py --client huawei_iam --username ${{ secrets.YUFEI_USERNAME }} --password ${{ secrets.PASSWORD }} --git-url ${{ secrets.YUFEI_GIT }}
