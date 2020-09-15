@@ -14,6 +14,10 @@ env:
   GIT_B: ${{ secrets.IAM_002_GIT }}
   GIT_C: ${{ secrets.YUFEI003_GIT }}
   GIT_D: ${{ secrets.YUFEI004_GIT }}
+  HUA_GIT_A: ${{ secrets.HUA_001_GIT }}
+  HUA_GIT_B: ${{ secrets.HUA_002_GIT }}
+  HUA_GIT_C: ${{ secrets.HUA003_GIT }}
+  HUA_GIT_D: ${{ secrets.HUA004_GIT }}
 
 jobs:
   build:
