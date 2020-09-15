@@ -1,0 +1,41 @@
+name: HuaWeiIam2
+
+on:
+  push:
+    branches: [ master ]
+  schedule:
+    - cron: '50 5-7 * * *'
+
+env:
+  DING_TOKEN: ${{ secrets.DING_TOKEN }}
+  REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.6'
+
+    - name: requirements
+      run: |
+        pip3 install -r requirements.txt
+
+    - name: Run 001
+      run: |
+        python3 main.py --client huawei_iam --username ${{ secrets.YUFEI003_USERNAME }} --password ${{ secrets.CAOYUFEI_PASSWORD }} --git-url ${{ secrets.YUFEI003_GIT }}
+
+    - name: Run 002
+      run: |
+        python3 main.py --client huawei_iam --username ${{ secrets.YUFEI004_USERNAME }} --password ${{ secrets.CAOYUFEI_PASSWORD }} --git-url ${{ secrets.YUFEI004_GIT }}
+
+    - name: Run 003
+      run: |
+        python3 main.py --client huawei_iam --username ${{ secrets.HUA003_USERNAME }} --password ${{ secrets.CAOYUFEI_PASSWORD }} --git-url ${{ secrets.HUA003_GIT }}
+
+    - name: Run 004
+      run: |
+        python3 main.py --client huawei_iam --username ${{ secrets.HUA004_USERNAME }} --password ${{ secrets.CAOYUFEI_PASSWORD }} --git-url ${{ secrets.HUA004_GIT }}
