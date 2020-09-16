@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import hashlib
 import hmac
@@ -36,6 +37,7 @@ class BaseClient:
                 self.logger.warning(e)
             finally:
                 await self.close()
+                await asyncio.sleep(3)
 
     async def init(self, **kwargs):
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
@@ -49,8 +51,15 @@ class BaseClient:
         raise RuntimeError
 
     async def close(self):
-        await self.page.close()
-        await self.browser.close()
+        try:
+            await self.page.close()
+        except Exception as e:
+            self.logger.debug(e)
+
+        try:
+            await self.browser.close()
+        except Exception as e:
+            self.logger.debug(e)
 
     @staticmethod
     async def close_dialog(dialog):
