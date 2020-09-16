@@ -11,6 +11,7 @@ name_map = {
     '代码托管': [['week_new_git', 0], ['open_code_task', 1], ['push_code_task', 2]],
     'CloudIDE': [['open_ide_task', 0]],
     '代码检查': [['week_new_code_check', 0], ['check_code_task', 1]],
+    '编译构建': [['compile_build_task', 1]],
     '部署': [['deploy_task', 1]],
     '发布': [['week_upload_task', 0]],
     '流水线': [['pipeline_task', 1]],
@@ -246,6 +247,12 @@ class BaseHuaWei(BaseClient):
             os.system(' && '.join(cmd))
             os.system('rm -rf /tmp/crawler')
             await asyncio.sleep(1)
+
+    async def compile_build_task(self):
+        await asyncio.sleep(1)
+        node = 'div.devui-table-view tbody tr:nth-child(1) .operation-btn-section .devui-btn:nth-child(1)'
+        await self.task_page.evaluate('''() =>{ document.querySelector('%s').click(); }''' % node)
+        await asyncio.sleep(2)
 
     async def check_code_task(self):
         await self.task_page.waitForSelector('div.g-dropdown', {'visible': True})

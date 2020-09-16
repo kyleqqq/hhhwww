@@ -23,12 +23,14 @@ class BaseClient:
 
     async def run(self, **kwargs):
         username_list = kwargs.get('username').split(',')
-        git_list = kwargs.get('git').split(',')
         password_list = kwargs.get('password').split(',')
+        git_list = kwargs.get('git')
+        if git_list:
+            git_list = git_list.split(',')
 
         self.logger.warning(username_list)
         for i, username in enumerate(username_list):
-            git = git_list[i]
+            git = git_list[i] if git_list and len(git_list) == len(username_list) else None
             password = password_list[0] if len(password_list) == 1 else password_list[i]
             try:
                 await self.init(**kwargs)
