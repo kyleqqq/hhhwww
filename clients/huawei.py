@@ -37,7 +37,6 @@ class HuaWei(BaseHuaWei):
         k = f'{username}_post_reply'
         r = redis.Redis(host='redis-10036.c1.asia-northeast1-1.gce.cloud.redislabs.com', port=10036,
                         password=redis_password)
-        self.logger.info(r.get(k))
         if not r.get(k):
             self.logger.info('post reply.')
             await self.post_reply()
