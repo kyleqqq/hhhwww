@@ -21,13 +21,6 @@ class BaseClient:
         self.ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36'
 
     async def run(self, **kwargs):
-        self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
-                                    args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
-        self.page = await self.browser.newPage()
-        await self.page.setUserAgent(self.ua)
-        await self.page.setViewport({'width': 1200, 'height': 768})
-        await self.page.goto(self.url, {'waitUntil': 'load'})
-
         username_list = kwargs.get('username').split(',')
         git_list = kwargs.get('git').split(',')
         password_list = kwargs.get('password').split(',')
@@ -37,11 +30,20 @@ class BaseClient:
             git = git_list[i]
             password = password_list[0] if len(password_list) == 1 else password_list[i]
             try:
+                await self.init(**kwargs)
                 await self.handler(username=username, password=password, git=git)
             except Exception as e:
                 self.logger.warning(e)
+            finally:
+                await self.close()
 
-        await self.close()
+    async def init(self, **kwargs):
+        self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
+                                    args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
+        self.page = await self.browser.newPage()
+        await self.page.setUserAgent(self.ua)
+        await self.page.setViewport({'width': 1200, 'height': 768})
+        await self.page.goto(self.url, {'waitUntil': 'load'})
 
     async def handler(self, **kwargs):
         raise RuntimeError
