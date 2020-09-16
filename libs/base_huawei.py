@@ -94,7 +94,7 @@ class BaseHuaWei(BaseClient):
         self.task_page = await self.get_new_page()
         try:
             if task_fun == 'push_code_task':
-                self.git_url = kwargs.get('git_url')
+                self.git_url = kwargs.get('git')
             await getattr(self, task_fun)()
             await asyncio.sleep(1)
             self.logger.warning(f'{task_name} -> DONE.')
