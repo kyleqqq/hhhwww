@@ -19,7 +19,8 @@ def script_main(params):
                 asyncio.get_event_loop().run_until_complete(func(**params))
             except Exception as e:
                 logging.warning(e)
-            break
+            finally:
+                break
 
 
 def main():

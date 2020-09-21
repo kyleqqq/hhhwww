@@ -376,13 +376,17 @@ class BaseHuaWei(BaseClient):
             await self.task_page.goto(url, {'waitUntil': 'load'})
 
         await asyncio.sleep(2)
-        await self.task_page.waitForSelector('#rightWrap', {'visible': True})
-        await self.task_page.click('#rightWrap .ant-row .ant-btn')
-        await asyncio.sleep(1)
-        await self.task_page.type('#name', ''.join(random.choices(string.ascii_letters, k=6)))
-        await self.task_page.waitForSelector('.preview', {'visible': True})
-        await self.task_page.click('.preview .ant-btn-primary')
-        await asyncio.sleep(5)
+        try:
+            await self.task_page.waitForSelector('#rightWrap', {'visible': True})
+            await self.task_page.click('#rightWrap .ant-row .ant-btn')
+            await asyncio.sleep(1)
+            await self.task_page.type('#name', ''.join(random.choices(string.ascii_letters, k=6)))
+            await self.task_page.waitForSelector('.preview', {'visible': True})
+            await self.task_page.click('.preview .ant-btn-primary')
+            await asyncio.sleep(5)
+        except Exception as e:
+            self.logger.warning(self.task_page.url)
+            self.logger.warning(e)
 
     async def delete_project(self):
         page = await self.browser.newPage()
