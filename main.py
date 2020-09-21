@@ -5,7 +5,7 @@ import logging
 from importlib import import_module
 
 DEFAULT_FORMATTER = '%(asctime)s[%(filename)s:%(lineno)d][%(levelname)s]:%(message)s'
-logging.basicConfig(format=DEFAULT_FORMATTER, level=logging.DEBUG)
+logging.basicConfig(format=DEFAULT_FORMATTER, level=logging.INFO)
 
 
 def script_main(params):
