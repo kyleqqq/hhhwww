@@ -1,8 +1,8 @@
 name: IamHua
 
 on:
-#  push:
-#    branches: [ master ]
+  push:
+    branches: [ master ]
   schedule:
     - cron: '5 3-5 * * *'
 
