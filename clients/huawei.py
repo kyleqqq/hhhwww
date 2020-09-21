@@ -33,13 +33,4 @@ class HuaWei(BaseHuaWei):
 
         await self.print_credit(username)
 
-        redis_password = os.environ.get('REDIS_PASSWORD')
-        k = f'{username}_post_reply'
-        r = redis.Redis(host='redis-10036.c1.asia-northeast1-1.gce.cloud.redislabs.com', port=10036,
-                        password=redis_password)
-        if not r.get(k):
-            self.logger.info('post reply.')
-            await self.post_reply()
-            r.set(k, time.strftime('%Y-%m-%d %H:%M:%S'), 3600 * 6)
-
         await asyncio.sleep(1)
