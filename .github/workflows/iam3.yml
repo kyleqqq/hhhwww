@@ -1,8 +1,8 @@
 name: IamMaYun
 
 on:
-  push:
-    branches: [ master ]
+#  push:
+#    branches: [ master ]
   schedule:
     - cron: '45 3-5 * * *'
 

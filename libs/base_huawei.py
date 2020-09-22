@@ -252,7 +252,11 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(1)
         node = 'div.devui-table-view tbody tr:nth-child(1) .operation-btn-section .devui-btn:nth-child(1)'
         await self.task_page.evaluate('''() =>{ document.querySelector('%s').click(); }''' % node)
-        await asyncio.sleep(6)
+        await asyncio.sleep(1)
+
+        node = 'ul.devui-dropdown-menu li:nth-child(1) a'
+        await self.task_page.evaluate('''() =>{ document.querySelector('%s').click(); }''' % node)
+        await asyncio.sleep(8)
 
     async def check_code_task(self):
         await self.task_page.waitForSelector('div.g-dropdown', {'visible': True})
