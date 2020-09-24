@@ -474,6 +474,8 @@ class BaseHuaWei(BaseClient):
             await asyncio.sleep(0.5)
             await page.click('.ti-modal-dialog .cti-button:nth-child(1) .cti-btn-container')
             await asyncio.sleep(2)
+        except Exception as e:
+            self.logger.debug(e)
         finally:
             await page.close()
 
@@ -496,6 +498,8 @@ class BaseHuaWei(BaseClient):
             await asyncio.sleep(0.5)
             await page.click('#delG')
             await asyncio.sleep(2)
+        except Exception as e:
+            self.logger.debug(e)
         finally:
             await page.close()
 
