@@ -36,7 +36,7 @@ class BaseClient:
             try:
                 await self.init(**kwargs)
                 credit = await self.handler(username=username, password=password, git=git)
-                message.append(f"{username} -> {credit}")
+                message.append(f"- {username} -> {credit}\n")
             except Exception as e:
                 self.logger.warning(e)
             finally:
@@ -44,7 +44,7 @@ class BaseClient:
                 await asyncio.sleep(3)
 
         if len(message):
-            self.send_message('- '.join(message), '华为云码豆')
+            self.send_message(''.join(message), '华为云码豆')
 
     async def init(self, **kwargs):
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
