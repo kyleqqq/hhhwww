@@ -29,17 +29,22 @@ class BaseClient:
             git_list = git_list.split(',')
 
         self.logger.warning(username_list)
+        message = []
         for i, username in enumerate(username_list):
             git = git_list[i] if git_list and len(git_list) == len(username_list) else None
             password = password_list[0] if len(password_list) == 1 else password_list[i]
             try:
                 await self.init(**kwargs)
-                await self.handler(username=username, password=password, git=git)
+                credit = await self.handler(username=username, password=password, git=git)
+                message.append(f"{username_list} -> {credit}")
             except Exception as e:
                 self.logger.warning(e)
             finally:
                 await self.close()
                 await asyncio.sleep(3)
+
+        if len(message):
+            self.send_message('\n'.join(message), '华为云码豆')
 
     async def init(self, **kwargs):
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),

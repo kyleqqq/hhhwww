@@ -27,6 +27,6 @@ class HuaWei(BaseHuaWei):
 
         await self.regular()
 
-        await self.print_credit(username)
+        # await self.print_credit(username)
 
-        await asyncio.sleep(1)
+        return await self.get_credit()
