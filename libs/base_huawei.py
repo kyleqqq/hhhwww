@@ -392,6 +392,31 @@ class BaseHuaWei(BaseClient):
             self.logger.warning(self.task_page.url)
             self.logger.warning(e)
 
+    async def delete_function(self):
+        page = await self.browser.newPage()
+        try:
+            await page.goto('https://console.huaweicloud.com/functiongraph/?region=cn-north-4#/serverless/functions',
+                            {'waitUntil': 'load'})
+            await page.setViewport({'width': 1200, 'height': 768})
+            await asyncio.sleep(5)
+            elements = await page.querySelectorAll('.ant-table-body tr')
+            if len(elements) < 1:
+                return
+
+            for element in elements:
+                # html = await element.Jeval('td:nth-child(4) span:nth-child(2)', 'el => el.outerHTML')
+                # print(html)
+                e = await element.querySelector('td:nth-child(4) span:nth-child(2)')
+                await e.click()
+                await asyncio.sleep(1)
+
+                await page.type('#identifyingCode', 'DELETE')
+                await asyncio.sleep(0.5)
+                await page.click('.ant-modal-footer .ant-btn:nth-child(1)')
+                await asyncio.sleep(1)
+        finally:
+            await page.close()
+
     async def delete_project(self):
         page = await self.browser.newPage()
         domains = ['https://devcloud.huaweicloud.com', 'https://devcloud.cn-north-4.huaweicloud.com',
@@ -427,7 +452,6 @@ class BaseHuaWei(BaseClient):
             await page.goto('https://console.huaweicloud.com/apig/?region=cn-north-4#/apig/multiLogical/openapi/list',
                             {'waitUntil': 'load'})
             await page.setViewport({'width': 1200, 'height': 768})
-            await page.waitForSelector('#openapi_list')
             await asyncio.sleep(10)
             elements = await page.querySelectorAll('#openapi_list tr')
             if len(elements) < 2:
@@ -459,8 +483,7 @@ class BaseHuaWei(BaseClient):
             await page.goto('https://console.huaweicloud.com/apig/?region=cn-north-4#/apig/multiLogical/openapi/group',
                             {'waitUntil': 'load'})
             await page.setViewport({'width': 1200, 'height': 768})
-            await page.waitForSelector('#openapi_group')
-            await asyncio.sleep(5)
+            await asyncio.sleep(8)
             elements = await page.querySelectorAll('#openapi_group tbody tr')
             if len(elements) < 1:
                 return

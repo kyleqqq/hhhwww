@@ -17,16 +17,18 @@ class HuaWei(BaseHuaWei):
         await self.page.click('#btn_submit')
         await asyncio.sleep(5)
 
-        await self.sign_task()
+        await self.delete_function()
 
-        await self.delete_project()
-        await self.delete_api()
-        await self.delete_api_group()
-
-        await self.start(**kwargs)
-
-        await self.regular()
-
-        # await self.print_credit(username)
-
-        return await self.get_credit()
+        # await self.sign_task()
+        #
+        # await self.delete_project()
+        # await self.delete_api()
+        # await self.delete_api_group()
+        #
+        # await self.start(**kwargs)
+        #
+        # await self.regular()
+        #
+        # # await self.print_credit(username)
+        #
+        # return await self.get_credit()
