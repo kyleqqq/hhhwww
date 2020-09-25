@@ -30,7 +30,7 @@ class BaseClient:
             git_list = git_list.split(',')
 
         self.logger.warning(username_list)
-        self.logger.warning(git_list)
+        # self.logger.warning(git_list)
 
         message = []
         for i, username in enumerate(username_list):
