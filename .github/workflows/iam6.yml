@@ -1,14 +1,13 @@
 name: IamYufei3
 
-on:
+#on:
 #  push:
 #    branches: [ master ]
-  schedule:
-    - cron: '50 6-8 * * *'
+#  schedule:
+#    - cron: '50 6-8 * * *'
 
 env:
   DING_TOKEN: ${{ secrets.DING_TOKEN }}
-  REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
   PARENT_USER: caoyufei
 
 jobs:

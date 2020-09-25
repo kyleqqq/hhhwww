@@ -123,8 +123,7 @@ class BaseHuaWei(BaseClient):
 
     async def sign_task(self):
         try:
-            await self.page.waitForSelector('#homeheader-signin, #homeheader-signined', {'visible': True})
-
+            await asyncio.sleep(5)
             info = await self.page.Jeval(
                 '#homeheader-signin span.button-content, #homeheader-signined  span.button-content',
                 'el => el.textContent')
