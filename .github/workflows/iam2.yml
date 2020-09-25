@@ -1,10 +1,10 @@
 name: IamHua
 
 on:
-#  push:
-#    branches: [ master ]
-  schedule:
-    - cron: '5 3-5 * * *'
+  push:
+    branches: [ dev ]
+#  schedule:
+#    - cron: '5 3-5 * * *'
 
 env:
   DING_TOKEN: ${{ secrets.DING_TOKEN }}
