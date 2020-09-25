@@ -1,8 +1,8 @@
 name: IamYufei3
 
-#on:
-#  push:
-#    branches: [ master ]
+on:
+  push:
+    branches: [ dev ]
 #  schedule:
 #    - cron: '50 6-8 * * *'
 
