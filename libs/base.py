@@ -25,12 +25,12 @@ class BaseClient:
         username_list = kwargs.get('username').split(',')
         password_list = kwargs.get('password').split(',')
         git_list = kwargs.get('git')
-        self.logger.warning(git_list)
 
         if git_list:
             git_list = git_list.split(',')
 
         self.logger.warning(username_list)
+        self.logger.warning(git_list)
 
         message = []
         for i, username in enumerate(username_list):
