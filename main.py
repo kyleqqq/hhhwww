@@ -20,7 +20,7 @@ def script_main(params):
             except Exception as e:
                 logging.warning(e)
             finally:
-                exit(1)
+                exit(0)
 
 
 def main():

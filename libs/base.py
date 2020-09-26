@@ -40,6 +40,7 @@ class BaseClient:
                 await self.init(**kwargs)
                 credit = await self.handler(username=username, password=password, git=git)
                 message.append(f"- {username} -> {credit}\n")
+                self.logger.warning(f"- {username} -> {credit}\n")
             except Exception as e:
                 self.logger.warning(e)
             finally:
