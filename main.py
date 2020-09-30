@@ -11,15 +11,17 @@ logging.basicConfig(format=DEFAULT_FORMATTER, level=logging.INFO)
 def script_main(params):
     client = params.get('client')
     module = import_module('.'.join(['clients', client]))
+    loop = asyncio.get_event_loop()
     for name, obj in inspect.getmembers(module):
         if inspect.isclass(obj) and str(obj).find('clients') != -1:
             instance = obj()
             func = getattr(instance, 'run')
             try:
-                asyncio.get_event_loop().run_until_complete(func(**params))
+                loop.run_until_complete(func(**params))
             except Exception as e:
                 logging.warning(e)
             finally:
+                loop.close()
                 exit(0)
 
 
