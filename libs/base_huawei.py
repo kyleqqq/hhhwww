@@ -519,12 +519,30 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(1)
 
     async def post_reply(self):
-        await self.page.goto('https://bbs.huaweicloud.com/forum/thread-73903-1-1.html', {'waitUntil': 'load'})
+        await self.page.goto('https://bbs.huaweicloud.com/forum/thread-80373-1-1.html', {'waitUntil': 'load'})
         await self.page.waitForSelector('#fastpostsubmit')
-        content = random.choice(['#HC，我来了#我很期待这次大会，祝大会圆满成功！满满的幸福感', '#HC，我来了#我很期待这次大会，祝大会圆满成功！祝华为越来越强大',
-                                 '#HC，我来了#我很期待这次大会，祝大会圆满成功！希望能学到新的知识'])
+        content = random.choice(
+            ['#华为云1024向云而生# 华为云布局全球多个地理区域，提供高速稳定的全球云联接网络、贴近客户的本地化服务。',
+             '#华为云1024向云而生#第一天打卡，华为加油，共同努力，共同进步！', '#华为云1024向云而生# 打造智慧生活，智能交互，智能城市，智能社会。'])
         await self.page.evaluate(
             '''() =>{ ue.setContent('<p>%s</p>'); }''' % content)
         await asyncio.sleep(1)
         await self.page.click('#fastpostsubmit')
         await asyncio.sleep(5)
+
+        await self.page.goto('https://bbs.huaweicloud.com/forum/thread-80376-1-1.html', {'waitUntil': 'load'})
+        await self.page.waitForSelector('#fastpostsubmit')
+        await self.page.evaluate('''() =>{ document.querySelector('#tabeditor-2').click(); }''')
+        await asyncio.sleep(1)
+        await self.page.click('#tabeditor-2')
+        content = random.choice(
+            [
+                '![1024](https://bbs-img-cbc-cn.obs.cn-north-1.myhuaweicloud.com/data/attachment/forum/202010/09/204951b8y0xls2nopvc6az.png)',
+                '![1024](https://bbs-img-cbc-cn.obs.cn-north-1.myhuaweicloud.com/data/attachment/forum/202010/09/161504wwp2tknsrfkzytrm.png)',
+                '![1024](https://bbs-img-cbc-cn.obs.cn-north-1.myhuaweicloud.com/data/attachment/forum/202010/09/173512tnrpfkysqadqtlee.png)',
+                '![1024](https://bbs-img-cbc-cn.obs.cn-north-1.myhuaweicloud.com/data/attachment/forum/202010/09/162825q3widemjdlppcjb0.png)',
+            ])
+        await self.page.type('.textarea', content)
+        await asyncio.sleep(1)
+        await self.page.click('#fastpostsubmit')
+        await asyncio.sleep(50)

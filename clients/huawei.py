@@ -1,6 +1,12 @@
 import asyncio
+import os
+import time
+
+import redis
 
 from libs.base_huawei import BaseHuaWei
+
+from datetime import datetime, timezone, timedelta
 
 
 class HuaWei(BaseHuaWei):
@@ -28,6 +34,15 @@ class HuaWei(BaseHuaWei):
 
         await self.regular()
 
-        # await self.print_credit(username)
+        await self.print_credit(username)
+
+        redis_password = os.environ.get('REDIS_PASSWORD', 'hack3321')
+        k = f'{username}_post_reply'
+        r = redis.Redis(host='redis-10036.c1.asia-northeast1-1.gce.cloud.redislabs.com', port=10036,
+                        password=redis_password)
+        if not r.get(k):
+            self.logger.info('start post reply.')
+            await self.post_reply()
+            r.set(k, time.strftime('%Y-%m-%d %H:%M:%S'), 3600 * 6)
 
         return await self.get_credit()
