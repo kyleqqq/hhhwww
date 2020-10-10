@@ -541,8 +541,11 @@ class BaseHuaWei(BaseClient):
                 '![1024](https://bbs-img-cbc-cn.obs.cn-north-1.myhuaweicloud.com/data/attachment/forum/202010/09/161504wwp2tknsrfkzytrm.png)',
                 '![1024](https://bbs-img-cbc-cn.obs.cn-north-1.myhuaweicloud.com/data/attachment/forum/202010/09/173512tnrpfkysqadqtlee.png)',
                 '![1024](https://bbs-img-cbc-cn.obs.cn-north-1.myhuaweicloud.com/data/attachment/forum/202010/09/162825q3widemjdlppcjb0.png)',
+                '![1024](https://bbs-img-cbc-cn.obs.cn-north-1.myhuaweicloud.com/data/attachment/forum/202010/10/111533ab4neej10wtrbmm6.png)',
             ])
-        await self.page.type('.textarea', content)
+        await self.page.type('.textarea', content, {'delay': 30})
+        # await self.page.evaluate('''() =>{ document.querySelector('.textarea').value = '%s'; }''' % content)
+        # await self.page.evaluate('''() =>{ document.querySelector('#mditorBox').value = '%s'; }''' % content)
         await asyncio.sleep(1)
         await self.page.click('#fastpostsubmit')
         await asyncio.sleep(5)
