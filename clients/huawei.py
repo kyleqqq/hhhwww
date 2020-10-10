@@ -6,8 +6,6 @@ import redis
 
 from libs.base_huawei import BaseHuaWei
 
-from datetime import datetime, timezone, timedelta
-
 
 class HuaWei(BaseHuaWei):
 
@@ -36,7 +34,7 @@ class HuaWei(BaseHuaWei):
 
         await self.print_credit(username)
 
-        redis_password = os.environ.get('REDIS_PASSWORD', 'hack3321')
+        redis_password = os.environ.get('REDIS_PASSWORD')
         k = f'{username}_post_reply'
         r = redis.Redis(host='redis-10036.c1.asia-northeast1-1.gce.cloud.redislabs.com', port=10036,
                         password=redis_password)
