@@ -545,4 +545,4 @@ class BaseHuaWei(BaseClient):
         await self.page.type('.textarea', content)
         await asyncio.sleep(1)
         await self.page.click('#fastpostsubmit')
-        await asyncio.sleep(50)
+        await asyncio.sleep(5)
