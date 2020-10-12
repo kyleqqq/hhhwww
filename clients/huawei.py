@@ -42,7 +42,7 @@ class HuaWei(BaseHuaWei):
         if not v:
             v = 0
 
-        if v < 3:
+        if v <= 0:
             self.logger.info('start post reply.')
             await self.post_reply()
             r.set(k, int(v) + 1, 3600)
