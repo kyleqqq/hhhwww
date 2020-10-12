@@ -11,17 +11,30 @@ name_map = {
     '代码托管': [['week_new_git', 0], ['open_code_task', 1], ['push_code_task', 2]],
     'CloudIDE': [['open_ide_task', 0]],
     '代码检查': [['week_new_code_check', 0], ['check_code_task', 1]],
-    '编译构建': [['compile_build_task', 1]],
-    '部署': [['deploy_task', 1]],
+    '编译构建': [['week_new_compile_build', 0], ['compile_build_task', 1]],
+    '部署': [['week_new_deploy', 0], ['deploy_task', 1]],
     '发布': [['week_upload_task', 0]],
-    '流水线': [['pipeline_task', 1]],
+    '流水线': [['week_new_pipeline', 0], ['pipeline_task', 1]],
     '接口测试': [['week_new_api_test_task', 0], ['api_test_task', 1]],
     '测试管理': [['week_new_test_task', 0]],
     'APIG网关': [['week_new_api_task', 0], ['week_run_api_task', 1]],
     '函数工作流': [['week_new_fun_task', 0]],
+    '使用API  Explorer完在线调试': 'api_explorer_task',
     '使用API Explorer在线调试': 'api_explorer_task',
     '使用Devstar生成代码工程': 'dev_star_task',
-    '浏览Codelabs代码示例': 'view_code_task'
+    '浏览Codelabs代码示例': 'view_code_task',
+}
+
+init_name_map = {
+    '项目管理': [['week_new_project', 0]],
+    '代码托管': [['week_new_git', 0]],
+    '代码检查': [['week_new_code_check', 0]],
+    '编译构建': [['week_new_compile_build', 0]],
+    '部署': [['week_new_deploy', 0]],
+    '流水线': [['week_new_pipeline', 0]],
+    '使用API  Explorer完在线调试': 'api_explorer_task',
+    '使用API Explorer在线调试': 'api_explorer_task',
+    '使用Devstar生成代码工程': 'dev_star_task',
 }
 
 
@@ -30,72 +43,92 @@ class BaseHuaWei(BaseClient):
     def __init__(self):
         super().__init__()
         self.url = 'https://devcloud.huaweicloud.com/bonususer/home/makebonus'
-        self.git_url = None
         self.task_page = None
 
-    async def start(self, **kwargs):
+    async def start(self):
         if self.page.url != self.url:
             await self.page.goto(self.url, {'waitUntil': 'load'})
 
-        id_list = ['experience-missions', 'middleware-missions']  # 'middleware-missions', 'experience-missions'
+        id_list = ['experience-missions', 'middleware-missions']
         for _id in id_list:
-            await self.page.waitForSelector(f'#{_id}', {'visible': True})
-            elements = await self.page.querySelectorAll(f'#{_id} ul.devui-nav li.ng-star-inserted')
-            for element in elements:
-                name = str(await element.Jeval('a', 'el => el.textContent')).strip()
-                items = name_map.get(name)
-                if items is None:
-                    continue
-
-                for item in items:
-                    await element.click()
-                    await asyncio.sleep(1)
-
-                    node = f'#{_id} #{_id}-{item[1]}'
-                    task_name = await self.page.Jeval(f'{node} h5', 'el => el.textContent')
-                    if await self.is_done(node):
-                        self.logger.warning(f'{task_name} -> DONE.')
-                        continue
-
-                    # print(await self.page.Jeval(f'{node}', 'el => el.outerHTML'))
-                    await self.run_task(node, task_name, item[0], **kwargs)
-
+            # await self.page.waitForSelector(f'#{_id}', {'visible': True})
+            # elements = await self.page.querySelectorAll(f'#{_id} ul.devui-nav li.ng-star-inserted')
+            # for element in elements:
+            #     name = str(await element.Jeval('a', 'el => el.textContent')).strip()
+            #     items = name_map.get(name)
+            #     if items is None:
+            #         continue
+            #
+            #     for item in items:
+            #         await element.click()
+            #         await asyncio.sleep(1)
+            #
+            #         node = f'#{_id} #{_id}-{item[1]}'
+            #         task_name = await self.page.Jeval(f'{node} h5', 'el => el.textContent')
+            #         if await self.is_done(node):
+            #             self.logger.warning(f'{task_name} -> DONE.')
+            #             continue
+            #
+            #         # print(await self.page.Jeval(f'{node}', 'el => el.outerHTML'))
+            #         await self.run_task(node, task_name, item[0], **kwargs)
+            await self.execute(_id, 'ul.devui-nav li.ng-star-inserted', '', True, name_map)
             await asyncio.sleep(2)
 
     async def regular(self):
-        _id = 'regular-missions'
-        await self.page.waitForSelector(f'#{_id}', {'visible': True})
-        elements = await self.page.querySelectorAll(f'#{_id} .daily-list li')
+        await self.execute('regular-missions', '.daily-list li', 'feedback-', False, name_map)
+
+    async def init_account(self):
+        await self.execute('experience-missions', 'ul.devui-nav li.ng-star-inserted', '', True, init_name_map)
+
+        await self.page.goto('https://devcloud.huaweicloud.com/bonususer/home/new', {'waitUntil': 'load'})
+        await asyncio.sleep(2)
+        await self.execute('new-tasks-box', 'li.hot-task-item', 'new-task', False, init_name_map)
+
+    async def execute(self, element_id, element_list_name, task_node, is_tab=True, task_map=None):
+        elements = await self.page.querySelectorAll(f'#{element_id} {element_list_name}')
         for i, element in enumerate(elements):
-            node = f'#{_id} #feedback-{i}'
-            task_name = await self.page.Jeval(f'{node} h5', 'el => el.textContent')
-            if not name_map.get(task_name):
-                continue
+            if is_tab:
+                name = str(await element.Jeval('a', 'el => el.textContent')).strip()
+                task_list = task_map.get(name)
+                if task_list is None:
+                    continue
 
-            if await self.is_done(node):
-                self.logger.warning(f'{task_name} -> DONE.')
-                continue
-
-            await self.run_task(node, task_name, name_map.get(task_name))
-            await asyncio.sleep(1)
+                for task in task_list:
+                    await element.click()
+                    await asyncio.sleep(1)
+                    task_node = f'#{element_id} #{element_id}-{task[1]}'
+                    await self.run_task(task_node, task[0])
+            else:
+                _task_node = f'#{element_id} #{task_node}{i}'
+                task_name = str(await self.page.Jeval(f'{_task_node} h5', 'el => el.textContent')).strip()
+                if not task_map.get(task_name):
+                    continue
+                await self.run_task(_task_node, task_map.get(task_name))
 
     async def is_done(self, node):
         try:
             is_done = await self.page.querySelector(f"{node} .complate-img")
             if is_done:
                 return True
+            is_done = await self.page.querySelector(f"{node} img.completed ")
+            if is_done:
+                return True
         except Exception as e:
             self.logger.debug(e)
         return False
 
-    async def run_task(self, node, task_name, task_fun, **kwargs):
-        await self.page.click(node)
+    async def run_task(self, task_node, task_fun):
+        task_name = await self.page.Jeval(f'{task_node} h5', 'el => el.textContent')
+
+        if await self.is_done(task_node):
+            self.logger.warning(f'{task_name} -> DONE.')
+            return
+
+        await self.page.click(task_node)
         await asyncio.sleep(2)
         self.logger.info(f'{task_name}')
         self.task_page = await self.get_new_page()
         try:
-            if task_fun == 'push_code_task':
-                self.git_url = kwargs.get('git')
             await getattr(self, task_fun)()
             await asyncio.sleep(1)
             self.logger.warning(f'{task_name} -> DONE.')
@@ -134,41 +167,6 @@ class BaseHuaWei(BaseClient):
                 await asyncio.sleep(3)
         except Exception as e:
             self.logger.warning(e)
-
-    async def get_new_page1(self, a=1, b=1, task=None):
-        if self.page.url != self.url:
-            await self.page.goto(self.url, {'waitUntil': 'load'})
-
-        self.logger.info(f'{task} -> {self.page.url}')
-        await self.page.waitForSelector('#daily-mission-wrapper', {'visible': True})
-
-        await self.page.click(
-            f'#daily-mission-wrapper div.ng-star-inserted:nth-child(1) ul li.ng-star-inserted:nth-child({a})')
-        await asyncio.sleep(1)
-
-        node = f'#daily-mission-wrapper div.ng-star-inserted:nth-child(1) .devui-tab-content #experience-missions-{b}'
-        is_done = None
-        try:
-            is_done = await self.page.querySelector(f"{node} .complate-img")
-        except Exception as e:
-            self.logger.debug(e)
-
-        if is_done:
-            raise Exception(f'{task} -> DONE.')
-
-        await self.page.click(node)
-        await asyncio.sleep(1)
-
-        await self.page.click('.modal.in .button-content'),
-        await asyncio.sleep(5)
-
-        # await asyncio.gather(
-        #     self.page.waitForNavigation({'waitUntil': 'load'}),
-        #     self.page.click('.modal.in .button-content'),
-        # )
-
-        page_list = await self.browser.pages()
-        return page_list[-1]
 
     async def get_new_page(self):
         await self.page.click('.modal.in .modal-footer .devui-btn')
@@ -231,12 +229,12 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(20)
 
     async def push_code_task(self):
-        if self.git_url:
+        if self.git:
             now_time = time.strftime('%Y-%m-%d %H:%M:%S')
             cmd = [
                 'cd /tmp',
                 'git config --global user.name "caoyufei" && git config --global user.email "atcaoyufei@gmail.com"',
-                f'git clone {self.git_url}',
+                f'git clone {self.git}',
                 'cd /tmp/crawler',
                 f'echo "{now_time}" >> time.txt',
                 "git add .",
@@ -246,6 +244,25 @@ class BaseHuaWei(BaseClient):
             os.system(' && '.join(cmd))
             os.system('rm -rf /tmp/crawler')
             await asyncio.sleep(1)
+
+    async def week_new_compile_build(self):
+        await asyncio.sleep(2)
+        await self.task_page.waitForSelector('.devui-layout-main-content', {'visible': True})
+        await self.task_page.click('.devui-layout-main-content #create_new_task')
+        await asyncio.sleep(1)
+        await self.task_page.click('.button-group .devui-btn-stress')
+        await asyncio.sleep(1)
+        await self.task_page.click('.button-group .devui-btn-stress')
+        await asyncio.sleep(5)
+        await self.task_page.click('a.devui-link')
+        await asyncio.sleep(5)
+        card_list = await self.task_page.querySelectorAll('.task-detail-cardlist .card-li')
+        await card_list[2].hover()
+        await asyncio.sleep(1)
+        await self.task_page.click('.task-detail-cardlist .card-li:nth-child(3) .add-btn')
+        await asyncio.sleep(2)
+        await self.task_page.click('.button-group .devui-btn-stress')
+        await asyncio.sleep(5)
 
     async def compile_build_task(self):
         await asyncio.sleep(1)
@@ -258,10 +275,57 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(8)
 
     async def check_code_task(self):
-        await self.task_page.waitForSelector('div.g-dropdown', {'visible': True})
-        await self.task_page.click('div.g-dropdown:nth-child(1)')
+        await asyncio.sleep(5)
+        task_list = await self.task_page.querySelectorAll('.devui-table tbody tr')
+        for task in task_list:
+            task_id = await task.Jeval('.task-card-name span', "el => el.getAttribute('id')")
+            task_id = task_id.replace('task_name', 'task_execute')
+            await self.task_page.click(f'#{task_id}')
+            break
+        await asyncio.sleep(5)
+
+    async def week_new_deploy(self):
         await asyncio.sleep(2)
-        await self.task_page.click('#task_execute_crawler')
+        await self.task_page.waitForSelector('.devui-layout-operate', {'visible': True})
+        await self.task_page.click('.devui-layout-operate #taskCreate')
+        await asyncio.sleep(1)
+        await self.task_page.click('.step-group .devui-btn-stress')
+        await asyncio.sleep(5)
+
+        template_list = await self.task_page.querySelectorAll('.template-list .template-item')
+        await template_list[1].click()
+        await asyncio.sleep(0.5)
+        await self.task_page.click('.step-group .devui-btn-stress')
+        await asyncio.sleep(3)
+        card_list = await self.task_page.querySelectorAll('.task-detail-cardlist .card-li')
+        await card_list[1].hover()
+        await asyncio.sleep(0.5)
+        await self.task_page.click('.task-detail-cardlist .card-li:nth-child(2) .add-btn')
+        await asyncio.sleep(1)
+
+        link_list = await self.task_page.querySelectorAll('.marked-text .devui-link')
+        await link_list[1].click()
+
+        await asyncio.sleep(10)
+        page_list = await self.browser.pages()
+        await page_list[-1].setViewport({'width': 1200, 'height': 768})
+        new_page = page_list[-1]
+        await asyncio.sleep(2)
+        await new_page.type('input.input-textarea-cn', self.username)
+        await asyncio.sleep(0.5)
+        await new_page.click('.btn-box .devui-btn-stress')
+        await asyncio.sleep(2)
+        await new_page.close()
+
+        await self.task_page.click('#DeploymentGroup_groupId_button')
+        await asyncio.sleep(2)
+        await self.task_page.click('.deployment-select')
+        await asyncio.sleep(0.5)
+        await self.task_page.click('.devui-dropdown-item:nth-child(1)')
+        await asyncio.sleep(0.5)
+        await self.task_page.type('div#SingleLineText_port_to_stop input', ''.join(random.choices(string.digits, k=4)))
+        await asyncio.sleep(0.5)
+        await self.task_page.click('.deployman-create-content__button-group .devui-btn-primary')
         await asyncio.sleep(3)
 
     async def deploy_task(self):
@@ -290,6 +354,23 @@ class BaseHuaWei(BaseClient):
             '''() =>{ document.querySelector('div.devui-table-view tbody tr:nth-child(1) i.icon-run').click(); }''')
         await asyncio.sleep(5)
 
+    async def week_new_pipeline(self):
+        await self.task_page.waitForSelector('.pull-right', {'visible': True})
+        await self.task_page.click('.pull-right .devui-btn-stress')
+        await asyncio.sleep(0.5)
+        await self.task_page.click('.pipeline-edit-tab .devui-btn-primary')
+        await asyncio.sleep(5)
+        await self.task_page.click('.mycontent .header a.pointer')
+        await asyncio.sleep(2)
+        await self.task_page.click('#selected-devcloud')
+        await asyncio.sleep(0.5)
+        await self.task_page.click('.devui-dropdown-item:nth-child(1)')
+        await asyncio.sleep(0.5)
+        await self.task_page.click('.pipeline-edit-tab .devui-btn-primary')
+        await asyncio.sleep(2)
+        await self.task_page.click('.codeCreate .devui-btn-stress')
+        await asyncio.sleep(3)
+
     async def pipeline_task(self):
         await asyncio.sleep(1)
         await self.task_page.evaluate(
@@ -300,21 +381,75 @@ class BaseHuaWei(BaseClient):
 
     async def week_new_project(self):
         await self.task_page.waitForSelector('.modal.in', {'visible': True})
-        await self.task_page.click('.modal.in .devui-btn:nth-child(1)')
-        await asyncio.sleep(5)
+        await asyncio.sleep(2)
+        no_data = await self.task_page.querySelector('.projects-container .no-data')
+        if no_data:
+            try:
+                await self.task_page.click('div.devui-checkbox label')
+                await asyncio.sleep(1)
+                await self.task_page.click('#declaration-notice .devui-btn.devui-btn-primary')
+                await asyncio.sleep(1)
+            except Exception as e:
+                self.logger.debug(e)
+
+            try:
+                btn_list = await self.task_page.querySelectorAll('.quick-create-phoenix .devui-btn')
+                await btn_list[1].click()
+
+                await self.task_page.click('#home-page-add-project')
+                await asyncio.sleep(1)
+                await self.task_page.click('#projet_scrum')
+                await asyncio.sleep(1)
+                await self.task_page.type('#projectCreateFormProjectName', self.username)
+                await asyncio.sleep(0.5)
+                await self.task_page.click('#createProjectBtn')
+                await asyncio.sleep(3)
+            except Exception as e:
+                self.logger.warning(e)
+                await self.close_page()
+                await self.close()
+                exit(1)
+        else:
+            btn_list = await self.task_page.querySelectorAll('.quick-create-phoenix .devui-btn')
+            await btn_list[0].click()
+            await asyncio.sleep(5)
 
     async def week_new_git(self):
+        await asyncio.sleep(5)
+        no_data = await self.task_page.querySelector('.new-list .no-data')
         await self.task_page.waitForSelector('.pull-right', {'visible': True})
         await self.task_page.click('.pull-right .devui-btn-primary')
-        await asyncio.sleep(2)
-        await self.task_page.type('#rname', ''.join(random.choices(string.ascii_letters, k=6)))
+        await asyncio.sleep(1)
+        git_name = ''.join(random.choices(string.ascii_letters, k=6))
+        if not no_data:
+            git_name = 'crawler'
+        await self.task_page.type('#rname', git_name)
+        await asyncio.sleep(0.5)
+
+        btn_list = await self.task_page.querySelectorAll('.new-repo-row-center:nth-child(1) .devui-checkbox')
+        await btn_list[2].click()
+
         await self.task_page.click('#newAddRepoBtn')
-        await asyncio.sleep(5)
+        await asyncio.sleep(8)
+
+        git_list = await self.task_page.querySelectorAll('.devui-table tbody tr')
+        if git_list and len(git_list) and git_name == 'crawler':
+            await self.task_page.click('#repoNamecrawler')
+            await asyncio.sleep(10)
+            git_url = await self.task_page.Jeval('.clone-url input', "el => el.getAttribute('title')")
+            git_url = git_url.replace('git@', f'https://atzouhua%2F{self.username}:hack3321@')
+            self.logger.info(git_url)
 
     async def week_new_code_check(self):
         await self.task_page.waitForSelector('.pull-right', {'visible': True})
         await self.task_page.click('.pull-right .devui-btn-primary')
-        await asyncio.sleep(5)
+        await asyncio.sleep(8)
+        btn = await self.task_page.querySelector('#codecheck-new-task-btn-0')
+        if btn:
+            await btn.click()
+            await asyncio.sleep(1)
+            await self.task_page.click('.btn-wrap .devui-btn-primary')
+            await asyncio.sleep(5)
 
     async def week_upload_task(self):
         await self.task_page.waitForSelector('#releasemanUploadDrop', {'visible': True})

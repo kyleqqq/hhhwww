@@ -11,7 +11,7 @@ class HuaWeiIam(BaseHuaWei):
     def __init__(self):
         super().__init__()
 
-    async def handler(self, username, password, **kwargs):
+    async def handler(self, username, password, git, **kwargs):
         self.logger.info(f'{username} start login.')
         await self.page.waitForSelector('#personalAccountInputId .tiny-input-text', {'visible': True})
         await self.page.click('#subUserLogin')
@@ -19,7 +19,7 @@ class HuaWeiIam(BaseHuaWei):
 
         await self.page.waitForSelector('#IAMAccountInputId .tiny-input-text', {'visible': True})
 
-        parent_user = os.environ.get('PARENT_USER')
+        parent_user = os.environ.get('PARENT_USER', 'atzouhua')
         await self.page.type('#IAMAccountInputId .tiny-input-text', parent_user)
         await self.page.type('#IAMUsernameInputId .tiny-input-text', username)
         await asyncio.sleep(0.5)
@@ -27,15 +27,17 @@ class HuaWeiIam(BaseHuaWei):
         await self.page.click('#loginBtn #btn_submit')
         await asyncio.sleep(5)
 
+        await self.regular()
+
+        # await self.init_account()
+
         await self.sign_task()
 
         await self.delete_project()
         await self.delete_api()
         await self.delete_api_group()
 
-        await self.start(**kwargs)
-
-        await self.regular()
+        await self.start()
 
         # await self.print_credit(username)
 

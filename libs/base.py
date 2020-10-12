@@ -19,6 +19,8 @@ class BaseClient:
         self.page: Optional[Page] = None
         self.logger = logging.getLogger(self.__class__.__name__)
         self.url = None
+        self.username = None
+        self.git = None
         self.ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36'
 
     async def run(self, **kwargs):
@@ -36,11 +38,14 @@ class BaseClient:
         for i, username in enumerate(username_list):
             git = git_list[i] if git_list and len(git_list) == len(username_list) else None
             password = password_list[0] if len(password_list) == 1 else password_list[i]
+            self.username = username
+            self.git = git
+
             try:
                 await self.init(**kwargs)
                 credit = await self.handler(username=username, password=password, git=git)
                 message.append(f"- {username} -> {credit}\n")
-                self.logger.warning(f"- {username} -> {credit}\n")
+                self.logger.warning(f"{username} -> {credit}\n")
             except Exception as e:
                 self.logger.warning(e)
             finally:
