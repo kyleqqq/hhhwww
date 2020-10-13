@@ -31,7 +31,7 @@ class HuaWei(BaseHuaWei):
 
         await self.regular()
 
-        await self.print_credit(username)
+        # await self.print_credit(username)
 
         redis_password = os.environ.get('REDIS_PASSWORD')
         k = f'{username}_post_reply2'
