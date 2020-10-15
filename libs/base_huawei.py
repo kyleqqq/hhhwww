@@ -531,9 +531,11 @@ class BaseHuaWei(BaseClient):
     async def week_fast_dev_star(self):
         await asyncio.sleep(5)
         await self.task_page.waitForSelector('#code-template-detail-container', {'visible': True})
-        await self.task_page.click('.template-detail-right-label .devui-btn-danger')
+        await self.task_page.click('.code-template-codebase-right-operations-panel .devui-btn-danger')
         await asyncio.sleep(3)
         await self.task_page.click('#deploy-btn')
+        # await asyncio.sleep(1)
+        # await self.task_page.click('.operation-next')
         await asyncio.sleep(15)
 
     async def delete_function(self):
