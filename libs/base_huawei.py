@@ -23,6 +23,7 @@ name_map = {
     '使用API Explorer在线调试': 'api_explorer_task',
     '使用Devstar生成代码工程': 'dev_star_task',
     '浏览Codelabs代码示例': 'view_code_task',
+    '体验DevStar快速生成代码': 'week_fast_dev_star',
 }
 
 init_name_map = {
@@ -527,30 +528,41 @@ class BaseHuaWei(BaseClient):
             self.logger.warning(self.task_page.url)
             self.logger.warning(e)
 
+    async def week_fast_dev_star(self):
+        await asyncio.sleep(5)
+        await self.task_page.waitForSelector('#code-template-detail-container', {'visible': True})
+        await self.task_page.click('.template-detail-right-label .devui-btn-danger')
+        await asyncio.sleep(3)
+        await self.task_page.click('#deploy-btn')
+        await asyncio.sleep(15)
+
     async def delete_function(self):
         page = await self.browser.newPage()
-        try:
-            await page.goto('https://console.huaweicloud.com/functiongraph/?region=cn-north-4#/serverless/functions',
-                            {'waitUntil': 'load'})
-            await page.setViewport({'width': 1200, 'height': 768})
-            await asyncio.sleep(5)
-            elements = await page.querySelectorAll('.ant-table-body tr')
-            if len(elements) < 1:
-                return
+        url_list = ['https://console.huaweicloud.com/functiongraph/?region=cn-north-4#/serverless/functions',
+                    'https://console.huaweicloud.com/functiongraph/?region=cn-south-1#/serverless/functions']
+        for _url in url_list:
+            try:
+                await page.goto(_url, {'waitUntil': 'load'})
+                await page.setViewport({'width': 1200, 'height': 768})
+                await asyncio.sleep(5)
+                elements = await page.querySelectorAll('.ant-table-body tr')
+                if len(elements) < 1:
+                    return
 
-            for element in elements:
-                # html = await element.Jeval('td:nth-child(4) span:nth-child(2)', 'el => el.outerHTML')
-                # print(html)
-                e = await element.querySelector('td:nth-child(4) span:nth-child(2)')
-                await e.click()
-                await asyncio.sleep(1)
+                for element in elements:
+                    # html = await element.Jeval('td:nth-child(4) span:nth-child(2)', 'el => el.outerHTML')
+                    # print(html)
+                    e = await element.querySelector('td:nth-child(4) span:nth-child(2)')
+                    await e.click()
+                    await asyncio.sleep(1)
 
-                await page.type('#identifyingCode', 'DELETE')
-                await asyncio.sleep(0.5)
-                await page.click('.ant-modal-footer .ant-btn:nth-child(1)')
-                await asyncio.sleep(1)
-        finally:
-            await page.close()
+                    await page.type('#identifyingCode', 'DELETE')
+                    await asyncio.sleep(0.5)
+                    await page.click('.ant-modal-footer .ant-btn:nth-child(1)')
+                    await asyncio.sleep(1)
+            except Exception as e:
+                self.logger.debug(e)
+        await page.close()
 
     async def delete_project(self):
         page = await self.browser.newPage()
