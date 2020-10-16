@@ -278,11 +278,14 @@ class BaseHuaWei(BaseClient):
     async def check_code_task(self):
         await asyncio.sleep(5)
         task_list = await self.task_page.querySelectorAll('.devui-table tbody tr')
-        for task in task_list:
-            task_id = await task.Jeval('.task-card-name span', "el => el.getAttribute('id')")
-            task_id = task_id.replace('task_name', 'task_execute')
-            await self.task_page.click(f'#{task_id}')
-            break
+        task_id = await task_list[0].Jeval('.task-card-name span', "el => el.getAttribute('id')")
+        task_id = task_id.replace('task_name', 'task_execute')
+        if await self.task_page.querySelector(f'#{task_id}'):
+            self.task_page.click(f'#{task_id}')
+        else:
+            self.task_page.click(f'.devui-btn-text-dark:nth-child(1)')
+            await asyncio.sleep(1)
+            self.task_page.click(f'#{task_id}')
         await asyncio.sleep(5)
 
     async def week_new_deploy(self):
