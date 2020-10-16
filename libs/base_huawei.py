@@ -283,7 +283,8 @@ class BaseHuaWei(BaseClient):
         if await self.task_page.querySelector(f'#{task_id}'):
             self.task_page.click(f'#{task_id}')
         else:
-            self.task_page.click(f'.devui-btn-text-dark:nth-child(1)')
+            btn_list = await self.task_page.querySelectorAll('.devui-btn-text-dark')
+            btn_list[0].click(f'.devui-btn-text-dark:nth-child(1)')
             await asyncio.sleep(1)
             self.task_page.click(f'#{task_id}')
         await asyncio.sleep(5)
