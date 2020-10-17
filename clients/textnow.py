@@ -12,9 +12,9 @@ class TextNow(BaseClient):
 
     async def handler(self, username, password, **kwargs):
         self.logger.info(f'{username} start login.')
-        await self.page.type('#txt-username', username)
+        await self.page.type('#txt-username', username, {'delay': 20})
         await asyncio.sleep(1)
-        await self.page.type('#txt-password', password)
+        await self.page.type('#txt-password', password, {'delay': 20})
         await asyncio.sleep(1)
         await self.page.click('#btn-login')
         await asyncio.sleep(5)

@@ -547,27 +547,26 @@ class BaseHuaWei(BaseClient):
         url_list = ['https://console.huaweicloud.com/functiongraph/?region=cn-north-4#/serverless/functions',
                     'https://console.huaweicloud.com/functiongraph/?region=cn-south-1#/serverless/functions']
         for _url in url_list:
-            try:
-                await page.goto(_url, {'waitUntil': 'load'})
-                await page.setViewport({'width': 1200, 'height': 768})
-                await asyncio.sleep(5)
-                elements = await page.querySelectorAll('.ant-table-body tr')
-                if len(elements) < 1:
-                    return
+            await page.goto(_url, {'waitUntil': 'load'})
+            await page.setViewport({'width': 1200, 'height': 768})
+            await asyncio.sleep(5)
+            elements = await page.querySelectorAll('.ant-table-body tr')
+            if len(elements) < 1:
+                continue
 
-                for element in elements:
-                    # html = await element.Jeval('td:nth-child(4) span:nth-child(2)', 'el => el.outerHTML')
-                    # print(html)
+            for element in elements:
+                # html = await element.Jeval('td:nth-child(4) span:nth-child(2)', 'el => el.outerHTML')
+                # print(html)
+                try:
                     e = await element.querySelector('td:nth-child(4) span:nth-child(2)')
                     await e.click()
                     await asyncio.sleep(1)
-
                     await page.type('#identifyingCode', 'DELETE')
                     await asyncio.sleep(0.5)
                     await page.click('.ant-modal-footer .ant-btn:nth-child(1)')
                     await asyncio.sleep(1)
-            except Exception as e:
-                self.logger.debug(e)
+                except Exception as e:
+                    self.logger.debug(e)
         await page.close()
 
     async def delete_project(self):
