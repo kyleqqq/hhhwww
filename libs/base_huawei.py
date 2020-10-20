@@ -286,7 +286,7 @@ class BaseHuaWei(BaseClient):
             btn_list = await self.task_page.querySelectorAll('.devui-btn-text-dark')
             await btn_list[0].click()
             await asyncio.sleep(1)
-            self.task_page.click(f'#{task_id}')
+            await self.task_page.click(f'#{task_id}')
         await asyncio.sleep(5)
 
     async def week_new_deploy(self):
