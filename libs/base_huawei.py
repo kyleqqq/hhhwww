@@ -286,7 +286,7 @@ class BaseHuaWei(BaseClient):
         task_id = await task_list[0].Jeval('.task-card-name span', "el => el.getAttribute('id')")
         task_id = task_id.replace('task_name', 'task_execute')
         if await self.task_page.querySelector(f'#{task_id}'):
-            self.task_page.click(f'#{task_id}')
+            await self.task_page.click(f'#{task_id}')
         else:
             btn_list = await self.task_page.querySelectorAll('.devui-btn-text-dark')
             await btn_list[0].click()
