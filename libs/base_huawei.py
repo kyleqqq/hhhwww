@@ -227,7 +227,12 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(3)
         await self.task_page.click(
             '.trial-stack-info .trial-stack:nth-child(1) .stack-content .stack-position .devui-btn')
-        await asyncio.sleep(20)
+        await asyncio.sleep(10)
+
+        try:
+            await self.close_page()
+        except Exception as e:
+            self.logger.error(e)
 
     async def push_code_task(self):
         if self.git:
