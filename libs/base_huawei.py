@@ -447,7 +447,8 @@ class BaseHuaWei(BaseClient):
             await self.task_page.click('#repoNamecrawler')
             await asyncio.sleep(10)
             git_url = await self.task_page.Jeval('.clone-url input', "el => el.getAttribute('title')")
-            git_url = git_url.replace('git@', f'https://{self.parent_user}%2F{self.username}:hack3321@')
+            _user = self.parent_user if self.parent_user else self.username
+            git_url = git_url.replace('git@', f'https://{_user}%2F{self.username}:hack3321@')
             git_url = git_url.replace('com:', 'com/')
             self.logger.info(git_url)
 
