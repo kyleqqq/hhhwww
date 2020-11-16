@@ -32,6 +32,8 @@ def main():
     parser.add_argument('--username')
     parser.add_argument('--password')
     parser.add_argument('--git')
+    parser.add_argument('--iam', action='store_true')
+    parser.add_argument('--parent')
     parser.add_argument('--headless', action='store_true')
     args = parser.parse_args()
     params = vars(args)
