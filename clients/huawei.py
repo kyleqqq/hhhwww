@@ -22,16 +22,16 @@ class HuaWei(BaseHuaWei):
 
         # cookies = await self.get_cookies()
 
-        await self.sign_task()
-        await self.delete_function()
-
-        await self.delete_project()
-        await self.delete_api()
-        await self.delete_api_group()
-
-        await self.start()
-
-        await self.regular()
+        # await self.sign_task()
+        # await self.delete_function()
+        #
+        # await self.delete_project()
+        # await self.delete_api()
+        # await self.delete_api_group()
+        #
+        # await self.start()
+        #
+        # await self.regular()
 
         # await self.print_credit(username)
 
@@ -43,8 +43,8 @@ class HuaWei(BaseHuaWei):
         if not reply_count:
             reply_count = 0
 
-        if reply_count < 5:
-            r.set(k, reply_count + 1, 3600 * 6)
+        if int(reply_count) < 5:
+            r.set(k, int(reply_count) + 1, 3600 * 6)
             await self.post_reply()
 
         return await self.get_credit()
