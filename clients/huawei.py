@@ -20,7 +20,7 @@ class HuaWei(BaseHuaWei):
         else:
             await self.login(username, password)
 
-        cookies = await self.get_cookies()
+        # cookies = await self.get_cookies()
 
         await self.sign_task()
         await self.delete_function()
@@ -36,11 +36,13 @@ class HuaWei(BaseHuaWei):
         # await self.print_credit(username)
 
         redis_password = os.environ.get('REDIS_PASSWORD', password)
-        k = f'{username}_cookie'
+        k = f'{username}_reply'
         r = redis.Redis(host='redis-10036.c1.asia-northeast1-1.gce.cloud.redislabs.com', port=10036,
                         password=redis_password)
-        if not r.get(k):
-            r.set(k, json.dumps(cookies), 3600 * 12)
+        reply_count = int(r.get(k))
+        if not reply_count or reply_count < 5:
+            r.set(k, reply_count + 1, 3600 * 6)
+            await self.post_reply()
 
         return await self.get_credit()
 
