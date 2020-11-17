@@ -39,7 +39,10 @@ class HuaWei(BaseHuaWei):
         k = f'{username}_reply'
         r = redis.Redis(host='redis-10036.c1.asia-northeast1-1.gce.cloud.redislabs.com', port=10036,
                         password=redis_password)
-        reply_count = int(r.get(k))
+        reply_count = r.get(k)
+        if reply_count is None:
+            reply_count = 0
+
         if not reply_count or reply_count < 5:
             r.set(k, reply_count + 1, 3600 * 6)
             await self.post_reply()
