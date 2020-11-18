@@ -22,16 +22,16 @@ class HuaWei(BaseHuaWei):
 
         # cookies = await self.get_cookies()
 
-        # await self.sign_task()
-        # await self.delete_function()
-        #
-        # await self.delete_project()
-        # await self.delete_api()
-        # await self.delete_api_group()
-        #
-        # await self.start()
-        #
-        # await self.regular()
+        await self.sign_task()
+        await self.delete_function()
+
+        await self.delete_project()
+        await self.delete_api()
+        await self.delete_api_group()
+
+        await self.start()
+
+        await self.regular()
 
         # await self.print_credit(username)
 
