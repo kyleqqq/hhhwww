@@ -35,17 +35,18 @@ class HuaWei(BaseHuaWei):
 
         # await self.print_credit(username)
 
-        redis_password = os.environ.get('REDIS_PASSWORD', password)
-        k = f'{username}_reply'
-        r = redis.Redis(host='redis-10036.c1.asia-northeast1-1.gce.cloud.redislabs.com', port=10036,
-                        password=redis_password)
-        reply_count = r.get(k)
-        if not reply_count:
-            reply_count = 0
+        if not iam:
+            redis_password = os.environ.get('REDIS_PASSWORD', password)
+            k = f'{username}_reply'
+            r = redis.Redis(host='redis-10036.c1.asia-northeast1-1.gce.cloud.redislabs.com', port=10036,
+                            password=redis_password)
+            reply_count = r.get(k)
+            if not reply_count:
+                reply_count = 0
 
-        if int(reply_count) < 5:
-            r.set(k, int(reply_count) + 1, 3600 * 6)
-            await self.post_reply()
+            if int(reply_count) < 5:
+                r.set(k, int(reply_count) + 1, 3600 * 6)
+                await self.post_reply()
 
         return await self.get_credit()
 
