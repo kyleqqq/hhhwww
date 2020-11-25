@@ -204,17 +204,13 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(2)
 
     async def open_code_task(self):
-        await self.task_page.waitForSelector('.btn_cloudide', {'visible': True})
-        await self.task_page.click('.btn_cloudide')
-        await asyncio.sleep(20)
-        # await asyncio.wait([
-        #     self.task_page.click('.btn_cloudide'),
-        #     self.task_page.waitForNavigation(),
-        # ])
-        # await asyncio.gather(
-        #     self.task_page.waitForNavigation({'waitUntil': 'load'}),
-        #     self.task_page.click('.modal.in .button-content'),
-        # )
+        await self.task_page.waitForSelector('div.devui-table-view', {'visible': True})
+        await self.task_page.evaluate(
+            '''() =>{ document.querySelector('div.devui-table-view tbody tr:nth-child(1) td:nth-child(8) i.icon-more-operate').click(); }''')
+        await asyncio.sleep(1)
+        await self.task_page.evaluate(
+            '''() =>{ document.querySelector('ul.dropdown-menu li:nth-child(5) .devui-btn').click(); }''')
+        await asyncio.sleep(25)
 
     async def open_ide_task(self):
         await self.task_page.waitForSelector('.trial-stack-info', {'visible': True})
@@ -352,7 +348,6 @@ class BaseHuaWei(BaseClient):
 
         await self.task_page.evaluate(
             '''() =>{ document.querySelector('div.devui-table-view tbody tr:nth-child(1) td:nth-child(12) i.icon-run').click(); }''')
-        # await self.task_page.click('div.devui-table-view tbody tr:nth-child(1) td:nth-child(12) i.icon-run')
 
         await asyncio.sleep(5)
 
