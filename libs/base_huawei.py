@@ -714,6 +714,15 @@ class BaseHuaWei(BaseClient):
         await self.page.click('#fastpostsubmit')
         await asyncio.sleep(5)
 
+        await self.page.goto(f'https://bbs.huaweicloud.com/forum/thread-89742-1-1.html', {'waitUntil': 'load'})
+        await self.page.waitForSelector('#fastpostsubmit')
+        content = ' #我和华为云的这一年#这一年是我和华为云相识的第一年，知道了华为云有很多课程，大拿讲课，受益颇丰。'
+        await self.page.evaluate(
+            '''() =>{ ue.setContent('<p>%s</p>'); }''' % content)
+        await asyncio.sleep(1)
+        await self.page.click('#fastpostsubmit')
+        await asyncio.sleep(5)
+
         # await self.page.goto('https://bbs.huaweicloud.com/forum/thread-80376-1-1.html', {'waitUntil': 'load'})
         # await self.page.waitForSelector('#fastpostsubmit')
         # await self.page.evaluate('''() =>{ document.querySelector('#tabeditor-2').click(); }''')
