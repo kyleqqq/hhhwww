@@ -13,7 +13,7 @@ name_map = {
     '代码检查': [['week_new_code_check', 0], ['check_code_task', 1]],
     '编译构建': [['week_new_compile_build', 0], ['compile_build_task', 1]],
     '部署': [['week_new_deploy', 0], ['deploy_task', 1]],
-    '发布': [['week_upload_task', 0]],
+    '发布': [['week_upload_task', 1]],
     '流水线': [['week_new_pipeline', 0], ['pipeline_task', 1]],
     '接口测试': [['week_new_api_test_task', 0], ['api_test_task', 1]],
     '测试管理': [['week_new_test_task', 0]],
@@ -81,9 +81,9 @@ class BaseHuaWei(BaseClient):
     async def init_account(self):
         await self.execute('experience-missions', 'ul.devui-nav li.ng-star-inserted', '', True, init_name_map)
 
-        await self.page.goto('https://devcloud.huaweicloud.com/bonususer/home/new', {'waitUntil': 'load'})
-        await asyncio.sleep(2)
-        await self.execute('new-tasks-box', 'li.hot-task-item', 'new-task', False, init_name_map)
+        # await self.page.goto('https://devcloud.huaweicloud.com/bonususer/home/new', {'waitUntil': 'load'})
+        # await asyncio.sleep(2)
+        # await self.execute('new-tasks-box', 'li.hot-task-item', 'new-task', False, init_name_map)
 
     async def execute(self, element_id, element_list_name, task_node, is_tab=True, task_map=None):
         elements = await self.page.querySelectorAll(f'#{element_id} {element_list_name}')
