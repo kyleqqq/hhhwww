@@ -45,7 +45,9 @@ class HuaWei(BaseHuaWei):
 
             if int(reply_count) < 5:
                 r.set(k, int(reply_count) + 1, 3600 * 6)
-                await self.post_reply()
+                await self.sign_post()
+
+            await self.post_reply()
 
         return await self.get_credit()
 

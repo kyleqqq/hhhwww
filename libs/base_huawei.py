@@ -689,7 +689,7 @@ class BaseHuaWei(BaseClient):
         await self.task_page.click('#testtype_1')
         await asyncio.sleep(1)
 
-    async def post_reply(self):
+    async def sign_post(self):
         tid_list = [87703, 87513, 87948, 87424, 87445, 87587, 87972, 87972]
         n = random.randint(1, 2)
         for i in range(n):
@@ -704,17 +704,17 @@ class BaseHuaWei(BaseClient):
             await self.page.click('#fastpostsubmit')
             await asyncio.sleep(5)
 
-
-        await self.page.goto(f'https://bbs.huaweicloud.com/forum/thread-89722-1-1.html', {'waitUntil': 'load'})
+    async def post_reply(self):
+        await self.page.goto('https://bbs.huaweicloud.com/forum/thread-89722-1-1.html', {'waitUntil': 'load'})
         await self.page.waitForSelector('#fastpostsubmit')
         content = '#2020年终盛典# 我很期待这次盛典，祝盛典圆满成功！顺利召开！'
         await self.page.evaluate(
             '''() =>{ ue.setContent('<p>%s</p>'); }''' % content)
         await asyncio.sleep(1)
         await self.page.click('#fastpostsubmit')
-        await asyncio.sleep(5)
+        await asyncio.sleep(10)
 
-        await self.page.goto(f'https://bbs.huaweicloud.com/forum/thread-89742-1-1.html', {'waitUntil': 'load'})
+        await self.page.goto('https://bbs.huaweicloud.com/forum/thread-89742-1-1.html', {'waitUntil': 'load'})
         await self.page.waitForSelector('#fastpostsubmit')
         content = ' #我和华为云的这一年#这一年是我和华为云相识的第一年，知道了华为云有很多课程，大拿讲课，受益颇丰。'
         await self.page.evaluate(
