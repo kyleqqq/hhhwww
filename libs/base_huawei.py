@@ -537,12 +537,12 @@ class BaseHuaWei(BaseClient):
             url = f'{url}#/serverless/dashboard'
             await self.task_page.goto(url, {'waitUntil': 'load'})
 
-        await asyncio.sleep(5)
+        await asyncio.sleep(1)
         try:
             await self.task_page.click('#rightWrap .ant-row .ant-btn')
-            await asyncio.sleep(1)
-            await self.task_page.type('#name', ''.join(random.choices(string.ascii_letters, k=6)))
-            await self.task_page.waitForSelector('.preview', {'visible': True})
+            await asyncio.sleep(3)
+            await self.task_page.type('#name', ''.join(random.choices(string.ascii_letters, k=6)), {'delay': 30})
+            await asyncio.sleep(3)
             await self.task_page.click('.preview .ant-btn-primary')
             await asyncio.sleep(5)
         except Exception as e:
