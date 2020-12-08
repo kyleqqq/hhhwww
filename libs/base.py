@@ -10,6 +10,7 @@ from typing import Optional
 import requests
 from pyppeteer import launch
 from pyppeteer.browser import Browser
+from pyppeteer.network_manager import Request
 from pyppeteer.page import Page
 
 
@@ -61,9 +62,17 @@ class BaseClient:
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True), dumpio=True,
                                     args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
         self.page = await self.browser.newPage()
+        await self.page.setRequestInterception(True)
+        self.page.on('request', self.intercept_request)
         await self.page.setUserAgent(self.ua)
         await self.page.setViewport({'width': 1200, 'height': 768})
         await self.page.goto(self.url, {'waitUntil': 'load'})
+
+    async def intercept_request(self, request):
+        if request.resourceType in ["image"]:
+            await request.abort()
+        else:
+            await request.continue_()
 
     async def handler(self, **kwargs):
         raise RuntimeError
