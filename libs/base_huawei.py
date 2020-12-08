@@ -140,17 +140,17 @@ class BaseHuaWei(BaseClient):
             await asyncio.sleep(1)
 
     async def get_credit(self):
-        if self.page.url != self.url:
-            await self.page.goto(self.url, {'waitUntil': 'load'})
-        else:
-            await self.page.reload({'waitUntil': 'load'})
-
-        await asyncio.sleep(5)
-        try:
-            return str(await self.page.Jeval('#homeheader-coins', 'el => el.textContent')).strip()
-        except Exception as e:
-            self.logger.debug(e)
-            return 0
+        for i in range(3):
+            if self.page.url != self.url:
+                await self.page.goto(self.url, {'waitUntil': 'load'})
+            else:
+                await self.page.reload({'waitUntil': 'load'})
+            await asyncio.sleep(5)
+            try:
+                return str(await self.page.Jeval('#homeheader-coins', 'el => el.textContent')).strip()
+            except Exception as e:
+                self.logger.debug(e)
+        return 0
 
     async def print_credit(self, user_name):
         new_credit = await self.get_credit()
@@ -540,7 +540,7 @@ class BaseHuaWei(BaseClient):
             url = f'{url}#/serverless/dashboard'
             await self.task_page.goto(url, {'waitUntil': 'load'})
 
-        await asyncio.sleep(1)
+        await asyncio.sleep(2)
         try:
             await self.task_page.click('#rightWrap .ant-row .ant-btn')
             await asyncio.sleep(3)

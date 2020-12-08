@@ -58,7 +58,7 @@ class BaseClient:
             self.send_message(''.join(message), '华为云码豆')
 
     async def init(self, **kwargs):
-        self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
+        self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True), dumpio=True,
                                     args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
         self.page = await self.browser.newPage()
         await self.page.setUserAgent(self.ua)
