@@ -146,8 +146,11 @@ class BaseHuaWei(BaseClient):
             await self.page.reload({'waitUntil': 'load'})
 
         await asyncio.sleep(5)
-        await self.page.waitForSelector('#homeheader-coins', {'visible': True})
-        return str(await self.page.Jeval('#homeheader-coins', 'el => el.textContent')).strip()
+        try:
+            return str(await self.page.Jeval('#homeheader-coins', 'el => el.textContent')).strip()
+        except Exception as e:
+            self.logger.debug(e)
+            return 0
 
     async def print_credit(self, user_name):
         new_credit = await self.get_credit()
