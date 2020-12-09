@@ -410,7 +410,8 @@ class BaseHuaWei(BaseClient):
         no_data = await self.task_page.querySelector('.projects-container .no-data')
         if no_data:
             try:
-                await self.task_page.click('div.devui-checkbox label')
+                # await self.task_page.click('.modal-btns devui-btn-primary:nth-child(2)')
+                await self.task_page.click('#declaration-notice div.devui-checkbox label')
                 await asyncio.sleep(1)
                 await self.task_page.click('#declaration-notice .devui-btn.devui-btn-primary')
                 await asyncio.sleep(1)
