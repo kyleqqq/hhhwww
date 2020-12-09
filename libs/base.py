@@ -60,10 +60,11 @@ class BaseClient:
 
     async def init(self, **kwargs):
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True), dumpio=True,
-                                    args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
+                                    args=['--disable-infobars', '--disable-gpu', '--disable-dev-shm-usage',
+                                          '--no-sandbox', '--start-maximized'])
         self.page = await self.browser.newPage()
-        # await self.page.setRequestInterception(True)
-        # self.page.on('request', self.intercept_request)
+        await self.page.setRequestInterception(True)
+        self.page.on('request', self.intercept_request)
         await self.page.setUserAgent(self.ua)
         await self.page.setViewport({'width': 1200, 'height': 768})
         await self.page.goto(self.url, {'waitUntil': 'load'})
