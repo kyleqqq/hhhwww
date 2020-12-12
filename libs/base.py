@@ -2,7 +2,6 @@ import asyncio
 import base64
 import hashlib
 import hmac
-import json
 import logging
 import os
 import time
@@ -12,7 +11,6 @@ import pymongo
 import requests
 from pyppeteer import launch
 from pyppeteer.browser import Browser
-from pyppeteer.network_manager import Request
 from pyppeteer.page import Page
 
 
