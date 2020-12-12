@@ -2,11 +2,13 @@ import asyncio
 import base64
 import hashlib
 import hmac
+import json
 import logging
 import os
 import time
 from typing import Optional
 
+import pymongo
 import requests
 from pyppeteer import launch
 from pyppeteer.browser import Browser
@@ -24,6 +26,7 @@ class BaseClient:
         self.parent_user = None
         self.git = None
         self.ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36'
+        self.mongo_pwd = '3LCmGDd9gXR3f5d0'
 
     async def run(self, **kwargs):
         username_list = kwargs.get('username').split(',')
@@ -34,7 +37,11 @@ class BaseClient:
             git_list = git_list.split(',')
 
         self.logger.warning(username_list)
-        # self.logger.warning(git_list)
+
+        client = pymongo.MongoClient(
+            f'mongodb+srv://huawei:{self.mongo_pwd}@cluster0.9v4wz.azure.mongodb.net/?retryWrites=true&w=majority')
+        db = client.get_database('huawei_db')
+        col = db.get_collection('huawei')
 
         message = []
         for i, username in enumerate(username_list):
@@ -49,14 +56,17 @@ class BaseClient:
                                             iam=kwargs.get('iam'))
                 message.append(f"- {username} -> {credit}\n")
                 self.logger.warning(f"{username} -> {credit}\n")
+                col.insert_one({'_id': username, 'credit': credit})
             except Exception as e:
                 self.logger.warning(e)
             finally:
                 await self.close()
                 await asyncio.sleep(3)
 
-        if len(message):
-            self.send_message(''.join(message), '华为云码豆')
+        client.close()
+
+        # if len(message):
+        #     self.send_message(''.join(message), '华为云码豆')
 
     async def init(self, **kwargs):
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
