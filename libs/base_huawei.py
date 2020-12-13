@@ -147,7 +147,7 @@ class BaseHuaWei(BaseClient):
                 await self.page.reload({'waitUntil': 'load'})
             await asyncio.sleep(5)
             try:
-                return str(await self.page.Jeval('#homeheader-coins', 'el => el.textContent')).strip()
+                return str(await self.page.Jeval('#homeheader-coins', 'el => el.textContent')).strip().replace('码豆', '')
             except Exception as e:
                 self.logger.debug(e)
         return 0
