@@ -48,13 +48,18 @@ class BaseClient:
             self.username = username
             self.git = git
 
+            if username.find('@') != -1:
+                continue
+
             try:
                 await self.init(**kwargs)
                 credit = await self.handler(username=username, password=password, git=git, parent=kwargs.get('parent'),
                                             iam=kwargs.get('iam'))
                 message.append(f"- {username} -> {credit}\n")
                 self.logger.warning(f"{username} -> {credit}\n")
-                col.insert_one({'_id': username, 'credit': credit})
+                if type(credit) == str:
+                    credit = int(credit.replace('码豆', '').strip())
+                col.update_one({'_id': username}, {'$set': {'credit': int(credit)}}, True)
             except Exception as e:
                 self.logger.warning(e)
             finally:
