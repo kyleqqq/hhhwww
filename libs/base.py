@@ -59,7 +59,9 @@ class BaseClient:
                 self.logger.warning(f"{username} -> {credit}\n")
                 if type(credit) == str:
                     credit = int(credit.replace('码豆', '').strip())
-                col.update_one({'_id': username}, {'$set': {'credit': int(credit)}}, True)
+
+                _id = f'{self.parent_user}_{username}' if self.parent_user else self.username
+                col.update_one({'_id': _id}, {'$set': {'credit': int(credit)}}, True)
             except Exception as e:
                 self.logger.warning(e)
             finally:
