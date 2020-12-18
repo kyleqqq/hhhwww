@@ -4,6 +4,8 @@ import random
 import string
 import time
 
+import pymongo
+
 from libs.base import BaseClient
 
 name_map = {
@@ -45,6 +47,25 @@ class BaseHuaWei(BaseClient):
         super().__init__()
         self.url = 'https://devcloud.huaweicloud.com/bonususer/home/makebonus'
         self.task_page = None
+        self.client = None
+        self.db = None
+        self.col = None
+
+    async def before_run(self):
+        self.client = pymongo.MongoClient(
+            f'mongodb+srv://huawei:{self.mongo_pwd}@cluster0.9v4wz.azure.mongodb.net/?retryWrites=true&w=majority')
+        self.db = self.client.get_database('huawei_db')
+        self.col = self.db.get_collection('huawei')
+
+    async def after_handler(self, **kwargs):
+        credit = kwargs.get('result')
+        username = kwargs.get('username')
+        self.logger.warning(f"{username} -> {credit}\n")
+        if type(credit) == str:
+            credit = int(credit.replace('码豆', '').strip())
+
+        _id = f'{self.parent_user}_{username}' if self.parent_user else self.username
+        self.col.update_one({'_id': _id}, {'$set': {'credit': int(credit)}}, True)
 
     async def start(self):
         if self.page.url != self.url:
@@ -52,26 +73,6 @@ class BaseHuaWei(BaseClient):
 
         id_list = ['experience-missions', 'middleware-missions']
         for _id in id_list:
-            # await self.page.waitForSelector(f'#{_id}', {'visible': True})
-            # elements = await self.page.querySelectorAll(f'#{_id} ul.devui-nav li.ng-star-inserted')
-            # for element in elements:
-            #     name = str(await element.Jeval('a', 'el => el.textContent')).strip()
-            #     items = name_map.get(name)
-            #     if items is None:
-            #         continue
-            #
-            #     for item in items:
-            #         await element.click()
-            #         await asyncio.sleep(1)
-            #
-            #         node = f'#{_id} #{_id}-{item[1]}'
-            #         task_name = await self.page.Jeval(f'{node} h5', 'el => el.textContent')
-            #         if await self.is_done(node):
-            #             self.logger.warning(f'{task_name} -> DONE.')
-            #             continue
-            #
-            #         # print(await self.page.Jeval(f'{node}', 'el => el.outerHTML'))
-            #         await self.run_task(node, task_name, item[0], **kwargs)
             await self.execute(_id, 'ul.devui-nav li.ng-star-inserted', '', True, name_map)
             await asyncio.sleep(2)
 

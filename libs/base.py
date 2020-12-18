@@ -26,7 +26,18 @@ class BaseClient:
         self.ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36'
         self.mongo_pwd = '3LCmGDd9gXR3f5d0'
 
+    async def before_run(self):
+        pass
+
+    async def after_run(self, **kwargs):
+        pass
+
+    async def after_handler(self, **kwargs):
+        pass
+
     async def run(self, **kwargs):
+        await self.before_run()
+
         username_list = kwargs.get('username').split(',')
         password_list = kwargs.get('password').split(',')
         git_list = kwargs.get('git')
@@ -36,47 +47,34 @@ class BaseClient:
 
         self.logger.warning(username_list)
 
-        client = pymongo.MongoClient(
-            f'mongodb+srv://huawei:{self.mongo_pwd}@cluster0.9v4wz.azure.mongodb.net/?retryWrites=true&w=majority')
-        db = client.get_database('huawei_db')
-        col = db.get_collection('huawei')
-
-        message = []
         for i, username in enumerate(username_list):
             git = git_list[i] if git_list and len(git_list) == len(username_list) else None
             password = password_list[0] if len(password_list) == 1 else password_list[i]
             self.username = username
             self.git = git
 
-            if username.find('@') != -1:
-                continue
-
             try:
                 await self.init(**kwargs)
-                credit = await self.handler(username=username, password=password, git=git, parent=kwargs.get('parent'),
+                result = await self.handler(username=username, password=password, git=git, parent=kwargs.get('parent'),
                                             iam=kwargs.get('iam'))
-                message.append(f"- {username} -> {credit}\n")
-                self.logger.warning(f"{username} -> {credit}\n")
-                if type(credit) == str:
-                    credit = int(credit.replace('码豆', '').strip())
-
-                _id = f'{self.parent_user}_{username}' if self.parent_user else self.username
-                col.update_one({'_id': _id}, {'$set': {'credit': int(credit)}}, True)
+                await self.after_handler(result=result, username=username)
             except Exception as e:
                 self.logger.warning(e)
             finally:
                 await self.close()
                 await asyncio.sleep(3)
 
-        client.close()
-
-        # if len(message):
-        #     self.send_message(''.join(message), '华为云码豆')
+        # await self.after_run(**kwargs)
 
     async def init(self, **kwargs):
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
                                     args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
         self.page = await self.browser.newPage()
+        try:
+            self.page.on('dialog', lambda dialog: asyncio.ensure_future(self.close_dialog(dialog)))
+        except Exception:
+            pass
+
         await self.page.setRequestInterception(True)
         self.page.on('request', self.intercept_request)
         await self.page.setUserAgent(self.ua)
