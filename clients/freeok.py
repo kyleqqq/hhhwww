@@ -27,3 +27,6 @@ class FreeOk(BaseClient):
             await self.page.click('#reactive')
             self.logger.info('reactive success.')
             await asyncio.sleep(10)
+        else:
+            await self.page.click('#checkin')
+            await asyncio.sleep(2)
