@@ -5,6 +5,7 @@ import hmac
 import logging
 import os
 import time
+from datetime import datetime, timezone, timedelta
 from typing import Optional
 
 import pymongo
@@ -122,3 +123,8 @@ class BaseClient:
         json_data = {'msgtype': 'markdown', 'markdown': {'text': text, 'title': title}}
         params = {'access_token': access_token, 'timestamp': _timestamp, 'sign': sign}
         return requests.post(ding_url, params=params, json=json_data).json()
+
+    @staticmethod
+    def get_bj_time():
+        utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
+        return utc_dt.astimezone(timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')
