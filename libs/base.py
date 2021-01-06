@@ -48,22 +48,25 @@ class BaseClient:
 
         self.logger.warning(username_list)
 
-        for i, username in enumerate(username_list):
-            git = git_list[i] if git_list and len(git_list) == len(username_list) else None
-            password = password_list[0] if len(password_list) == 1 else password_list[i]
-            self.username = username
-            self.git = git
-            self.logger.info('init begin.')
-            try:
-                await self.init(**kwargs)
-                result = await self.handler(username=username, password=password, git=git, parent=kwargs.get('parent'),
-                                            iam=kwargs.get('iam'))
-                await self.after_handler(result=result, username=username)
-            except Exception as e:
-                self.logger.warning(e)
-            finally:
-                await self.close()
-                await asyncio.sleep(3)
+        try:
+            for i, username in enumerate(username_list):
+                git = git_list[i] if git_list and len(git_list) == len(username_list) else None
+                password = password_list[0] if len(password_list) == 1 else password_list[i]
+                self.username = username
+                self.git = git
+                self.logger.info('init begin.')
+                try:
+                    await self.init(**kwargs)
+                    result = await self.handler(username=username, password=password, git=git, parent=kwargs.get('parent'),
+                                                iam=kwargs.get('iam'))
+                    await self.after_handler(result=result, username=username)
+                except Exception as e:
+                    self.logger.warning(e)
+                finally:
+                    await self.close()
+                    await asyncio.sleep(3)
+        except Exception as e:
+            self.logger.error(e)
 
         # await self.after_run(**kwargs)
 
