@@ -78,14 +78,13 @@ class BaseClient:
         except Exception as e:
             self.logger.warning(e)
 
-        await self.page.setRequestInterception(True)
-        self.page.on('request', self.intercept_request)
+        # await self.page.setRequestInterception(True)
+        # self.page.on('request', self.intercept_request)
 
         await self.page.setUserAgent(self.ua)
         await self.page.setViewport({'width': 1200, 'height': 768})
 
         await self.page.goto(self.url, {'waitUntil': 'load'})
-        self.logger.info('init end.')
 
     async def intercept_request(self, request):
         if request.resourceType in ["image"]:
