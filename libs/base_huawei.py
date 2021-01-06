@@ -61,11 +61,11 @@ class BaseHuaWei(BaseClient):
         credit = kwargs.get('result')
         username = kwargs.get('username')
         self.logger.warning(f"{username} -> {credit}\n")
-        # if type(credit) == str:
-        #     credit = int(credit.replace('码豆', '').strip())
-        #
-        # _id = f'{self.parent_user}_{username}' if self.parent_user else self.username
-        # self.col.update_one({'_id': _id}, {'$set': {'credit': int(credit), 'update_time': self.get_bj_time()}}, True)
+        if type(credit) == str:
+            credit = int(credit.replace('码豆', '').strip())
+
+        _id = f'{self.parent_user}_{username}' if self.parent_user else self.username
+        self.col.update_one({'_id': _id}, {'$set': {'credit': int(credit), 'update_time': self.get_bj_time()}}, True)
 
     async def start(self):
         if self.page.url != self.url:

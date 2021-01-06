@@ -37,7 +37,7 @@ class BaseClient:
         pass
 
     async def run(self, **kwargs):
-        # await self.before_run()
+        await self.before_run()
 
         username_list = kwargs.get('username').split(',')
         password_list = kwargs.get('password').split(',')
@@ -68,6 +68,7 @@ class BaseClient:
         # await self.after_run(**kwargs)
 
     async def init(self, **kwargs):
+        self.logger.info('init begin.')
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
                                     args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
         self.page = await self.browser.newPage()
@@ -81,6 +82,7 @@ class BaseClient:
         await self.page.setUserAgent(self.ua)
         await self.page.setViewport({'width': 1200, 'height': 768})
         await self.page.goto(self.url, {'waitUntil': 'load'})
+        self.logger.info('init end.')
 
     async def intercept_request(self, request):
         if request.resourceType in ["image"]:
