@@ -2,7 +2,7 @@ name: HuaWei
 
 on:
   push:
-    branches: [ master ]
+    branches: [ dev ]
 #  schedule:
 #    - cron: '5 0-2 * * *'
 

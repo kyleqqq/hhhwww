@@ -37,7 +37,7 @@ class BaseClient:
         pass
 
     async def run(self, **kwargs):
-        await self.before_run()
+        # await self.before_run()
 
         username_list = kwargs.get('username').split(',')
         password_list = kwargs.get('password').split(',')
