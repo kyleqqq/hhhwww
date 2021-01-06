@@ -67,8 +67,6 @@ class BaseClient:
         except Exception as e:
             self.logger.error(e)
 
-        # await self.after_run(**kwargs)
-
     async def init(self, **kwargs):
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
                                     args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
