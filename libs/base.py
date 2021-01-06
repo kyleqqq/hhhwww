@@ -53,7 +53,7 @@ class BaseClient:
             password = password_list[0] if len(password_list) == 1 else password_list[i]
             self.username = username
             self.git = git
-
+            self.logger.info('init begin.')
             try:
                 await self.init(**kwargs)
                 result = await self.handler(username=username, password=password, git=git, parent=kwargs.get('parent'),
@@ -68,7 +68,6 @@ class BaseClient:
         # await self.after_run(**kwargs)
 
     async def init(self, **kwargs):
-        self.logger.info('init begin.')
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
                                     args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
         self.page = await self.browser.newPage()
