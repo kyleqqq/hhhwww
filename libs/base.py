@@ -71,11 +71,9 @@ class BaseClient:
         # await self.after_run(**kwargs)
 
     async def init(self, **kwargs):
-        self.logger.warning('1')
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
                                     args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
         self.page = await self.browser.newPage()
-        self.logger.warning('2')
         try:
             self.page.on('dialog', lambda dialog: asyncio.ensure_future(self.close_dialog(dialog)))
         except Exception as e:
@@ -83,10 +81,11 @@ class BaseClient:
 
         await self.page.setRequestInterception(True)
         self.page.on('request', self.intercept_request)
-        self.logger.warning('3')
 
         await self.page.setUserAgent(self.ua)
         await self.page.setViewport({'width': 1200, 'height': 768})
+        self.logger.warning(self.url)
+
         await self.page.goto(self.url, {'waitUntil': 'load'})
         self.logger.info('init end.')
 
