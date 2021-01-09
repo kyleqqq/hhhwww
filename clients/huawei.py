@@ -1,8 +1,6 @@
 import asyncio
 import os
 
-import redis
-
 from libs.base_huawei import BaseHuaWei
 
 
