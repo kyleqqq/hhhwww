@@ -407,39 +407,38 @@ class BaseHuaWei(BaseClient):
 
     async def week_new_project(self):
         await self.task_page.waitForSelector('.modal.in', {'visible': True})
-        await asyncio.sleep(2)
-        no_data = await self.task_page.querySelector('.projects-container .no-data')
-        if no_data:
-            try:
-                # await self.task_page.click('.modal-btns devui-btn-primary:nth-child(2)')
+        await asyncio.sleep(3)
+        try:
+            notice = await self.task_page.querySelector('#declaration-notice')
+            if notice:
+                btn_list = await self.task_page.querySelectorAll('.quick-create-phoenix .devui-btn')
+                await btn_list[1].click()
+                await asyncio.sleep(1)
                 await self.task_page.click('#declaration-notice div.devui-checkbox label')
                 await asyncio.sleep(1)
                 await self.task_page.click('#declaration-notice .devui-btn.devui-btn-primary')
                 await asyncio.sleep(1)
-            except Exception as e:
-                self.logger.debug(e)
+        except Exception as e:
+            self.logger.debug(e)
 
-            try:
-                btn_list = await self.task_page.querySelectorAll('.quick-create-phoenix .devui-btn')
+        try:
+            btn_list = await self.task_page.querySelectorAll('.quick-create-phoenix .devui-btn')
+            if btn_list and len(btn_list):
                 await btn_list[1].click()
 
-                await self.task_page.click('#home-page-add-project')
-                await asyncio.sleep(1)
-                await self.task_page.click('#projet_scrum')
-                await asyncio.sleep(1)
-                await self.task_page.type('#projectCreateFormProjectName', self.username)
-                await asyncio.sleep(0.5)
-                await self.task_page.click('#createProjectBtn')
-                await asyncio.sleep(3)
-            except Exception as e:
-                self.logger.warning(e)
-                await self.close_page()
-                await self.close()
-                exit(1)
-        else:
-            btn_list = await self.task_page.querySelectorAll('.quick-create-phoenix .devui-btn')
-            await btn_list[0].click()
-            await asyncio.sleep(5)
+            await self.task_page.click('#home-page-add-project')
+            await asyncio.sleep(1)
+            await self.task_page.click('#projet_scrum')
+            await asyncio.sleep(1)
+            await self.task_page.type('#projectCreateFormProjectName', self.username)
+            await asyncio.sleep(0.5)
+            await self.task_page.click('#createProjectBtn')
+            await asyncio.sleep(3)
+        except Exception as e:
+            self.logger.warning(e)
+            await self.close_page()
+            await self.close()
+            exit(1)
 
     async def week_new_git(self):
         await asyncio.sleep(5)
