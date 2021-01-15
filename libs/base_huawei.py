@@ -695,8 +695,9 @@ class BaseHuaWei(BaseClient):
 
     async def add_address(self):
         page = await self.browser.newPage()
-
+        await page.setUserAgent(self.ua)
         await page.goto('https://devcloud.huaweicloud.com/bonususer/home/managebonus', {'waitUntil': 'load'})
+
         await asyncio.sleep(5)
         try:
             await page.click('li#Add')
