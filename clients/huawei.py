@@ -19,7 +19,9 @@ class HuaWei(BaseHuaWei):
 
         await self.sign_task()
         await self.add_address()
+
         # await self.init_account()
+
         await self.delete_function()
 
         await self.delete_project()

@@ -698,7 +698,7 @@ class BaseHuaWei(BaseClient):
         await page.setUserAgent(self.ua)
         await page.goto('https://devcloud.huaweicloud.com/bonususer/home/managebonus', {'waitUntil': 'load'})
 
-        await asyncio.sleep(5)
+        await asyncio.sleep(2)
         try:
             await page.click('li#Add')
             await asyncio.sleep(1)
@@ -728,8 +728,6 @@ class BaseHuaWei(BaseClient):
         except Exception as e:
             self.logger.error(e)
             self.logger.error(page.url)
-            html = await page.Jeval('#manage-bonus-box .tablist', 'el => el.textContent')
-            self.logger.info(html)
         finally:
             await page.close()
 
