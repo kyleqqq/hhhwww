@@ -726,6 +726,9 @@ class BaseHuaWei(BaseClient):
             await asyncio.sleep(2)
         except Exception as e:
             self.logger.error(e)
+            self.logger.error(page.url)
+            html = await page.Jeval('#manage-bonus-box .tablist', 'el => el.textContent')
+            self.logger.info(html)
         finally:
             await page.close()
 
