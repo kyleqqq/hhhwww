@@ -423,17 +423,21 @@ class BaseHuaWei(BaseClient):
 
         try:
             btn_list = await self.task_page.querySelectorAll('.quick-create-phoenix .devui-btn')
-            if btn_list and len(btn_list):
-                await btn_list[1].click()
+            projects = await self.task_page.querySelectorAll('.projects-container .projects-board-in-home')
+            if projects and len(projects) and btn_list and len(btn_list):
+                await btn_list[0].click()
+            else:
+                if btn_list and len(btn_list):
+                    await btn_list[1].click()
 
-            await self.task_page.click('#home-page-add-project')
-            await asyncio.sleep(1)
-            await self.task_page.click('#projet_scrum')
-            await asyncio.sleep(1)
-            await self.task_page.type('#projectCreateFormProjectName', self.username)
-            await asyncio.sleep(0.5)
-            await self.task_page.click('#createProjectBtn')
-            await asyncio.sleep(3)
+                    await self.task_page.click('#home-page-add-project')
+                    await asyncio.sleep(1)
+                    await self.task_page.click('#projet_scrum')
+                    await asyncio.sleep(1)
+                    await self.task_page.type('#projectCreateFormProjectName', self.username)
+                    await asyncio.sleep(0.5)
+                    await self.task_page.click('#createProjectBtn')
+                    await asyncio.sleep(3)
         except Exception as e:
             self.logger.warning(e)
             await self.close_page()
@@ -702,8 +706,8 @@ class BaseHuaWei(BaseClient):
         try:
             await page.click('li#Add')
             await asyncio.sleep(5)
-            no_data = await page.querySelector('#add-table .no-data')
-            if no_data:
+            no_data = await page.querySelectorAll('#add-table tbody tr')
+            if no_data and len(no_data):
                 return
 
             await page.click('#add-adds')
