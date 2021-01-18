@@ -701,7 +701,7 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(2)
         try:
             await page.click('li#Add')
-            await asyncio.sleep(1)
+            await asyncio.sleep(5)
             no_data = await page.querySelector('#add-table .no-data')
             if no_data:
                 return
