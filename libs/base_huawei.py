@@ -14,7 +14,7 @@ name_map = {
     'CloudIDE': [['open_ide_task', 0]],
     '代码检查': [['week_new_code_check', 0], ['check_code_task', 1]],
     '编译构建': [['week_new_compile_build', 0], ['compile_build_task', 1]],
-    '部署': [['week_new_deploy', 0], ['deploy_task', 1]],
+    # '部署': [['week_new_deploy', 0], ['deploy_task', 1]],
     '发布': [['week_upload_task', 0]],
     '流水线': [['week_new_pipeline', 0], ['pipeline_task', 1]],
     '接口测试': [['week_new_api_test_task', 0], ['api_test_task', 1]],
@@ -33,7 +33,7 @@ init_name_map = {
     '代码托管': [['week_new_git', 0]],
     '代码检查': [['week_new_code_check', 0]],
     '编译构建': [['week_new_compile_build', 0]],
-    '部署': [['week_new_deploy', 0]],
+    # '部署': [['week_new_deploy', 0]],
     '流水线': [['week_new_pipeline', 0]],
     '使用API  Explorer完在线调试': 'api_explorer_task',
     '使用API Explorer在线调试': 'api_explorer_task',
@@ -82,9 +82,9 @@ class BaseHuaWei(BaseClient):
     async def init_account(self):
         await self.execute('experience-missions', 'ul.devui-nav li.ng-star-inserted', '', True, init_name_map)
 
-        # await self.page.goto('https://devcloud.huaweicloud.com/bonususer/home/new', {'waitUntil': 'load'})
-        # await asyncio.sleep(2)
-        # await self.execute('new-tasks-box', 'li.hot-task-item', 'new-task', False, init_name_map)
+        await self.page.goto('https://devcloud.huaweicloud.com/bonususer/home/new', {'waitUntil': 'load'})
+        await asyncio.sleep(2)
+        await self.execute('new-tasks-box', 'li.hot-task-item', 'new-task', False, init_name_map)
 
     async def execute(self, element_id, element_list_name, task_node, is_tab=True, task_map=None):
         elements = await self.page.querySelectorAll(f'#{element_id} {element_list_name}')
@@ -190,9 +190,9 @@ class BaseHuaWei(BaseClient):
     async def api_explorer_task(self):
         _url = 'https://apiexplorer.developer.huaweicloud.com/apiexplorer/doc?product=APIExplorer&api=ListProductsV3'
         await self.task_page.goto(_url, {'waitUntil': 'load'})
-        await self.task_page.waitForSelector('#debug', {'visible': True})
+        await asyncio.sleep(5)
         await self.task_page.click('#debug')
-        await asyncio.sleep(3)
+        await asyncio.sleep(2)
 
     async def dev_star_task(self):
         await asyncio.sleep(2)
@@ -257,11 +257,15 @@ class BaseHuaWei(BaseClient):
         await self.task_page.click('.devui-layout-main-content #create_new_task')
         await asyncio.sleep(1)
         await self.task_page.click('.button-group .devui-btn-stress')
+        await asyncio.sleep(3)
+        template = await self.task_page.querySelectorAll('.template-content li.template-item')
+        await template[3].click()
         await asyncio.sleep(1)
         await self.task_page.click('.button-group .devui-btn-stress')
-        await asyncio.sleep(5)
-        await self.task_page.click('a.devui-link')
-        await asyncio.sleep(5)
+
+        await asyncio.sleep(3)
+        # await self.task_page.click('a.devui-link')
+        # await asyncio.sleep(5)
         card_list = await self.task_page.querySelectorAll('.task-detail-cardlist .card-li')
         await card_list[2].hover()
         await asyncio.sleep(1)
@@ -307,10 +311,14 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(0.5)
         await self.task_page.click('.step-group .devui-btn-stress')
         await asyncio.sleep(3)
+        items = await self.task_page.querySelectorAll('.category-wrapper ul.devui-nav li')
+        await items[4].click()
+        await asyncio.sleep(3)
+
         card_list = await self.task_page.querySelectorAll('.task-detail-cardlist .card-li')
-        await card_list[1].hover()
+        await card_list[0].hover()
         await asyncio.sleep(0.5)
-        await self.task_page.click('.task-detail-cardlist .card-li:nth-child(2) .add-btn')
+        await self.task_page.click('.task-detail-cardlist .card-li:nth-child(1) .add-btn')
         await asyncio.sleep(1)
 
         link_list = await self.task_page.querySelectorAll('.marked-text .devui-link')
