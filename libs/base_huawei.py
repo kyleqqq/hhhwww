@@ -99,23 +99,14 @@ class BaseHuaWei(BaseClient):
                     await element.click()
                     await asyncio.sleep(1)
                     task_node = f'#{element_id} #{element_id}-{task[1]}'
-                    try:
-                        await asyncio.wait_for(self.run_task(task_node, task[0]), timeout=120.0)
-                    except asyncio.TimeoutError:
-                        continue
-                    # await self.run_task(task_node, task[0])
+                    await self.run_task(task_node, task[0])
             else:
                 _task_node = f'#{element_id} #{task_node}{i}'
                 task_name = str(await self.page.Jeval(f'{_task_node} h5', 'el => el.textContent')).strip()
                 if not task_map.get(task_name):
                     continue
 
-                try:
-                    await asyncio.wait_for(self.run_task(_task_node, task_map.get(task_name)), timeout=120.0)
-                except asyncio.TimeoutError:
-                    continue
-
-                # await self.run_task(_task_node, task_map.get(task_name))
+                await self.run_task(_task_node, task_map.get(task_name))
 
     async def is_done(self, node):
         try:
@@ -144,14 +135,13 @@ class BaseHuaWei(BaseClient):
 
         try:
             func = getattr(self, task_fun)
-            await func()
-            # await asyncio.wait_for(func(), timeout=100.0)
+            # await func()
+            await asyncio.wait(func(), timeout=100.0)
             self.logger.warning(f'{task_name} -> DONE.')
         except Exception as e:
             self.logger.error(e)
         finally:
             await self.close_page()
-            await asyncio.sleep(1)
             return True
 
     async def get_credit(self):
