@@ -110,7 +110,12 @@ class BaseHuaWei(BaseClient):
                 if not task_map.get(task_name):
                     continue
 
-                await self.run_task(_task_node, task_map.get(task_name))
+                try:
+                    await asyncio.wait_for(self.run_task(_task_node, task_map.get(task_name)), timeout=120.0)
+                except asyncio.TimeoutError as e:
+                    self.logger.error(e)
+
+                # await self.run_task(_task_node, task_map.get(task_name))
 
     async def is_done(self, node):
         try:
