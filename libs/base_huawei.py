@@ -100,7 +100,7 @@ class BaseHuaWei(BaseClient):
                     await asyncio.sleep(1)
                     task_node = f'#{element_id} #{element_id}-{task[1]}'
                     try:
-                        await asyncio.wait_for(self.run_task(task_node, task[0]), timeout=100.0)
+                        await asyncio.wait_for(self.run_task(task_node, task[0]), timeout=120.0)
                     except asyncio.TimeoutError as e:
                         self.logger.error(e)
                     # await self.run_task(task_node, task[0])
@@ -129,7 +129,7 @@ class BaseHuaWei(BaseClient):
 
         if await self.is_done(task_node):
             self.logger.warning(f'{task_name} -> DONE.')
-            return
+            return True
 
         await self.page.click(task_node)
         await asyncio.sleep(2)
@@ -142,14 +142,12 @@ class BaseHuaWei(BaseClient):
             await func()
             # await asyncio.wait_for(func(), timeout=100.0)
             self.logger.warning(f'{task_name} -> DONE.')
-        except asyncio.TimeoutError as e:
-            self.logger.error(e)
-            await self.close_page()
         except Exception as e:
             self.logger.error(e)
         finally:
             await self.close_page()
             await asyncio.sleep(1)
+            return True
 
     async def get_credit(self):
         for i in range(3):
