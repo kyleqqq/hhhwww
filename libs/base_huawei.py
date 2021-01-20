@@ -101,8 +101,8 @@ class BaseHuaWei(BaseClient):
                     task_node = f'#{element_id} #{element_id}-{task[1]}'
                     try:
                         await asyncio.wait_for(self.run_task(task_node, task[0]), timeout=120.0)
-                    except asyncio.TimeoutError as e:
-                        self.logger.error(e)
+                    except asyncio.TimeoutError:
+                        continue
                     # await self.run_task(task_node, task[0])
             else:
                 _task_node = f'#{element_id} #{task_node}{i}'
@@ -112,8 +112,8 @@ class BaseHuaWei(BaseClient):
 
                 try:
                     await asyncio.wait_for(self.run_task(_task_node, task_map.get(task_name)), timeout=120.0)
-                except asyncio.TimeoutError as e:
-                    self.logger.error(e)
+                except asyncio.TimeoutError:
+                    continue
 
                 # await self.run_task(_task_node, task_map.get(task_name))
 
