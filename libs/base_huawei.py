@@ -22,7 +22,7 @@ name_map = {
     'APIG网关': [['week_new_api_task', 0], ['week_run_api_task', 1]],
     '函数工作流': [['week_new_fun_task', 0]],
     '使用API  Explorer完在线调试': 'api_explorer_task',
-    '使用API Explorer在线调试': 'api_explorer_task',
+    '使用API Explorer在线调试': 'api2_explorer_task',
     '使用Devstar生成代码工程': 'dev_star_task',
     '浏览Codelabs代码示例': 'view_code_task',
     '体验DevStar快速生成代码': 'week_fast_dev_star',
@@ -128,8 +128,10 @@ class BaseHuaWei(BaseClient):
 
         await self.page.click(task_node)
         await asyncio.sleep(2)
-        self.logger.info(f'{task_name}')
         self.task_page = await self.get_new_page()
+        self.task_page.setDefaultNavigationTimeout(30000)
+        await self.task_page.setUserAgent(self.ua)
+        self.logger.info(f'{task_name}')
         try:
             await getattr(self, task_fun)()
             await asyncio.sleep(1)
@@ -193,14 +195,17 @@ class BaseHuaWei(BaseClient):
         if html.find('English') != -1:
             items = await self.task_page.querySelectorAll('.userInfo')
             await items[1].hover()
-            await asyncio.sleep(1)
+            await asyncio.sleep(2)
             await self.task_page.click('.cdk-overlay-container .dropdown-item')
             await asyncio.sleep(5)
-            # html = await self.task_page.Jeval('.cdk-overlay-container', 'el => el.outerHTML')
-            # print(html)
 
         await self.task_page.click('#debug')
         await asyncio.sleep(3)
+
+    async def api2_explorer_task(self):
+        _url = 'https://apiexplorer.developer.huaweicloud.com/apiexplorer/doc?product=DevStar&api=ListPublishedTemplates'
+        await self.task_page.goto(_url, {'waitUntil': 'load'})
+        await self.api_test_task()
 
     async def dev_star_task(self):
         await asyncio.sleep(2)
@@ -265,22 +270,20 @@ class BaseHuaWei(BaseClient):
         await self.task_page.click('.devui-layout-main-content #create_new_task')
         await asyncio.sleep(1)
         await self.task_page.click('.button-group .devui-btn-stress')
-        await asyncio.sleep(3)
+        await asyncio.sleep(5)
         template = await self.task_page.querySelectorAll('.template-content li.template-item')
         await template[3].click()
         await asyncio.sleep(1)
         await self.task_page.click('.button-group .devui-btn-stress')
 
-        await asyncio.sleep(3)
-        # await self.task_page.click('a.devui-link')
-        # await asyncio.sleep(5)
+        await asyncio.sleep(5)
         card_list = await self.task_page.querySelectorAll('.task-detail-cardlist .card-li')
         await card_list[2].hover()
         await asyncio.sleep(1)
         await self.task_page.click('.task-detail-cardlist .card-li:nth-child(3) .add-btn')
         await asyncio.sleep(2)
         await self.task_page.click('.button-group .devui-btn-stress')
-        await asyncio.sleep(5)
+        await asyncio.sleep(2)
 
     async def compile_build_task(self):
         await asyncio.sleep(1)
@@ -502,10 +505,8 @@ class BaseHuaWei(BaseClient):
             await asyncio.sleep(5)
 
     async def week_upload_task(self):
-        await self.task_page.waitForSelector('#releasemanUploadDrop', {'visible': True})
-        # html = await self.task_page.Jeval('div.devui-table-view tbody tr:nth-child(1) td',
-        #                                   'el => el.outerHTML')
-        # print(html)
+        await asyncio.sleep(3)
+        # items = await self.task_page.querySelectorAll('')
 
         await self.task_page.click('#releasemanUploadDrop tbody tr:nth-child(1) td a.column-link')
         await asyncio.sleep(3)
