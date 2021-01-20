@@ -75,7 +75,6 @@ class BaseHuaWei(BaseClient):
         id_list = ['experience-missions', 'middleware-missions']
         for _id in id_list:
             await self.execute(_id, 'ul.devui-nav li.ng-star-inserted', '', True, name_map)
-            await asyncio.sleep(2)
 
     async def regular(self):
         await self.execute('regular-missions', '.daily-list li', 'feedback-', False, name_map)
@@ -100,7 +99,11 @@ class BaseHuaWei(BaseClient):
                     await element.click()
                     await asyncio.sleep(1)
                     task_node = f'#{element_id} #{element_id}-{task[1]}'
-                    await self.run_task(task_node, task[0])
+                    try:
+                        await asyncio.wait_for(self.run_task(task_node, task[0]), timeout=100.0)
+                    except asyncio.TimeoutError as e:
+                        self.logger.error(e)
+                    # await self.run_task(task_node, task[0])
             else:
                 _task_node = f'#{element_id} #{task_node}{i}'
                 task_name = str(await self.page.Jeval(f'{_task_node} h5', 'el => el.textContent')).strip()
@@ -136,7 +139,8 @@ class BaseHuaWei(BaseClient):
 
         try:
             func = getattr(self, task_fun)
-            await asyncio.wait_for(func(), timeout=100.0)
+            await func()
+            # await asyncio.wait_for(func(), timeout=100.0)
             self.logger.warning(f'{task_name} -> DONE.')
         except asyncio.TimeoutError as e:
             self.logger.error(e)
