@@ -205,7 +205,7 @@ class BaseHuaWei(BaseClient):
     async def api2_explorer_task(self):
         _url = 'https://apiexplorer.developer.huaweicloud.com/apiexplorer/doc?product=DevStar&api=ListPublishedTemplates'
         await self.task_page.goto(_url, {'waitUntil': 'load'})
-        await self.api_test_task()
+        await self.api_explorer_task()
 
     async def dev_star_task(self):
         await asyncio.sleep(2)
