@@ -138,6 +138,8 @@ class BaseHuaWei(BaseClient):
             func = getattr(self, task_fun)
             await asyncio.wait_for(func(), timeout=80.0)
             self.logger.warning(f'{task_name} -> DONE.')
+        except asyncio.TimeoutError as e:
+            self.logger.error(e)
         except Exception as e:
             self.logger.error(e)
         finally:
