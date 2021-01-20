@@ -106,6 +106,7 @@ class BaseHuaWei(BaseClient):
                 task_name = str(await self.page.Jeval(f'{_task_node} h5', 'el => el.textContent')).strip()
                 if not task_map.get(task_name):
                     continue
+
                 await self.run_task(_task_node, task_map.get(task_name))
 
     async def is_done(self, node):
@@ -130,16 +131,16 @@ class BaseHuaWei(BaseClient):
         await self.page.click(task_node)
         await asyncio.sleep(2)
         self.task_page = await self.get_new_page()
-        self.task_page.setDefaultNavigationTimeout(30000)
         await self.task_page.setUserAgent(self.ua)
         self.logger.info(f'{task_name}')
 
         try:
             func = getattr(self, task_fun)
-            await asyncio.wait_for(func(), timeout=80.0)
+            await asyncio.wait_for(func(), timeout=100.0)
             self.logger.warning(f'{task_name} -> DONE.')
         except asyncio.TimeoutError as e:
             self.logger.error(e)
+            await self.close_page()
         except Exception as e:
             self.logger.error(e)
         finally:
