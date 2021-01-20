@@ -2,6 +2,7 @@ import asyncio
 import os
 import random
 import string
+import threading
 import time
 
 import pymongo
@@ -132,12 +133,13 @@ class BaseHuaWei(BaseClient):
         self.task_page.setDefaultNavigationTimeout(30000)
         await self.task_page.setUserAgent(self.ua)
         self.logger.info(f'{task_name}')
+
         try:
-            await getattr(self, task_fun)()
-            await asyncio.sleep(1)
+            func = getattr(self, task_fun)
+            await asyncio.wait_for(func(), timeout=80.0)
             self.logger.warning(f'{task_name} -> DONE.')
         except Exception as e:
-            self.logger.warning(e)
+            self.logger.error(e)
         finally:
             await self.close_page()
             await asyncio.sleep(1)
