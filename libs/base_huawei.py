@@ -188,11 +188,19 @@ class BaseHuaWei(BaseClient):
                 await page.close()
 
     async def api_explorer_task(self):
-        _url = 'https://apiexplorer.developer.huaweicloud.com/apiexplorer/doc?product=APIExplorer&api=ListProductsV3'
-        await self.task_page.goto(_url, {'waitUntil': 'load'})
-        await asyncio.sleep(5)
+        await asyncio.sleep(3)
+        html = str(await self.task_page.JJeval('.userInfo', '(els) => els.map(el => el.outerHTML)'))
+        if html.find('English') != -1:
+            items = await self.task_page.querySelectorAll('.userInfo')
+            await items[1].hover()
+            await asyncio.sleep(1)
+            await self.task_page.click('.cdk-overlay-container .dropdown-item')
+            await asyncio.sleep(5)
+            # html = await self.task_page.Jeval('.cdk-overlay-container', 'el => el.outerHTML')
+            # print(html)
+
         await self.task_page.click('#debug')
-        await asyncio.sleep(2)
+        await asyncio.sleep(3)
 
     async def dev_star_task(self):
         await asyncio.sleep(2)
@@ -401,16 +409,18 @@ class BaseHuaWei(BaseClient):
             '''() =>{ document.querySelector('div.devui-table-view tbody tr:nth-child(1) .icon-run').click(); }''')
         await asyncio.sleep(1)
         await self.task_page.click('.modal.in .devui-btn-primary')
-        await asyncio.sleep(5)
-
-        dropdowns = await self.task_page.querySelectorAll('div.source-value')
-        dropup = await dropdowns[0].querySelectorAll('.devui-dropup')
-        await dropup[1].click()
-        await asyncio.sleep(2)
-        dropdown_item = await dropup[1].querySelectorAll('.devui-dropdown-item')
-        await dropdown_item[0].click()
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(1)
         await self.task_page.click('.modal.in .devui-btn-primary')
+        await asyncio.sleep(1)
+
+        # dropdowns = await self.task_page.querySelectorAll('div.source-value')
+        # dropup = await dropdowns[0].querySelectorAll('.devui-dropup')
+        # await dropup[1].click()
+        # await asyncio.sleep(2)
+        # dropdown_item = await dropup[1].querySelectorAll('.devui-dropdown-item')
+        # await dropdown_item[0].click()
+        # await asyncio.sleep(0.5)
+        # await self.task_page.click('.modal.in .devui-btn-primary')
         await asyncio.sleep(5)
 
     async def week_new_project(self):
