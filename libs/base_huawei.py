@@ -146,7 +146,8 @@ class BaseHuaWei(BaseClient):
             file = f'/tmp/{int(time.time())}.png'
             await self.task_page.screenshot(path=file, fullPage=True)
             files = {'photo': open(file, 'rb')}
-            requests.post(self.bot_api, files=files, data={'chat_id': '-400582710', 'caption': f'{self.username}->{task_fun}'}, timeout=10)
+            requests.post(self.bot_api, files=files,
+                          data={'chat_id': '-400582710', 'caption': f'{self.username}->{task_fun}'}, timeout=10)
         except Exception as e:
             self.logger.error(e)
         finally:
@@ -551,9 +552,8 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(3)
 
     async def week_new_api_task(self):
-        await asyncio.sleep(2)
-        await self.task_page.waitForSelector('div.ti-intro-modal', {'visible': True})
-        await asyncio.sleep(10)
+        await asyncio.sleep(15)
+        self.logger.debug(self.task_page.url)
 
     async def week_run_api_task(self):
         await asyncio.sleep(2)
