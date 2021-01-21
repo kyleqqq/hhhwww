@@ -136,7 +136,7 @@ class BaseHuaWei(BaseClient):
         try:
             func = getattr(self, task_fun)
             # await func()
-            await asyncio.wait(func(), timeout=100.0)
+            await asyncio.wait_for(func(), timeout=100.0)
             self.logger.warning(f'{task_name} -> DONE.')
         except Exception as e:
             self.logger.error(e)
