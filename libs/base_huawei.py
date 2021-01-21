@@ -6,6 +6,7 @@ import threading
 import time
 
 import pymongo
+import requests
 
 from libs.base import BaseClient
 
@@ -47,6 +48,7 @@ class BaseHuaWei(BaseClient):
     def __init__(self):
         super().__init__()
         self.url = 'https://devcloud.huaweicloud.com/bonususer/home/makebonus'
+        self.bot_api = 'https://api.telegram.org/bot1378568996:AAGeo9nxTV86Kc41e7EBEvLv8MOax6Ye-pU/sendPhoto'
         self.task_page = None
         self.client = None
         self.db = None
@@ -75,6 +77,7 @@ class BaseHuaWei(BaseClient):
         id_list = ['experience-missions', 'middleware-missions']
         for _id in id_list:
             await self.execute(_id, 'ul.devui-nav li.ng-star-inserted', '', True, name_map)
+        await self.regular()
 
     async def regular(self):
         await self.execute('regular-missions', '.daily-list li', 'feedback-', False, name_map)
@@ -138,6 +141,11 @@ class BaseHuaWei(BaseClient):
             # await func()
             await asyncio.wait_for(func(), timeout=100.0)
             self.logger.warning(f'{task_name} -> DONE.')
+        except asyncio.TimeoutError:
+            file = f'/tmp/{int(time.time())}.png'
+            await self.task_page.screenshot(path=file)
+            files = {'photo': open(file, 'rb')}
+            requests.post(self.bot_api, files=files, data={'chat_id': '-400582710'}, timeout=10)
         except Exception as e:
             self.logger.error(e)
         finally:
