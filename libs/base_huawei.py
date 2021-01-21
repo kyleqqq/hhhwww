@@ -152,6 +152,7 @@ class BaseHuaWei(BaseClient):
             self.logger.error(e)
         finally:
             await self.close_page()
+            await asyncio.sleep(2)
             return True
 
     async def get_credit(self):
@@ -233,16 +234,18 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(2)
 
     async def open_code_task(self):
-        await self.task_page.waitForSelector('div.devui-table-view', {'visible': True})
-        await self.task_page.evaluate(
-            '''() =>{ document.querySelector('div.devui-table-view tbody tr:nth-child(1) td:nth-child(8) i.icon-more-operate').click(); }''')
-        await asyncio.sleep(1)
-        await self.task_page.evaluate(
-            '''() =>{ document.querySelector('ul.dropdown-menu li:nth-child(5) .devui-btn').click(); }''')
-        await asyncio.sleep(25)
+        await asyncio.sleep(5)
+        items = await self.task_page.querySelectorAll('div.devui-table-view tbody tr')
+        if items and len(items):
+            await self.task_page.evaluate(
+                '''() =>{ document.querySelector('div.devui-table-view tbody tr:nth-child(1) td:nth-child(8) i.icon-more-operate').click(); }''')
+            await asyncio.sleep(1)
+            await self.task_page.evaluate(
+                '''() =>{ document.querySelector('ul.dropdown-menu li:nth-child(5) .devui-btn').click(); }''')
+            await asyncio.sleep(20)
 
     async def open_ide_task(self):
-        await self.task_page.waitForSelector('.trial-stack-info', {'visible': True})
+        await asyncio.sleep(5)
         try:
             await self.task_page.click('.region-modal-button-content .region-modal-button-common')
             await asyncio.sleep(1)
@@ -253,11 +256,6 @@ class BaseHuaWei(BaseClient):
         await self.task_page.click(
             '.trial-stack-info .trial-stack:nth-child(1) .stack-content .stack-position .devui-btn')
         await asyncio.sleep(10)
-
-        try:
-            await self.close_page()
-        except Exception as e:
-            self.logger.error(e)
 
     async def push_code_task(self):
         if self.git:
