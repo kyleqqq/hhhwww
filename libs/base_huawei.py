@@ -48,7 +48,8 @@ class BaseHuaWei(BaseClient):
     def __init__(self):
         super().__init__()
         self.url = 'https://devcloud.huaweicloud.com/bonususer/home/makebonus'
-        self.bot_api = 'https://api.telegram.org/bot1378568996:AAGeo9nxTV86Kc41e7EBEvLv8MOax6Ye-pU/sendPhoto'
+        self.bot_key = 'AAGeo9nxTV86Kc41e7EBEvLv8MOax6Ye-pU'
+        self.bot_api = f'https://api.telegram.org/bot1378568996:{self.bot_key}/sendPhoto'
         self.task_page = None
         self.client = None
         self.db = None
