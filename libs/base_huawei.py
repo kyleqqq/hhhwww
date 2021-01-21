@@ -144,9 +144,9 @@ class BaseHuaWei(BaseClient):
             self.logger.warning(f'{task_name} -> DONE.')
         except asyncio.TimeoutError:
             file = f'/tmp/{int(time.time())}.png'
-            await self.task_page.screenshot(path=file)
+            await self.task_page.screenshot(path=file, fullPage=True)
             files = {'photo': open(file, 'rb')}
-            requests.post(self.bot_api, files=files, data={'chat_id': '-400582710'}, timeout=10)
+            requests.post(self.bot_api, files=files, data={'chat_id': '-400582710', 'caption': f'{self.username}->{task_fun}'}, timeout=10)
         except Exception as e:
             self.logger.error(e)
         finally:
