@@ -499,11 +499,6 @@ class BaseHuaWei(BaseClient):
         if git_list and len(git_list) and git_name == 'crawler':
             await self.task_page.click('#repoNamecrawler')
             await asyncio.sleep(10)
-            git_url = await self.task_page.Jeval('.clone-url input', "el => el.getAttribute('title')")
-            _user = self.parent_user if self.parent_user else self.username
-            git_url = git_url.replace('git@', f'https://{_user}%2F{self.username}:hack3321@')
-            git_url = git_url.replace('com:', 'com/')
-            self.logger.info(git_url)
 
     async def week_new_code_check(self):
         await self.task_page.waitForSelector('.pull-right', {'visible': True})
