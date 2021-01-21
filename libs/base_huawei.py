@@ -549,11 +549,9 @@ class BaseHuaWei(BaseClient):
         self.logger.debug(self.task_page.url)
 
     async def week_run_api_task(self):
-        await asyncio.sleep(2)
-        await self.task_page.waitForSelector('div.ti-intro-modal', {'visible': True})
+        await asyncio.sleep(3)
         await self.task_page.click('div.ti-intro-modal .ti-btn-danger')
-        await asyncio.sleep(2)
-        await self.task_page.waitForSelector('#send', {'visible': True})
+        await asyncio.sleep(3)
         await self.task_page.click('#send')
         await asyncio.sleep(2)
         await self.task_page.click('.pull-left .cti-button')
