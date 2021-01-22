@@ -709,43 +709,6 @@ class BaseHuaWei(BaseClient):
         await self.task_page.click('#testtype_1')
         await asyncio.sleep(1)
 
-    async def add_address(self):
-        page = await self.browser.newPage()
-        await page.setUserAgent(self.ua)
-        await page.goto('https://devcloud.huaweicloud.com/bonususer/home/managebonus', {'waitUntil': 'load'})
-
-        await asyncio.sleep(2)
-        try:
-            await page.click('li#Add')
-            await asyncio.sleep(5)
-            no_data = await page.querySelectorAll('#add-table tbody tr')
-            if no_data and len(no_data):
-                return
-
-            await page.click('#add-adds')
-            await asyncio.sleep(1)
-            await page.type('#add-receive-name', '邹华')
-            await page.type('#add-receive-phone', '18664845253')
-            await page.type('#add-receive-area-info', '静安路6号55创意产业园3楼')
-            await page.click('#add-info .devui-checkbox')
-            await page.click('#ifDefault .devui-toggle')
-
-            items = await page.querySelectorAll('#add-receive-area .devui-dropup')
-            index = [13, 1, 5]
-            for i, item in enumerate(items):
-                await item.click()
-                await asyncio.sleep(1)
-                await page.click(f'.cdk-overlay-container .devui-dropdown-item:nth-child({index[i]})')
-                await asyncio.sleep(1)
-
-            await asyncio.sleep(1)
-            await page.click('#adds-dialog .devui-btn-stress')
-            await asyncio.sleep(2)
-        except Exception as e:
-            self.logger.error(e)
-            self.logger.error(page.url)
-        finally:
-            await page.close()
 
     async def sign_post(self):
         tid_list = [87703, 87513, 87948, 87424, 87445, 87587, 87972, 87972]
