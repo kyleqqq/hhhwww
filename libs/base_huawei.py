@@ -48,18 +48,11 @@ class BaseHuaWei(BaseClient):
     def __init__(self):
         super().__init__()
         self.url = 'https://devcloud.huaweicloud.com/bonususer/home/makebonus'
-        self.bot_key = 'AAGeo9nxTV86Kc41e7EBEvLv8MOax6Ye-pU'
-        self.bot_api = f'https://api.telegram.org/bot1378568996:{self.bot_key}/sendPhoto'
+        self.api = 'https://api-atcaoyufei.cloud.okteto.net/'
         self.task_page = None
         self.client = None
         self.db = None
         self.col = None
-
-    async def before_run(self):
-        self.client = pymongo.MongoClient(
-            f'mongodb+srv://huawei:{self.mongo_pwd}@cluster0.9v4wz.azure.mongodb.net/?retryWrites=true&w=majority')
-        self.db = self.client.get_database('huawei_db')
-        self.col = self.db.get_collection('huawei')
 
     async def after_handler(self, **kwargs):
         credit = kwargs.get('result')
@@ -69,7 +62,7 @@ class BaseHuaWei(BaseClient):
             credit = int(credit.replace('码豆', '').strip())
 
         _id = f'{self.parent_user}_{username}' if self.parent_user else self.username
-        self.col.update_one({'_id': _id}, {'$set': {'credit': int(credit), 'update_time': self.get_bj_time()}}, True)
+        requests.post(f'{self.api}/huawei/save', {'name': _id, 'credit': credit})
 
     async def start(self):
         if self.page.url != self.url:
@@ -145,9 +138,9 @@ class BaseHuaWei(BaseClient):
         except asyncio.TimeoutError:
             file = f'/tmp/{int(time.time())}.png'
             await self.task_page.screenshot(path=file, fullPage=True)
-            files = {'photo': open(file, 'rb')}
-            requests.post(self.bot_api, files=files,
-                          data={'chat_id': '-400582710', 'caption': f'{self.username}->{task_fun}'}, timeout=10)
+            files = {'file': open(file, 'rb')}
+            requests.post(f'{self.api}/tg/photo', files=files,
+                          data={'chat_id': '-400582710', 'title': f'{self.username}->{task_fun}'}, timeout=10)
         except Exception as e:
             self.logger.error(e)
         finally:
