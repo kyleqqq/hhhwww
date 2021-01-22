@@ -48,7 +48,7 @@ class BaseHuaWei(BaseClient):
     def __init__(self):
         super().__init__()
         self.url = 'https://devcloud.huaweicloud.com/bonususer/home/makebonus'
-        self.api = 'https://api-atcaoyufei.cloud.okteto.net/'
+        self.api = 'https://api-atcaoyufei.cloud.okteto.net'
         self.task_page = None
         self.client = None
         self.db = None
