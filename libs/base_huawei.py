@@ -140,7 +140,7 @@ class BaseHuaWei(BaseClient):
             await self.task_page.screenshot(path=file, fullPage=True)
             files = {'file': open(file, 'rb')}
             requests.post(f'{self.api}/tg/photo', files=files,
-                          data={'chat_id': '-400582710', 'title': f'{self.username}->{task_fun}'}, timeout=10)
+                          data={'chat_id': '-445291602', 'title': f'{self.username}->{task_fun}'}, timeout=10)
         except Exception as e:
             self.logger.error(e)
         finally:
