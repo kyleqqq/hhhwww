@@ -430,8 +430,7 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(5)
 
     async def week_new_project(self):
-        await self.task_page.waitForSelector('.modal.in', {'visible': True})
-        await asyncio.sleep(3)
+        await asyncio.sleep(5)
         try:
             notice = await self.task_page.querySelector('#declaration-notice')
             if notice:
@@ -450,6 +449,7 @@ class BaseHuaWei(BaseClient):
             projects = await self.task_page.querySelectorAll('.projects-container .projects-board-in-home')
             if projects and len(projects) and btn_list and len(btn_list):
                 await btn_list[0].click()
+                await asyncio.sleep(2)
             else:
                 if btn_list and len(btn_list):
                     await btn_list[1].click()
