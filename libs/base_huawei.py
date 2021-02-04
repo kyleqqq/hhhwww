@@ -619,18 +619,16 @@ class BaseHuaWei(BaseClient):
                     continue
 
                 for item in data['result']['project_info_list']:
-                    if item['name'].find('DevOps') != -1:
-                        self.logger.warning(f"delete {item['name']}")
-                        delete_url = f"{domain}/projects/project/{item['project_id']}/config/info"
-                        await page.goto(delete_url, {'waitUntil': 'load'})
-                        await asyncio.sleep(2)
-                        await page.click('.form-container .margin-right-s .devui-btn:nth-child(1)')
-                        await asyncio.sleep(2)
-                        await page.type('#deleteProject .projectInput', item['name'])
-                        await asyncio.sleep(0.5)
-                        await page.click('.dialog-footer .devui-btn-primary')
-                        await asyncio.sleep(1)
-                        break
+                    self.logger.warning(f"delete {item['name']}")
+                    delete_url = f"{domain}/projects/project/{item['project_id']}/config/info"
+                    await page.goto(delete_url, {'waitUntil': 'load'})
+                    await asyncio.sleep(2)
+                    await page.click('.form-container .margin-right-s .devui-btn:nth-child(1)')
+                    await asyncio.sleep(2)
+                    await page.type('#deleteProject .projectInput', item['name'])
+                    await asyncio.sleep(0.5)
+                    await page.click('.dialog-footer .devui-btn-primary')
+                    await asyncio.sleep(1)
                 return domain
         finally:
             await page.close()
