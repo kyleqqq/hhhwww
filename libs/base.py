@@ -21,6 +21,7 @@ class BaseClient:
         self.logger = logging.getLogger(self.__class__.__name__)
         self.url = None
         self.username = None
+        self.password = None
         self.parent_user = None
         self.git = None
         self.ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36'
@@ -50,11 +51,11 @@ class BaseClient:
             git = git_list[i] if git_list and len(git_list) == len(username_list) else None
             password = password_list[0] if len(password_list) == 1 else password_list[i]
             self.username = username
+            self.password = password
             self.git = git
             try:
                 await self.init(**kwargs)
-                result = await self.handler(username=username, password=password, git=git, parent=kwargs.get('parent'),
-                                            iam=kwargs.get('iam'))
+                result = await self.handler(**kwargs)
                 await self.after_handler(result=result, username=username)
             except Exception as e:
                 self.logger.warning(e)

@@ -10,18 +10,18 @@ class HuaWei(BaseHuaWei):
     def __init__(self):
         super().__init__()
 
-    async def handler(self, username, password, git, parent=None, iam=False):
-        self.logger.info(f'{username} start login.')
+    async def handler(self, **kwargs):
+        self.logger.info(f'{self.username} start login.')
         await self.page.waitForSelector('#personalAccountInputId .tiny-input-text', {'visible': True})
-        if iam:
-            await self.iam_login(username, password, parent)
+        if kwargs.get('iam'):
+            await self.iam_login(self.username, self.password, kwargs.get('parent'))
         else:
-            await self.login(username, password)
+            await self.login(self.username, self.password)
 
         utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
         h = int(utc_dt.astimezone(timezone(timedelta(hours=8))).strftime('%H'))
 
-        # await self.check_project()
+        await self.check_project()
 
         await self.sign_task()
         await self.start()
@@ -29,8 +29,8 @@ class HuaWei(BaseHuaWei):
         if h >= 11:
             await self.delete_project()
             await self.delete_function()
-            # await self.delete_api()
-            # await self.delete_api_group()
+            await self.delete_api()
+            await self.delete_api_group()
 
         # await self.init_account()
 
