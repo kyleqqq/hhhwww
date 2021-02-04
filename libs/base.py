@@ -53,8 +53,7 @@ class BaseClient:
             self.git = git
             try:
                 await self.init(**kwargs)
-                result = await self.handler(username=username, password=password, git=git, parent=kwargs.get('parent'),
-                                            iam=kwargs.get('iam'))
+                result = await self.handler(username=username, password=password, git=git, **kwargs)
                 await self.after_handler(result=result, username=username)
             except Exception as e:
                 self.logger.warning(e)

@@ -1,5 +1,6 @@
 import asyncio
 import os
+from datetime import datetime, timezone, timedelta
 
 from libs.base_huawei import BaseHuaWei
 
@@ -18,21 +19,19 @@ class HuaWei(BaseHuaWei):
             await self.login(username, password)
 
         await self.sign_task()
-        # await self.add_address()
-
-        # await self.init_account()
-
-        await self.delete_function()
-
-        await self.delete_project()
-        await self.delete_api()
-        await self.delete_api_group()
-
         await self.start()
 
-        await self.regular()
+        def get_bj_time():
+            utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
+            return int(utc_dt.astimezone(timezone(timedelta(hours=8))).strftime('%H'))
 
-        # await self.print_credit(username)
+        if get_bj_time() >= 12:
+            await self.delete_project()
+            await self.delete_function()
+            await self.delete_api()
+            await self.delete_api_group()
+
+        # await self.init_account()
 
         return await self.get_credit()
 

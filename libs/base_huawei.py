@@ -2,10 +2,8 @@ import asyncio
 import os
 import random
 import string
-import threading
 import time
 
-import pymongo
 import requests
 
 from libs.base import BaseClient
@@ -57,12 +55,13 @@ class BaseHuaWei(BaseClient):
     async def after_handler(self, **kwargs):
         credit = kwargs.get('result')
         username = kwargs.get('username')
-        self.logger.warning(f"{username} -> {credit}\n")
-        if type(credit) == str:
-            credit = int(credit.replace('码豆', '').strip())
+        if credit:
+            self.logger.warning(f"{username} -> {credit}\n")
+            if type(credit) == str:
+                credit = int(credit.replace('码豆', '').strip())
 
-        _id = f'{self.parent_user}_{username}' if self.parent_user else self.username
-        requests.post(f'{self.api}/huawei/save', {'name': _id, 'credit': credit})
+            _id = f'{self.parent_user}_{username}' if self.parent_user else self.username
+            requests.post(f'{self.api}/huawei/save', {'name': _id, 'credit': credit})
 
     async def start(self):
         if self.page.url != self.url:
@@ -708,7 +707,6 @@ class BaseHuaWei(BaseClient):
         await self.task_page.waitForSelector('#testtype_1')
         await self.task_page.click('#testtype_1')
         await asyncio.sleep(1)
-
 
     async def sign_post(self):
         tid_list = [87703, 87513, 87948, 87424, 87445, 87587, 87972, 87972]
