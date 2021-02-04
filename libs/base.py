@@ -53,7 +53,8 @@ class BaseClient:
             self.git = git
             try:
                 await self.init(**kwargs)
-                result = await self.handler(username=username, password=password, git=git, **kwargs)
+                result = await self.handler(username=username, password=password, git=git, parent=kwargs.get('parent'),
+                                            iam=kwargs.get('iam'))
                 await self.after_handler(result=result, username=username)
             except Exception as e:
                 self.logger.warning(e)
@@ -74,7 +75,7 @@ class BaseClient:
         # self.page.on('request', self.intercept_request)
 
         await self.page.setUserAgent(self.ua)
-        await self.page.setViewport({'width': 1200, 'height': 768})
+        await self.page.setViewport({'width': 1920, 'height': 768})
 
         await self.page.goto(self.url, {'waitUntil': 'load'})
 

@@ -48,9 +48,7 @@ class BaseHuaWei(BaseClient):
         self.url = 'https://devcloud.huaweicloud.com/bonususer/home/makebonus'
         self.api = 'https://api-atcaoyufei.cloud.okteto.net'
         self.task_page = None
-        self.client = None
-        self.db = None
-        self.col = None
+        self.create_done = False
 
     async def after_handler(self, **kwargs):
         credit = kwargs.get('result')
@@ -108,10 +106,10 @@ class BaseHuaWei(BaseClient):
         try:
             is_done = await self.page.querySelector(f"{node} .complate-img")
             if is_done:
-                return True
+                return False if self.create_done else True
             is_done = await self.page.querySelector(f"{node} img.completed ")
             if is_done:
-                return True
+                return False if self.create_done else True
         except Exception as e:
             self.logger.debug(e)
         return False
@@ -581,35 +579,49 @@ class BaseHuaWei(BaseClient):
 
     async def delete_function(self):
         page = await self.browser.newPage()
-        url_list = ['https://console.huaweicloud.com/functiongraph/?region=cn-north-4#/serverless/functions',
-                    'https://console.huaweicloud.com/functiongraph/?region=cn-south-1#/serverless/functions']
+        url_list = ['https://console.huaweicloud.com/functiongraph/?region=cn-north-4#/serverless/functionList',
+                    'https://console.huaweicloud.com/functiongraph/?region=cn-south-1#/serverless/functionList']
         for _url in url_list:
             await page.goto(_url, {'waitUntil': 'load'})
-            await page.setViewport({'width': 1200, 'height': 768})
+            await page.setViewport({'width': 1920, 'height': 768})
             await asyncio.sleep(5)
-            elements = await page.querySelectorAll('.ant-table-body tr')
-            if len(elements) < 1:
-                continue
+            elements = await page.querySelectorAll('a.ti3-action-menu-item')
+            html = await self.task_page.JJeval('a.ti3-action-menu-item', '(els) => els.map(el => el.outerHTML)')
 
-            for element in elements:
-                # html = await element.Jeval('td:nth-child(4) span:nth-child(2)', 'el => el.outerHTML')
-                # print(html)
-                try:
-                    e = await element.querySelector('td:nth-child(4) span:nth-child(2)')
-                    await e.click()
-                    await asyncio.sleep(1)
-                    await page.type('#identifyingCode', 'DELETE')
-                    await asyncio.sleep(0.5)
-                    await page.click('.ant-modal-footer .ant-btn:nth-child(1)')
-                    await asyncio.sleep(1)
-                except Exception as e:
-                    self.logger.debug(e)
+            # for element in elements:
+            #     try:
+            #         e = await element.querySelector('td:nth-child(5) a.ti3-action-menu-item')
+            #         print(await element.Jeval('section', 'el => el.textContent'))
+            #         # await e.click()
+            #         # await asyncio.sleep(1)
+            #         # await page.type('input[name="text"]', 'DELETE')
+            #         # await asyncio.sleep(0.5)
+            #         # await page.click('.ti3-btn-danger')
+            #         # await asyncio.sleep(1)
+            #     except Exception as e:
+            #         self.logger.error(e)
         await page.close()
+        await asyncio.sleep(2)
+
+    async def check_project(self):
+        page = await self.browser.newPage()
+        domains = ['https://devcloud.huaweicloud.com', 'https://devcloud.cn-north-4.huaweicloud.com']
+        data = None
+        try:
+            for domain in domains:
+                url = f'{domain}/projects/v2/project/list?sort=&search=&page_no=1&page_size=40&project_type=&archive=1'
+                res = await page.goto(url, {'waitUntil': 'load'})
+                data = await res.json()
+                if data.get('error') or not data.get('result') or not len(data['result']['project_info_list']):
+                    continue
+        finally:
+            await page.close()
+            if not data:
+                self.create_done = True
 
     async def delete_project(self):
         page = await self.browser.newPage()
-        domains = ['https://devcloud.huaweicloud.com', 'https://devcloud.cn-north-4.huaweicloud.com',
-                   'https://devcloud.cn-east-3.huaweicloud.com']
+        domains = ['https://devcloud.huaweicloud.com', 'https://devcloud.cn-north-4.huaweicloud.com']
         try:
             for domain in domains:
                 url = f'{domain}/projects/v2/project/list?sort=&search=&page_no=1&page_size=40&project_type=&archive=1'
@@ -619,7 +631,7 @@ class BaseHuaWei(BaseClient):
                     continue
 
                 for item in data['result']['project_info_list']:
-                    self.logger.warning(f"delete {item['name']}")
+                    self.logger.warning(f"delete project {item['name']}")
                     delete_url = f"{domain}/projects/project/{item['project_id']}/config/info"
                     await page.goto(delete_url, {'waitUntil': 'load'})
                     await asyncio.sleep(2)

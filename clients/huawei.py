@@ -18,18 +18,19 @@ class HuaWei(BaseHuaWei):
         else:
             await self.login(username, password)
 
+        utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
+        h = int(utc_dt.astimezone(timezone(timedelta(hours=8))).strftime('%H'))
+
+        # await self.check_project()
+
         await self.sign_task()
         await self.start()
 
-        def get_bj_time():
-            utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
-            return int(utc_dt.astimezone(timezone(timedelta(hours=8))).strftime('%H'))
-
-        if get_bj_time() >= 11:
+        if h >= 11:
             await self.delete_project()
             await self.delete_function()
-            await self.delete_api()
-            await self.delete_api_group()
+            # await self.delete_api()
+            # await self.delete_api_group()
 
         # await self.init_account()
 
