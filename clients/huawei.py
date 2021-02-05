@@ -26,7 +26,7 @@ class HuaWei(BaseHuaWei):
         await self.sign_task()
         await self.start()
 
-        if h >= 11:
+        if h >= 12:
             await self.delete_project()
             await self.delete_function()
             await self.delete_api()
