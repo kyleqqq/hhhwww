@@ -576,6 +576,8 @@ class BaseHuaWei(BaseClient):
             await asyncio.sleep(5)
         except Exception as e:
             self.logger.warning(e)
+        finally:
+            return
 
     async def fast_dev_star(self):
         await asyncio.sleep(5)
