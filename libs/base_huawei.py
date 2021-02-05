@@ -15,17 +15,17 @@ name_map = {
     '代码检查': [['week_new_code_check', 0], ['check_code_task', 1]],
     '编译构建': [['week_new_compile_build', 0], ['compile_build_task', 1]],
     # '部署': [['week_new_deploy', 0], ['deploy_task', 1]],
-    '发布': [['week_upload_task', 0]],
+    '发布': [['upload_task', 0]],
     '流水线': [['week_new_pipeline', 0], ['pipeline_task', 1]],
     '接口测试': [['week_new_api_test_task', 0], ['api_test_task', 1]],
-    '测试管理': [['week_new_test_task', 0]],
-    'APIG网关': [['week_new_api_task', 0], ['week_run_api_task', 1]],
-    '函数工作流': [['week_new_fun_task', 0]],
+    '测试管理': [['new_test_task', 0]],
+    'APIG网关': [['new_new_api_task', 0], ['run_api_task', 1]],
+    '函数工作流': [['new_fun_task', 0]],
     '使用API  Explorer完在线调试': 'api_explorer_task',
     '使用API Explorer在线调试': 'api2_explorer_task',
     '使用Devstar生成代码工程': 'dev_star_task',
     '浏览Codelabs代码示例': 'view_code_task',
-    '体验DevStar快速生成代码': 'week_fast_dev_star',
+    '体验DevStar快速生成代码': 'fast_dev_star',
 }
 
 init_name_map = {
@@ -103,14 +103,18 @@ class BaseHuaWei(BaseClient):
 
                 await self.run_task(_task_node, task_map.get(task_name))
 
-    async def is_done(self, node):
+    async def is_done(self, node, task_fun):
         try:
             is_done = await self.page.querySelector(f"{node} .complate-img  {self.create_done}")
             if is_done:
-                return False if self.create_done else True
+                if self.create_done and 'week' in task_fun:
+                    return False
+                return True
             is_done = await self.page.querySelector(f"{node} img.completed  {self.create_done}")
             if is_done:
-                return False if self.create_done else True
+                if self.create_done and 'week' in task_fun:
+                    return False
+                return True
         except Exception as e:
             self.logger.debug(e)
         return False
@@ -118,7 +122,7 @@ class BaseHuaWei(BaseClient):
     async def run_task(self, task_node, task_fun):
         task_name = await self.page.Jeval(f'{task_node} h5', 'el => el.textContent')
 
-        if await self.is_done(task_node):
+        if await self.is_done(task_node, task_fun):
             self.logger.warning(f'{task_name} -> DONE.')
             return True
 
@@ -505,7 +509,7 @@ class BaseHuaWei(BaseClient):
             await self.task_page.click('.btn-wrap .devui-btn-primary')
             await asyncio.sleep(5)
 
-    async def week_upload_task(self):
+    async def upload_task(self):
         await asyncio.sleep(3)
         # items = await self.task_page.querySelectorAll('')
 
@@ -516,7 +520,7 @@ class BaseHuaWei(BaseClient):
         await f.uploadFile(__file__)
         await asyncio.sleep(3)
 
-    async def week_new_test_task(self):
+    async def new_test_task(self):
         await asyncio.sleep(2)
         await self.task_page.click('#global-guidelines .icon-close')
         await asyncio.sleep(1)
@@ -540,11 +544,11 @@ class BaseHuaWei(BaseClient):
         await self.task_page.click('div.footer .devui-btn-stress')
         await asyncio.sleep(3)
 
-    async def week_new_api_task(self):
+    async def new_new_api_task(self):
         await asyncio.sleep(15)
         self.logger.debug(self.task_page.url)
 
-    async def week_run_api_task(self):
+    async def run_api_task(self):
         await asyncio.sleep(3)
         await self.task_page.click('div.ti-intro-modal .ti-btn-danger')
         await asyncio.sleep(3)
@@ -556,7 +560,7 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(5)
         await self.task_page.click('.ti-btn-danger.ml10.ng-binding')
 
-    async def week_new_fun_task(self):
+    async def new_fun_task(self):
         url = self.task_page.url
         if url.find('serverless/dashboard') == -1:
             url = f'{url}#/serverless/dashboard'
@@ -573,7 +577,7 @@ class BaseHuaWei(BaseClient):
         except Exception as e:
             self.logger.warning(e)
 
-    async def week_fast_dev_star(self):
+    async def fast_dev_star(self):
         await asyncio.sleep(5)
         await self.task_page.click('.code-template-codebase-right-operations-panel .devui-btn-common')
         # await asyncio.sleep(1)
