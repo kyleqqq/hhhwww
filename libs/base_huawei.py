@@ -616,7 +616,7 @@ class BaseHuaWei(BaseClient):
     async def check_project(self):
         page = await self.browser.newPage()
         domains = ['https://devcloud.huaweicloud.com', 'https://devcloud.cn-north-4.huaweicloud.com']
-        project = []
+        projects = []
         try:
             for domain in domains:
                 url = f'{domain}/projects/v2/project/list?sort=&search=&page_no=1&page_size=40&project_type=&archive=1'
@@ -626,15 +626,19 @@ class BaseHuaWei(BaseClient):
                     await asyncio.sleep(1)
                     continue
 
-                project = data['result']['project_info_list']
+                projects = data['result']['project_info_list']
                 self.home_url = domain
                 await asyncio.sleep(1)
         except Exception as e:
             self.logger.error(e)
         finally:
             await page.close()
-            if len(project) <= 0:
+            if len(projects) <= 0:
                 self.create_done = True
+            else:
+                self.create_done = False
+                for item in projects:
+                    self.logger.warning(f"project {item['name']}")
 
     async def delete_project(self):
         page = await self.browser.newPage()
