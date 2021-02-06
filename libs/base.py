@@ -122,7 +122,7 @@ class BaseClient:
         utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
         return utc_dt.astimezone(timezone(timedelta(hours=8))).strftime('%Y-%m-%d %H:%M:%S')
 
-    def send_photo(self, page, title):
+    async def send_photo(self, page, title):
         file = f'/tmp/{int(time.time())}.png'
         await page.screenshot(path=file, fullPage=True)
         files = {'file': open(file, 'rb')}
