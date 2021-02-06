@@ -2,6 +2,8 @@ import asyncio
 import re
 import time
 
+import requests
+
 from libs.base import BaseClient
 
 
@@ -25,16 +27,14 @@ class Euserv(BaseClient):
             await self.page.click('#kc2_order_customer_orders_tab_1')
         except Exception as e:
             self.logger.error(e)
-            try:
-                tab = await self.page.Jeval('#kc2_order_customer_orders_tab', 'el => el.textContent')
-                self.logger.info(tab)
-            except Exception as e:
-                self.logger.error(e)
+            file = f'/tmp/{int(time.time())}.png'
+            await self.page.screenshot(path=file, fullPage=True)
+            files = {'photo': open(file, 'rb')}
+            requests.post(f'https://api.telegram.org/bot1378568996:AAGeo9nxTV86Kc41e7EBEvLv8MOax6Ye-pU/sendPhoto',
+                          files=files,
+                          data={'chat_id': '-445291602'}, timeout=10)
 
-            email = await self.page.Jeval('input[name="c_email"]', 'el => el.outerHTML')
-            self.logger.info(email)
-
-            await asyncio.sleep(1)
+        await asyncio.sleep(1)
 
         s = await self.page.Jeval('.kc2_order_extend_contract_term_container', 'el => el.textContent')
         self.logger.info(s)
