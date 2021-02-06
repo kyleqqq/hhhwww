@@ -20,8 +20,23 @@ class Euserv(BaseClient):
         await self.page.click('input[name="Submit"]')
         await asyncio.sleep(10)
 
-        await self.page.click('#kc2_order_customer_orders_tab_1')
-        await asyncio.sleep(1)
+        try:
+            await self.page.click('#kc2_order_customer_orders_tab_1')
+        except Exception as e:
+            self.logger.error(e)
+            try:
+                tab = await self.page.Jeval('#kc2_order_customer_orders_tab', 'el => el.textContent')
+                self.logger.info(tab)
+            except Exception as e:
+                self.logger.error(e)
+
+            try:
+                email = await self.page.Jeval('input[name="c_email"]', 'el => el.outerHTML')
+                self.logger.info(email)
+            except Exception as e:
+                self.logger.error(e)
+
+            await asyncio.sleep(1)
 
         s = await self.page.Jeval('.kc2_order_extend_contract_term_container', 'el => el.textContent')
         self.logger.info(s)
