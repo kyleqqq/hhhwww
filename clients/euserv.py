@@ -20,6 +20,7 @@ class Euserv(BaseClient):
         await self.page.click('input[name="Submit"]')
         await asyncio.sleep(10)
 
+        self.logger.info(self.page.url)
         try:
             await self.page.click('#kc2_order_customer_orders_tab_1')
         except Exception as e:
@@ -30,11 +31,8 @@ class Euserv(BaseClient):
             except Exception as e:
                 self.logger.error(e)
 
-            try:
-                email = await self.page.Jeval('input[name="c_email"]', 'el => el.outerHTML')
-                self.logger.info(email)
-            except Exception as e:
-                self.logger.error(e)
+            email = await self.page.Jeval('input[name="c_email"]', 'el => el.outerHTML')
+            self.logger.info(email)
 
             await asyncio.sleep(1)
 
@@ -53,6 +51,3 @@ class Euserv(BaseClient):
             await asyncio.sleep(5)
         except Exception as e:
             self.logger.error(e)
-
-
-
