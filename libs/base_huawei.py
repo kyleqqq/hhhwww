@@ -128,9 +128,10 @@ class BaseHuaWei(BaseClient):
 
         await self.page.click(task_node)
         await asyncio.sleep(2)
+        self.logger.info(f'{task_name}')
+
         self.task_page = await self.get_new_page()
         await self.task_page.setUserAgent(self.ua)
-        self.logger.info(f'{task_name}')
 
         try:
             func = getattr(self, task_fun)
