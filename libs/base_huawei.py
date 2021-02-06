@@ -46,7 +46,6 @@ class BaseHuaWei(BaseClient):
     def __init__(self):
         super().__init__()
         self.url = 'https://devcloud.huaweicloud.com/bonususer/home/makebonus'
-        self.api = 'https://api-atcaoyufei.cloud.okteto.net'
         self.task_page = None
         self.create_done = False
         self.home_url = None
@@ -139,11 +138,7 @@ class BaseHuaWei(BaseClient):
             await asyncio.wait_for(func(), timeout=100.0)
             self.logger.warning(f'{task_name} -> DONE.')
         except asyncio.TimeoutError:
-            file = f'/tmp/{int(time.time())}.png'
-            await self.task_page.screenshot(path=file, fullPage=True)
-            files = {'file': open(file, 'rb')}
-            requests.post(f'{self.api}/tg/photo', files=files,
-                          data={'chat_id': '-445291602', 'title': f'{self.username}->{task_fun}'}, timeout=10)
+            self.send_photo(self.task_page, task_fun)
         except Exception as e:
             self.logger.error(e)
         finally:

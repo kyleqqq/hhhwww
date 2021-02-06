@@ -1,8 +1,4 @@
 import asyncio
-import re
-import time
-
-import requests
 
 from libs.base import BaseClient
 
@@ -13,11 +9,11 @@ class Euserv(BaseClient):
         super().__init__()
         self.url = 'https://support.euserv.com'
 
-    async def handler(self, username, password, **kwargs):
-        self.logger.info(f'{username} start login.')
-        await self.page.type('input[name="email"]', username, {'delay': 30})
+    async def handler(self, **kwargs):
+        self.logger.info(f'{self.username} start login.')
+        await self.page.type('input[name="email"]', self.username, {'delay': 30})
         await asyncio.sleep(0.5)
-        await self.page.type('input[name="password"]', password, {'delay': 30})
+        await self.page.type('input[name="password"]', self.password, {'delay': 30})
         await asyncio.sleep(0.5)
         await self.page.click('input[name="Submit"]')
         await asyncio.sleep(10)
@@ -27,12 +23,7 @@ class Euserv(BaseClient):
             await self.page.click('#kc2_order_customer_orders_tab_1')
         except Exception as e:
             self.logger.error(e)
-            file = f'/tmp/{int(time.time())}.png'
-            await self.page.screenshot(path=file, fullPage=True)
-            files = {'photo': open(file, 'rb')}
-            requests.post(f'https://api.telegram.org/bot1378568996:AAGeo9nxTV86Kc41e7EBEvLv8MOax6Ye-pU/sendPhoto',
-                          files=files,
-                          data={'chat_id': '-445291602'}, timeout=10)
+            self.send_photo(self.page, 'euserv')
 
         await asyncio.sleep(1)
 
