@@ -180,7 +180,11 @@ class BaseHuaWei(BaseClient):
             self.logger.warning(e)
 
     async def get_new_page(self):
-        await self.page.click('.modal.in .modal-footer .devui-btn')
+        try:
+            await self.page.click('.modal.in .modal-footer .devui-btn')
+        except Exception as e:
+            await self.send_photo(self.page, 'get_new_page')
+            raise e
         await asyncio.sleep(2)
         page_list = await self.browser.pages()
         await page_list[-1].setViewport({'width': 1200, 'height': 768})
