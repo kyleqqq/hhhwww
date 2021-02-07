@@ -29,15 +29,15 @@ name_map = {
 }
 
 init_name_map = {
-    '项目管理': [['week_new_project', 0]],
-    '代码托管': [['week_new_git', 0]],
-    '代码检查': [['week_new_code_check', 0]],
-    '编译构建': [['week_new_compile_build', 0]],
+    # '项目管理': [['week_new_project', 0]],
+    # '代码托管': [['week_new_git', 0]],
+    # '代码检查': [['week_new_code_check', 0]],
+    # '编译构建': [['week_new_compile_build', 0]],
     # '部署': [['week_new_deploy', 0]],
-    '流水线': [['week_new_pipeline', 0]],
+    # '流水线': [['week_new_pipeline', 0]],
     '使用API  Explorer完在线调试': 'api_explorer_task',
     '使用API Explorer在线调试': 'api_explorer_task',
-    '使用Devstar生成代码工程': 'dev_star_task',
+    # '使用Devstar生成代码工程': 'dev_star_task',
 }
 
 
@@ -67,14 +67,26 @@ class BaseHuaWei(BaseClient):
 
         id_list = ['experience-missions', 'middleware-missions']
         for _id in id_list:
-            await self.execute(_id, 'ul.devui-nav li.ng-star-inserted', '', True, name_map)
-        await self.regular()
+            try:
+                await self.execute(_id, 'ul.devui-nav li.ng-star-inserted', '', True, name_map)
+            except Exception as e:
+                self.logger.debug(e)
+
+        try:
+            await self.regular()
+        except Exception as e:
+            self.logger.debug(e)
+
+        try:
+            await self.init_account()
+        except Exception as e:
+            self.logger.debug(e)
 
     async def regular(self):
         await self.execute('regular-missions', '.daily-list li', 'feedback-', False, name_map)
 
     async def init_account(self):
-        await self.execute('experience-missions', 'ul.devui-nav li.ng-star-inserted', '', True, init_name_map)
+        # await self.execute('experience-missions', 'ul.devui-nav li.ng-star-inserted', '', True, init_name_map)
 
         await self.page.goto('https://devcloud.huaweicloud.com/bonususer/home/new', {'waitUntil': 'load'})
         await asyncio.sleep(2)
