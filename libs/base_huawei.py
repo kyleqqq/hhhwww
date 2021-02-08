@@ -116,12 +116,12 @@ class BaseHuaWei(BaseClient):
 
     async def is_done(self, node, task_fun):
         try:
-            is_done = await self.page.querySelector(f"{node} .complate-img  {self.create_done}")
+            is_done = await self.page.querySelector(f"{node} .complate-img")
             if is_done:
                 if self.create_done and 'week' in task_fun:
                     return False
                 return True
-            is_done = await self.page.querySelector(f"{node} img.completed  {self.create_done}")
+            is_done = await self.page.querySelector(f"{node} img.completed")
             if is_done:
                 if self.create_done and 'week' in task_fun:
                     return False
