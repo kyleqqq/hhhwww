@@ -310,6 +310,8 @@ class BaseHuaWei(BaseClient):
 
         node = 'ul.devui-dropdown-menu li:nth-child(1) a'
         await self.task_page.evaluate('''() =>{ document.querySelector('%s').click(); }''' % node)
+        await asyncio.sleep(2)
+        await self.task_page.click('.modal-footer .devui-btn-primary')
         await asyncio.sleep(8)
 
     async def check_code_task(self):
