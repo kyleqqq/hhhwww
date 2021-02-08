@@ -675,6 +675,11 @@ class BaseHuaWei(BaseClient):
                             delete_url = f"{domain}/projects/project/{item['project_id']}/config/info"
                             await page.goto(delete_url, {'waitUntil': 'load'})
                             await asyncio.sleep(2)
+                            btn_list = await page.querySelectorAll('.modal-footer .btn')
+                            if len(btn_list) == 2:
+                                await btn_list[1].click()
+                                await asyncio.sleep(1)
+
                             await page.click('.form-container .margin-right-s .devui-btn:nth-child(1)')
                             await asyncio.sleep(2)
                             await page.type('#deleteProject .projectInput', item['name'])
