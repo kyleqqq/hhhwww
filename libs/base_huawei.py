@@ -141,8 +141,12 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(2)
         self.logger.info(f'{task_name}')
 
-        self.task_page = await self.get_new_page()
-        await self.task_page.setUserAgent(self.ua)
+        try:
+            self.task_page = await self.get_new_page()
+            await self.task_page.setUserAgent(self.ua)
+        except Exception as e:
+            await self.send_photo(self.page, f'{task_fun} -> task_node')
+            raise e
 
         try:
             func = getattr(self, task_fun)
@@ -192,14 +196,10 @@ class BaseHuaWei(BaseClient):
             self.logger.warning(e)
 
     async def get_new_page(self):
-        try:
-            await self.page.click('.modal.in .modal-footer .devui-btn')
-        except Exception as e:
-            await self.send_photo(self.page, 'get_new_page')
-            raise e
+        await self.page.click('.modal.in .modal-footer .devui-btn')
         await asyncio.sleep(2)
         page_list = await self.browser.pages()
-        await page_list[-1].setViewport({'width': 1200, 'height': 768})
+        await page_list[-1].setViewport({'width': 1920, 'height': 768})
         return page_list[-1]
 
     async def close_page(self):
