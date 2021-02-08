@@ -461,7 +461,7 @@ class BaseHuaWei(BaseClient):
         try:
             btn_list = await self.task_page.querySelectorAll('.quick-create-phoenix .devui-btn')
             projects = await self.task_page.querySelectorAll('.projects-container .projects-board-in-home')
-            if projects and len(projects) and btn_list and len(btn_list):
+            if projects and len(projects) and btn_list and len(btn_list) and False:
                 await btn_list[0].click()
                 await asyncio.sleep(2)
             else:
@@ -630,7 +630,6 @@ class BaseHuaWei(BaseClient):
     async def check_project(self):
         page = await self.browser.newPage()
         domains = ['https://devcloud.huaweicloud.com', 'https://devcloud.cn-north-4.huaweicloud.com']
-        projects = []
         try:
             for domain in domains:
                 url = f'{domain}/projects/v2/project/list?sort=&search=&page_no=1&page_size=40&project_type=&archive=1'
@@ -642,17 +641,16 @@ class BaseHuaWei(BaseClient):
 
                 projects = data['result']['project_info_list']
                 self.home_url = domain
+
+                if len(projects) > 0:
+                    self.create_done = False
+                    break
                 await asyncio.sleep(1)
         except Exception as e:
             self.logger.error(e)
         finally:
             await page.close()
-            if len(projects) <= 0:
-                self.create_done = True
-            else:
-                self.create_done = False
-                for item in projects:
-                    self.logger.warning(f"project {item['name']}")
+            self.logger.info(self.create_done)
 
     async def delete_project(self):
         page = await self.browser.newPage()
