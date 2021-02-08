@@ -153,8 +153,9 @@ class BaseHuaWei(BaseClient):
             # await func()
             await asyncio.wait_for(func(), timeout=100.0)
             self.logger.warning(f'{task_name} -> DONE.')
-        except asyncio.TimeoutError:
-            await self.send_photo(self.task_page, task_fun)
+        except asyncio.TimeoutError as t:
+            self.logger.debug(t)
+            # await self.send_photo(self.task_page, task_fun)
         except Exception as e:
             self.logger.error(e)
         finally:
