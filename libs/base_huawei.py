@@ -354,7 +354,7 @@ class BaseHuaWei(BaseClient):
 
         await asyncio.sleep(10)
         page_list = await self.browser.pages()
-        await page_list[-1].setViewport({'width': 1200, 'height': 768})
+        await page_list[-1].setViewport({'width': 1920, 'height': 768})
         new_page = page_list[-1]
         await asyncio.sleep(2)
         await new_page.type('input.input-textarea-cn', self.username)
@@ -689,7 +689,7 @@ class BaseHuaWei(BaseClient):
         try:
             await page.goto('https://console.huaweicloud.com/apig/?region=cn-north-4#/apig/multiLogical/openapi/list',
                             {'waitUntil': 'load'})
-            await page.setViewport({'width': 1200, 'height': 768})
+            await page.setViewport({'width': 1920, 'height': 768})
             await asyncio.sleep(10)
             elements = await page.querySelectorAll('#openapi_list tr')
             if len(elements) < 2:
@@ -722,7 +722,7 @@ class BaseHuaWei(BaseClient):
         try:
             await page.goto('https://console.huaweicloud.com/apig/?region=cn-north-4#/apig/multiLogical/openapi/group',
                             {'waitUntil': 'load'})
-            await page.setViewport({'width': 1200, 'height': 768})
+            await page.setViewport({'width': 1920, 'height': 768})
             await asyncio.sleep(8)
             elements = await page.querySelectorAll('#openapi_group tbody tr')
             if len(elements) < 1:
