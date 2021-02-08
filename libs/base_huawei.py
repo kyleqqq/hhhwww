@@ -14,7 +14,7 @@ name_map = {
     'CloudIDE': [['open_ide_task', 0]],
     '代码检查': [['week_new_code_check', 0], ['check_code_task', 1]],
     '编译构建': [['week_new_compile_build', 0], ['compile_build_task', 1]],
-    # '部署': [['week_new_deploy', 0], ['deploy_task', 1]],
+    '部署': [['deploy_task', 1]],
     '发布': [['upload_task', 0]],
     '流水线': [['week_new_pipeline', 0], ['pipeline_task', 1]],
     '接口测试': [['week_new_api_test_task', 0], ['api_test_task', 1]],
@@ -377,7 +377,7 @@ class BaseHuaWei(BaseClient):
         await asyncio.sleep(3)
 
     async def deploy_task(self):
-        await self.task_page.waitForSelector('#rf-task-execute', {'visible': True})
+        await asyncio.sleep(3)
         await self.task_page.click('#rf-task-execute')
         await asyncio.sleep(3)
 
@@ -462,22 +462,25 @@ class BaseHuaWei(BaseClient):
 
         try:
             btn_list = await self.task_page.querySelectorAll('.quick-create-phoenix .devui-btn')
-            projects = await self.task_page.querySelectorAll('.projects-container .projects-board-in-home')
-            if projects and len(projects) and btn_list and len(btn_list) and False:
-                await btn_list[0].click()
-                await asyncio.sleep(2)
-            else:
-                if btn_list and len(btn_list):
-                    await btn_list[1].click()
+            await btn_list[0].click()
+            await asyncio.sleep(2)
 
-                    await self.task_page.click('#home-page-add-project')
-                    await asyncio.sleep(1)
-                    await self.task_page.click('#projet_scrum')
-                    await asyncio.sleep(1)
-                    await self.task_page.type('#projectCreateFormProjectName', self.username)
-                    await asyncio.sleep(0.5)
-                    await self.task_page.click('#createProjectBtn')
-                    await asyncio.sleep(3)
+            # projects = await self.task_page.querySelectorAll('.projects-container .projects-board-in-home')
+            # if projects and len(projects) and btn_list and len(btn_list) and False:
+            #     await btn_list[0].click()
+            #     await asyncio.sleep(2)
+            # else:
+            #     if btn_list and len(btn_list):
+            #         await btn_list[1].click()
+            #
+            #         await self.task_page.click('#home-page-add-project')
+            #         await asyncio.sleep(1)
+            #         await self.task_page.click('#projet_scrum')
+            #         await asyncio.sleep(1)
+            #         await self.task_page.type('#projectCreateFormProjectName', self.username)
+            #         await asyncio.sleep(0.5)
+            #         await self.task_page.click('#createProjectBtn')
+            #         await asyncio.sleep(3)
         except Exception as e:
             self.logger.warning(e)
             await self.close_page()
