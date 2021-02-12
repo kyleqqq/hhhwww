@@ -19,16 +19,15 @@ class Euserv(BaseClient):
         await asyncio.sleep(10)
 
         self.logger.info(self.page.url)
-        try:
-            await self.page.click('#kc2_order_customer_orders_tab_1')
-        except Exception as e:
-            self.logger.error(e)
-            await self.send_photo(self.page, 'euserv')
+        await self.page.click('#kc2_order_customer_orders_tab_1')
 
         await asyncio.sleep(1)
 
         s = await self.page.Jeval('.kc2_order_extend_contract_term_container', 'el => el.textContent')
         self.logger.info(s)
+        if type(s) == str and s.find('Contract extension possible from') != -1:
+            return
+
         try:
             await self.page.click('.kc2_order_extend_contract_term_container')
             await asyncio.sleep(15)
