@@ -34,7 +34,7 @@ class Euserv(BaseClient):
             await asyncio.sleep(5)
             await self.page.click('.kc2_customer_contract_details_change_plan_item_action_button')
             await asyncio.sleep(5)
-            await self.page.type('input[name="password"]', password, {'delay': 30})
+            await self.page.type('input[name="password"]', self.password, {'delay': 30})
             await asyncio.sleep(1)
             await self.page.click('#kc2_security_password_dialog_action_confirm')
             await asyncio.sleep(5)
