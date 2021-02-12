@@ -42,4 +42,4 @@ class Euserv(BaseClient):
             await asyncio.sleep(5)
         except Exception as e:
             self.logger.error(e)
-            self.send_photo(self.page, 'euserv')
+            await self.send_photo(self.page, 'euserv')
