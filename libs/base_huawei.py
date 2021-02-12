@@ -47,7 +47,7 @@ class BaseHuaWei(BaseClient):
         super().__init__()
         self.url = 'https://devcloud.huaweicloud.com/bonususer/home/makebonus'
         self.task_page = None
-        self.create_done = False
+        self.create_done = True
         self.home_url = None
 
     async def after_handler(self, **kwargs):
