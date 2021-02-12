@@ -31,7 +31,7 @@ class Euserv(BaseClient):
         self.logger.info(s)
         try:
             await self.page.click('.kc2_order_extend_contract_term_container')
-            await asyncio.sleep(5)
+            await asyncio.sleep(15)
             await self.page.click('.kc2_customer_contract_details_change_plan_item_action_button')
             await asyncio.sleep(5)
             await self.page.type('input[name="password"]', self.password, {'delay': 30})
