@@ -26,6 +26,7 @@ class TextNow(BaseClient):
                 error_info = await (await item.getProperty('textContent')).jsonValue()
                 if error_info:
                     self.logger.error(f'{self.username}: {error_info}')
+            await self.send_photo(self.page, 'textnow')
             return
 
         self.logger.info('login success.')
