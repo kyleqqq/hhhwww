@@ -17,7 +17,7 @@ class TextNow(BaseClient):
         await self.page.type('#txt-password', self.password, {'delay': 20})
         await asyncio.sleep(1)
         await self.page.click('#btn-login')
-        await asyncio.sleep(5)
+        await asyncio.sleep(20)
 
         page_url = self.page.url
         if page_url != 'https://www.textnow.com/messaging':
