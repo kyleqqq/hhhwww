@@ -607,6 +607,54 @@ class BaseHuaWei(BaseClient):
 
         await asyncio.sleep(15)
 
+    async def add_address(self):
+        page = await self.browser.newPage()
+        await page.setUserAgent(self.ua)
+        await page.setViewport({'width': 1920, 'height': 768})
+        await page.goto('https://devcloud.huaweicloud.com/bonususer/home/managebonus', {'waitUntil': 'load'})
+
+        async def area(_page):
+            _items = await _page.querySelectorAll('#add-receive-area .devui-dropup')
+            index = [13, 1, 7]
+            for i, item in enumerate(_items):
+                await item.click()
+                await asyncio.sleep(1)
+                await page.click(f'.cdk-overlay-container .devui-dropdown-item:nth-child({index[i]})')
+                await asyncio.sleep(1)
+
+        try:
+            await asyncio.sleep(2)
+            await page.click('li#Add')
+            await asyncio.sleep(5)
+
+            items = await page.querySelectorAll('div.devui-table-view tbody tr')
+            if items and len(items):
+                await page.click('#edit-0')
+                await asyncio.sleep(1)
+            else:
+                await page.click('#add-adds')
+                await asyncio.sleep(1)
+                await page.type('#add-receive-name', '邹华')
+                await page.type('#add-receive-phone', '18664845253')
+                await page.click('#ifDefault .devui-toggle')
+
+            await page.evaluate(
+                '''() =>{ document.getElementById('add-receive-area-info').value = ''; }''')
+            await page.type('#add-receive-area-info', '雄楚大道28号MSC江宏中心3楼')
+            await area(page)
+            await asyncio.sleep(1)
+
+            await page.click('#add-info .devui-checkbox')
+
+            await asyncio.sleep(1)
+            await page.click('#adds-dialog .devui-btn-stress')
+            await asyncio.sleep(2)
+        except Exception as e:
+            self.logger.error(e)
+            self.logger.error(page.url)
+        finally:
+            await page.close()
+
     async def delete_function(self):
         page = await self.browser.newPage()
         url_list = ['https://console.huaweicloud.com/functiongraph/?region=cn-north-4#/serverless/functionList',
