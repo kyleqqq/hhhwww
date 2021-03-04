@@ -640,7 +640,7 @@ class BaseHuaWei(BaseClient):
 
             await page.evaluate(
                 '''() =>{ document.getElementById('add-receive-area-info').value = ''; }''')
-            await page.type('#add-receive-area-info', '雄楚大道28号MSC江宏中心3楼')
+            await page.type('#add-receive-area-info', '雄楚大道28号(校友创新中心|MSC江宏中心)3楼')
             await area(page)
             await asyncio.sleep(1)
 
