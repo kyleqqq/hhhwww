@@ -5,7 +5,6 @@ import hmac
 import logging
 import os
 import time
-import tkinter
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 
@@ -70,15 +69,16 @@ class BaseClient:
         except Exception as e:
             self.logger.warning(e)
 
-        tk = tkinter.Tk()
-        width = tk.winfo_screenwidth()
-        height = tk.winfo_screenheight()
-        tk.quit()
+        # tk = tkinter.Tk()
+        # width = tk.winfo_screenwidth()
+        # height = tk.winfo_screenheight()
+        # tk.quit()
+        # print(width, height)
         # await self.page.setRequestInterception(True)
         # self.page.on('request', self.intercept_request)
 
         await self.page.setUserAgent(self.ua)
-        await self.page.setViewport(viewport={'width': width, 'height': height})
+        # await self.page.setViewport(viewport={'width': width, 'height': height})
 
         js_text = """
         () =>{
