@@ -53,13 +53,13 @@ class BaseClient:
                 result = await self.handler(**kwargs)
                 await self.after_handler(result=result, username=username)
             except Exception as e:
-                self.logger.warning(e)
+                self.logger.exception(e)
             finally:
                 await self.close()
                 await asyncio.sleep(3)
 
     async def init(self, **kwargs):
-        del launcher.DEFAULT_ARGS['--enable-automation']
+        launcher.DEFAULT_ARGS.remove('--enable-automation')
 
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
                                     args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
