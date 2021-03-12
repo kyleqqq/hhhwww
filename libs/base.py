@@ -59,7 +59,7 @@ class BaseClient:
                 await asyncio.sleep(3)
 
     async def init(self, **kwargs):
-        launcher.DEFAULT_ARGS.remove("--enable-automation")
+        del launcher.DEFAULT_ARGS['--enable-automation']
 
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
                                     args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
