@@ -19,7 +19,7 @@ class HuaWei(BaseHuaWei):
             await self.login(self.username, self.password)
 
         url = self.page.url
-        if '' in url:
+        if 'login' in url:
             self.logger.error(f'{self.username} login fail.')
             return None
 
