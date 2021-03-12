@@ -60,6 +60,7 @@ class BaseClient:
 
     async def init(self, **kwargs):
         # launcher.DEFAULT_ARGS.remove('--enable-automation')
+        print(launcher.DEFAULT_ARGS)
 
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
                                     args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
@@ -77,8 +78,10 @@ class BaseClient:
         # await self.page.setRequestInterception(True)
         # self.page.on('request', self.intercept_request)
 
+        width = 1440
+        height = 900
         await self.page.setUserAgent(self.ua)
-        # await self.page.setViewport(viewport={'width': width, 'height': height})
+        await self.page.setViewport(viewport={'width': width, 'height': height})
 
         js_text = """
         () =>{
