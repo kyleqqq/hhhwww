@@ -5,11 +5,12 @@ import hmac
 import logging
 import os
 import time
+import tkinter
 from datetime import datetime, timezone, timedelta
 from typing import Optional
 
 import requests
-from pyppeteer import launch
+from pyppeteer import launch, launcher
 from pyppeteer.browser import Browser
 from pyppeteer.page import Page
 
@@ -24,7 +25,7 @@ class BaseClient:
         self.password = None
         self.parent_user = None
         self.git = None
-        self.ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36'
+        self.ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36'
         self.api = 'https://api-atcaoyufei.cloud.okteto.net'
 
     async def before_run(self):
@@ -59,6 +60,8 @@ class BaseClient:
                 await asyncio.sleep(3)
 
     async def init(self, **kwargs):
+        launcher.DEFAULT_ARGS.remove("--enable-automation")
+
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
                                     args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
         self.page = await self.browser.newPage()
@@ -67,11 +70,25 @@ class BaseClient:
         except Exception as e:
             self.logger.warning(e)
 
+        tk = tkinter.Tk()
+        width = tk.winfo_screenwidth()
+        height = tk.winfo_screenheight()
+        tk.quit()
         # await self.page.setRequestInterception(True)
         # self.page.on('request', self.intercept_request)
 
         await self.page.setUserAgent(self.ua)
-        await self.page.setViewport({'width': 1920, 'height': 768})
+        await self.page.setViewport(viewport={'width': width, 'height': height})
+
+        js_text = """
+        () =>{
+            Object.defineProperties(navigator,{ webdriver:{ get: () => false } });
+            window.navigator.chrome = { runtime: {},  };
+            Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
+            Object.defineProperty(navigator, 'plugins', { get: () => [1, 2, 3, 4, 5,6], });
+         }
+            """
+        await self.page.evaluateOnNewDocument(js_text)
 
         await self.page.goto(self.url, {'waitUntil': 'load'})
 
