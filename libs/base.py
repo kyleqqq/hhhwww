@@ -26,6 +26,8 @@ class BaseClient:
         self.git = None
         self.ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36'
         self.api = 'https://api-atcaoyufei.cloud.okteto.net'
+        self.width = 1440
+        self.height = 900
 
     async def before_run(self):
         pass
@@ -60,8 +62,6 @@ class BaseClient:
 
     async def init(self, **kwargs):
         # launcher.DEFAULT_ARGS.remove('--enable-automation')
-        print(launcher.DEFAULT_ARGS)
-
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
                                     args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
         self.page = await self.browser.newPage()
@@ -70,18 +70,8 @@ class BaseClient:
         except Exception as e:
             self.logger.warning(e)
 
-        # tk = tkinter.Tk()
-        # width = tk.winfo_screenwidth()
-        # height = tk.winfo_screenheight()
-        # tk.quit()
-        # print(width, height)
-        # await self.page.setRequestInterception(True)
-        # self.page.on('request', self.intercept_request)
-
-        width = 1440
-        height = 900
         await self.page.setUserAgent(self.ua)
-        await self.page.setViewport(viewport={'width': width, 'height': height})
+        await self.page.setViewport(viewport={'width': self.width, 'height': self.height})
 
         js_text = """
         () =>{

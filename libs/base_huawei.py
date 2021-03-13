@@ -200,7 +200,7 @@ class BaseHuaWei(BaseClient):
         await self.page.click('.modal.in .modal-footer .devui-btn')
         await asyncio.sleep(2)
         page_list = await self.browser.pages()
-        await page_list[-1].setViewport({'width': 1920, 'height': 768})
+        await page_list[-1].setViewport({'width': self.width, 'height': self.height})
         return page_list[-1]
 
     async def close_page(self):
@@ -357,7 +357,7 @@ class BaseHuaWei(BaseClient):
 
         await asyncio.sleep(10)
         page_list = await self.browser.pages()
-        await page_list[-1].setViewport({'width': 1920, 'height': 768})
+        await page_list[-1].setViewport({'width': self.width, 'height': self.height})
         new_page = page_list[-1]
         await asyncio.sleep(2)
         await new_page.type('input.input-textarea-cn', self.username)
@@ -610,7 +610,7 @@ class BaseHuaWei(BaseClient):
     async def add_address(self):
         page = await self.browser.newPage()
         await page.setUserAgent(self.ua)
-        await page.setViewport({'width': 1920, 'height': 768})
+        await page.setViewport({'width': self.width, 'height': self.height})
         await page.goto('https://devcloud.huaweicloud.com/bonususer/home/managebonus', {'waitUntil': 'load'})
 
         async def area(_page):
@@ -661,7 +661,7 @@ class BaseHuaWei(BaseClient):
                     'https://console.huaweicloud.com/functiongraph/?region=cn-south-1#/serverless/functionList']
         for _url in url_list:
             await page.goto(_url, {'waitUntil': 'load'})
-            await page.setViewport({'width': 1920, 'height': 768})
+            await page.setViewport({'width': self.width, 'height': self.height})
             await asyncio.sleep(5)
             elements = await page.querySelectorAll('td[style="white-space: normal;"]')
             for element in elements:
@@ -748,7 +748,7 @@ class BaseHuaWei(BaseClient):
         try:
             await page.goto('https://console.huaweicloud.com/apig/?region=cn-north-4#/apig/multiLogical/openapi/list',
                             {'waitUntil': 'load'})
-            await page.setViewport({'width': 1920, 'height': 768})
+            await page.setViewport({'width': self.width, 'height': self.height})
             await asyncio.sleep(10)
             elements = await page.querySelectorAll('#openapi_list tr')
             if len(elements) < 2:
@@ -781,7 +781,7 @@ class BaseHuaWei(BaseClient):
         try:
             await page.goto('https://console.huaweicloud.com/apig/?region=cn-north-4#/apig/multiLogical/openapi/group',
                             {'waitUntil': 'load'})
-            await page.setViewport({'width': 1920, 'height': 768})
+            await page.setViewport({'width': self.width, 'height': self.height})
             await asyncio.sleep(8)
             elements = await page.querySelectorAll('#openapi_group tbody tr')
             if len(elements) < 1:
