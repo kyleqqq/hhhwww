@@ -201,11 +201,15 @@ class BaseHuaWei(BaseClient):
             self.logger.warning(e)
 
     async def get_new_page(self):
-        await self.page.click('.modal.in .modal-footer .devui-btn')
         await asyncio.sleep(2)
-        page_list = await self.browser.pages()
-        await page_list[-1].setViewport({'width': self.width, 'height': self.height})
-        return page_list[-1]
+        _id = await self.page.querySelectorAll('#taskintr-dialog')
+        if _id and len(_id):
+            await self.page.click('#taskintr-dialog')
+            await asyncio.sleep(5)
+            page_list = await self.browser.pages()
+            await page_list[-1].setViewport({'width': self.width, 'height': self.height})
+            return page_list[-1]
+        raise Exception('not fount taskintr-dialog')
 
     async def close_page(self):
         page_list = await self.browser.pages()
