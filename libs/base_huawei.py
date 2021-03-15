@@ -49,6 +49,7 @@ class BaseHuaWei(BaseClient):
         self.task_page = None
         self.create_done = True
         self.home_url = None
+        self.cancel = False
 
     async def after_handler(self, **kwargs):
         credit = kwargs.get('result')
@@ -95,6 +96,9 @@ class BaseHuaWei(BaseClient):
     async def execute(self, element_id, element_list_name, task_node, is_tab=True, task_map=None):
         elements = await self.page.querySelectorAll(f'#{element_id} {element_list_name}')
         for i, element in enumerate(elements):
+            if self.cancel:
+                break
+
             if is_tab:
                 name = str(await element.Jeval('a', 'el => el.textContent')).strip()
                 task_list = task_map.get(name)
@@ -145,7 +149,7 @@ class BaseHuaWei(BaseClient):
             self.task_page = await self.get_new_page()
             await self.task_page.setUserAgent(self.ua)
         except Exception as e:
-            await self.send_photo(self.page, f'{task_fun} -> task_node')
+            self.logger.error(e)
             raise e
 
         try:
@@ -483,10 +487,11 @@ class BaseHuaWei(BaseClient):
             #         await self.task_page.click('#createProjectBtn')
             #         await asyncio.sleep(3)
         except Exception as e:
-            self.logger.warning(e)
+            await self.send_photo(self.task_page, 'week_new_project')
+            self.logger.exception(e)
             await self.close_page()
             await self.close()
-            exit(1)
+            self.cancel = True
 
     async def week_new_git(self):
         await asyncio.sleep(5)
