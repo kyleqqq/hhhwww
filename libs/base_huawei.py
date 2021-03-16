@@ -470,27 +470,9 @@ class BaseHuaWei(BaseClient):
             btn_list = await self.task_page.querySelectorAll('.quick-create-phoenix .devui-btn')
             await btn_list[0].click()
             await asyncio.sleep(2)
-
-            # projects = await self.task_page.querySelectorAll('.projects-container .projects-board-in-home')
-            # if projects and len(projects) and btn_list and len(btn_list) and False:
-            #     await btn_list[0].click()
-            #     await asyncio.sleep(2)
-            # else:
-            #     if btn_list and len(btn_list):
-            #         await btn_list[1].click()
-            #
-            #         await self.task_page.click('#home-page-add-project')
-            #         await asyncio.sleep(1)
-            #         await self.task_page.click('#projet_scrum')
-            #         await asyncio.sleep(1)
-            #         await self.task_page.type('#projectCreateFormProjectName', self.username)
-            #         await asyncio.sleep(0.5)
-            #         await self.task_page.click('#createProjectBtn')
-            #         await asyncio.sleep(3)
         except Exception as e:
             await self.send_photo(self.task_page, 'week_new_project')
             self.logger.exception(e)
-            await self.close_page()
             await self.close()
             self.cancel = True
 

@@ -11,6 +11,8 @@ class HuaWei(BaseHuaWei):
         super().__init__()
 
     async def handler(self, **kwargs):
+        self.cancel = False
+
         self.logger.info(f'{self.username} start login.')
         await self.page.waitForSelector('#personalAccountInputId .tiny-input-text', {'visible': True})
         if kwargs.get('iam'):
@@ -25,7 +27,7 @@ class HuaWei(BaseHuaWei):
 
         utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
         h = int(utc_dt.astimezone(timezone(timedelta(hours=8))).strftime('%H'))
-        self.logger.info(f'not hours: {h}')
+        self.logger.info(f'now hours: {h}')
 
         if h <= 12:
             await self.check_project()
