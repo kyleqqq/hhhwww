@@ -25,6 +25,9 @@ class HuaWei(BaseHuaWei):
             self.logger.error(f'{self.username} login fail.')
             return None
 
+        if 'bonususer/home/makebonus' not in url:
+            await self.page.goto('https://devcloud.huaweicloud.com/bonususer/home/makebonus', {'waitUntil': 'load'})
+
         await self.sign_task()
 
         utc_dt = datetime.utcnow().replace(tzinfo=timezone.utc)
