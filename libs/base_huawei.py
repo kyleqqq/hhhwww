@@ -664,7 +664,7 @@ class BaseHuaWei(BaseClient):
                         await page.click('.ti3-modal-footer .ti3-btn-danger')
                         await asyncio.sleep(1)
                     except Exception as e:
-                        self.logger.error(e)
+                        self.logger.exception(e)
 
         await page.close()
         await asyncio.sleep(1)
