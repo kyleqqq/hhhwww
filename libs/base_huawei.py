@@ -83,12 +83,6 @@ class BaseHuaWei(BaseClient):
         except Exception as e:
             self.logger.debug(e)
 
-    async def init(self, **kwargs):
-        if kwargs.get('iam'):
-            self.parent_user = os.environ.get('PARENT_USER', kwargs.get('parent'))
-            self.url = f'https://auth.huaweicloud.com/authui/login?id={self.parent_user}'
-        await super(BaseHuaWei, self).init(**kwargs)
-
     async def regular(self):
         await self.execute('regular-missions', '.daily-list li', 'feedback-', False, name_map)
 

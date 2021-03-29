@@ -14,7 +14,6 @@ class HuaWei(BaseHuaWei):
         self.cancel = False
 
         self.logger.info(f'{self.username} start login.')
-        await self.page.waitForSelector('.hwid-input.hwid-cover-input.userAccount')
         if kwargs.get('iam'):
             await self.iam_login(self.username, self.password, kwargs.get('parent'))
         else:
@@ -24,9 +23,6 @@ class HuaWei(BaseHuaWei):
         if 'login' in url:
             self.logger.error(f'{self.username} login fail.')
             return None
-
-        if 'bonususer/home/makebonus' not in url:
-            await self.page.goto('https://devcloud.huaweicloud.com/bonususer/home/makebonus', {'waitUntil': 'load'})
 
         await self.sign_task()
 
@@ -51,10 +47,11 @@ class HuaWei(BaseHuaWei):
         return await self.get_credit()
 
     async def login(self, username, password):
-        await asyncio.sleep(5)
-        await self.page.type('.hwid-input.hwid-cover-input.userAccount', username)
+        await self.page.waitForSelector('.hwid-input.hwid-cover-input.userAccount')
+        await asyncio.sleep(2)
+        await self.page.type('.hwid-input.hwid-cover-input.userAccount', username, {'delay': 10})
         await asyncio.sleep(0.5)
-        await self.page.type('.hwid-input-pwd', password)
+        await self.page.type('.hwid-input-pwd', password, {'delay': 10})
         await self.page.click('.normalBtn')
         await asyncio.sleep(5)
         items = await self.page.querySelectorAll('.mutilAccountList .hwid-list-radio')
@@ -65,9 +62,15 @@ class HuaWei(BaseHuaWei):
             await asyncio.sleep(5)
 
     async def iam_login(self, username, password, parent):
-        await self.page.type('#IAMUsernameInputId', username)
+        await self.page.waitForSelector('#IAMLinkDiv')
+        await asyncio.sleep(5)
+        await self.page.click('#IAMLinkDiv')
+        await asyncio.sleep(1)
+        await self.page.type('#IAMAccountInputId', parent, {'delay': 10})
         await asyncio.sleep(0.5)
-        await self.page.type('#IAMPasswordInputId', password)
+        await self.page.type('#IAMUsernameInputId', username, {'delay': 10})
+        await asyncio.sleep(0.5)
+        await self.page.type('#IAMPasswordInputId', password, {'delay': 10})
         await self.page.click('#loginBtn')
         await asyncio.sleep(5)
 

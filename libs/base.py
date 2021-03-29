@@ -104,7 +104,7 @@ class BaseClient:
             await self.browser.close()
         except Exception as e:
             self.logger.debug(e)
-            os.system("kill -9 `ps -ef|grep chrome|grep -v grep|awk '{print $2}'`")
+            # os.system("kill -9 `ps -ef|grep chrome|grep -v grep|awk '{print $2}'`")
             self.browser = None
 
     @staticmethod
