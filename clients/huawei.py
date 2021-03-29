@@ -62,17 +62,22 @@ class HuaWei(BaseHuaWei):
             await asyncio.sleep(5)
 
     async def iam_login(self, username, password, parent):
-        await self.page.waitForSelector('#IAMLinkDiv')
-        await asyncio.sleep(5)
-        await self.page.click('#IAMLinkDiv')
-        await asyncio.sleep(1)
-        await self.page.type('#IAMAccountInputId', parent, {'delay': 10})
-        await asyncio.sleep(0.5)
-        await self.page.type('#IAMUsernameInputId', username, {'delay': 10})
-        await asyncio.sleep(0.5)
-        await self.page.type('#IAMPasswordInputId', password, {'delay': 10})
-        await self.page.click('#loginBtn')
-        await asyncio.sleep(5)
+        self.parent_user = os.environ.get('PARENT_USER', parent)
+
+        try:
+            await self.page.waitForSelector('#IAMLinkDiv')
+            await asyncio.sleep(5)
+            await self.page.click('#IAMLinkDiv')
+            await asyncio.sleep(1)
+            await self.page.type('#IAMAccountInputId', self.parent_user, {'delay': 10})
+            await asyncio.sleep(0.5)
+            await self.page.type('#IAMUsernameInputId', username, {'delay': 10})
+            await asyncio.sleep(0.5)
+            await self.page.type('#IAMPasswordInputId', password, {'delay': 10})
+            await self.page.click('#loginBtn')
+            await asyncio.sleep(5)
+        except Exception as e:
+            self.logger.exception(e)
 
     async def get_cookies(self):
         cookies = await self.page.cookies()
