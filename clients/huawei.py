@@ -33,7 +33,6 @@ class HuaWei(BaseHuaWei):
         if h <= 12:
             await self.check_project()
             await self.start()
-            await self.add_address()
 
         if h > 12:
             await self.delete_project()
