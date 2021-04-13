@@ -30,9 +30,9 @@ class HuaWei(BaseHuaWei):
         h = int(utc_dt.astimezone(timezone(timedelta(hours=8))).strftime('%H'))
         self.logger.info(f'now hours: {h}')
 
-        if h <= 18:
-            await self.check_project()
-            await self.start()
+        # if h <= 16:
+        #     await self.check_project()
+        #     await self.start()
 
         # if h > 12:
         #     await self.delete_project()
@@ -42,7 +42,14 @@ class HuaWei(BaseHuaWei):
 
         # await self.init_account()
 
-        await self.print_credit(self.username)
+        d = int(utc_dt.astimezone(timezone(timedelta(hours=8))).strftime('%d'))
+
+        if d <= 20:
+            # 3月23日-4月20日
+            # await self.hdc_floor()
+            # 3月23日-4月20日
+            await self.hdc_read()
+
         return await self.get_credit()
 
     async def login(self, username, password):

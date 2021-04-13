@@ -184,7 +184,7 @@ class BaseHuaWei(BaseClient):
         new_credit = await self.get_credit()
         self.logger.info(f'码豆: {new_credit}')
         message = f'{user_name} -> {new_credit}'
-        self.send_message(message, '华为云码豆')
+        self.dingding_bot(message, '华为云码豆')
 
     async def sign_task(self):
         try:
@@ -810,3 +810,47 @@ class BaseHuaWei(BaseClient):
         # await asyncio.sleep(1)
         # await self.page.click('#fastpostsubmit')
         # await asyncio.sleep(5)
+
+    # HDC flag 读书签到 3月23日-4月20日，累计29天
+    async def hdc_read(self):
+        await self.page.goto(os.environ.get('FLAGURL'), {'waitUntil': 'load'})
+        await self.page.waitForSelector('#fastpostsubmit')
+        await asyncio.sleep(1)
+        await self.page.click('#tabeditor-2')
+        content = random.choice(
+                [
+                    '每天坚持打卡', 
+                    '实现flag，打卡mark', 
+                    '坚持继续打卡~~', 
+                    '打卡++1', 
+                    'flag达成', 
+                    '记录一下', 
+                    'mark今天的打卡', 
+                    '打卡，坚持不停',
+                    '继续打卡'
+                ])
+        await self.page.type('.textarea', content, {'delay': 30})
+        await asyncio.sleep(1)
+        await self.page.click('#fastpostsubmit')
+        await asyncio.sleep(30)
+    
+    # 【我要去HDC2021①】口令盖楼，周边、码豆、门票每周送！ 活动时间：3月23日-4月20日
+    async def hdc_floor(self):
+        await self.page.goto('https://bbs.huaweicloud.com/forum/thread-115425-1-1.html', {'waitUntil': 'load'})
+        await self.page.waitForSelector('#fastpostsubmit')
+        await asyncio.sleep(1)
+        await self.page.click('#tabeditor-2')
+        content = random.choice(
+                [
+                    '华为云IoT城市物联服务台助力鹰潭城市物联网产业竞争力提升，并着力打造城市名片。目前鹰潭网络建设、公共服务平台建设、示范应用建设领跑全国，已有30+类物联网应用，15万+设备接入。', 
+                    '华为云IoT携手兆邦基集团，基于园区物联网服务在深圳前海打造高效、智能、绿色、安全的科技大厦，实现楼宇设备全连接、数据全融合、场景全联动、调度全智能，有效节约能耗15%。', 
+                    '基于华为云IoT全栈云服务，武汉拓宝科技股份有限公司以云计算为核心实现海量数据的汇总处理，提升管理效率，随时随地接受火警，集中管理设备，大大降低了消防实施成本，设备无线联网，电池供电，不需布线，无线覆盖广，平台云端部署。', 
+                    '深圳市泛海三江电子股份有限公司基于华为云IoT全栈云服务，实现了消防从烟感探测器这个“哨兵”到消防中心的“指挥部”全程打通，从而突破消防产品单一性销售弊端，开拓全面的消防服务渠道。', 
+                    '基于华为云IoT提供的路网数字化服务，都汶高速采用摄像头、雷达等多维度数据采集，在不受雨雾遮挡影响、不新增路灯的情况下，实现全天候实时感知，并能对车辆位置、速度等进行准确检测，实现多种车路协同场景的安全预警。', 
+                    '基于华为云IoT设备接入管理服务，SKG实现了手机APP-按 摩仪-云端的智能交互。用户可通过APP选择适合的按 摩功能，还可从云端模式库中下载不同手法的软件包，一键下载、自动安装。', 
+                    '华为云&中创瀚维携手打造了以自动割胶系统为核心的智慧胶园，每棵胶树上配置自动割胶机，通过云端统一管控，并将割胶机的精准机械仿形与云端实时感知控制相结合，实现对不同形状胶树的标准0.01mm厚度的精准割胶。'
+                ])
+        await self.page.type('.textarea', content, {'delay': 30})
+        await asyncio.sleep(1)
+        await self.page.click('#fastpostsubmit')
+        await asyncio.sleep(30)

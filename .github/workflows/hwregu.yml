@@ -1,9 +1,9 @@
-name: ZHYW
+name: hwregu
 
 on:
     workflow_dispatch:
     schedule:
-        - cron: "*/30 0-14 * * *"
+        - cron: "10 0-15 * * *"
     watch:
         types: [started]
 

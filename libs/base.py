@@ -14,6 +14,9 @@ from pyppeteer.browser import Browser
 from pyppeteer.network_manager import Request
 from pyppeteer.page import Page
 
+import urllib.parse
+import json
+
 
 class BaseClient:
     def __init__(self):
@@ -120,6 +123,29 @@ class BaseClient:
     @staticmethod
     async def accept_dialog(dialog):
         await dialog.accept()
+
+    @staticmethod
+    def dingding_bot(content, title='HW'):
+        timestamp = str(round(time.time() * 1000))  # 时间戳
+        access_token = os.environ.get('DING_TOKEN')
+        secret = os.environ.get('DING_SECRET')
+        secret_enc = secret.encode('utf-8')
+        string_to_sign = '{}\n{}'.format(timestamp, secret)
+        string_to_sign_enc = string_to_sign.encode('utf-8')
+        hmac_code = hmac.new(secret_enc, string_to_sign_enc, digestmod=hashlib.sha256).digest()
+        sign = urllib.parse.quote_plus(base64.b64encode(hmac_code))  # 签名
+        print('开始使用 钉钉机器人 推送消息...', end='')
+        url = f'https://oapi.dingtalk.com/robot/send?access_token={access_token}&timestamp={timestamp}&sign={sign}'
+        headers = {'Content-Type': 'application/json;charset=utf-8'}
+        data = {
+            'msgtype': 'text',
+            'text': {'content': f'{title}\n\n{content}'}
+        }
+        response = requests.post(url=url, data=json.dumps(data), headers=headers, timeout=15).json()
+        if not response['errcode']:
+            print('推送成功！')
+        else:
+            print('推送失败！')
 
     @staticmethod
     def send_message(text, title='Notice'):
