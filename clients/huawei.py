@@ -46,18 +46,19 @@ class HuaWei(BaseHuaWei):
 
     async def login(self, username, password):
         await self.page.waitForSelector('input[name="userAccount"]')
-        await asyncio.sleep(2)
+        await asyncio.sleep(1)
         await self.page.type('input[name="userAccount"]', username, {'delay': 10})
         await asyncio.sleep(0.5)
         await self.page.type('.hwid-input-pwd', password, {'delay': 10})
+        await asyncio.sleep(2)
+        items = await self.page.querySelectorAll('.hwid-list-row-active')
+
+        if items and len(items):
+            await items[0].click()
+            await asyncio.sleep(1)
+
         await self.page.click('.normalBtn')
         await asyncio.sleep(5)
-        items = await self.page.querySelectorAll('.mutilAccountList .hwid-list-radio')
-        if len(items):
-            await items[1].click()
-            await asyncio.sleep(0.5)
-            await self.page.click('.hwid-mutilAccountMenu .normalBtn')
-            await asyncio.sleep(5)
 
     async def iam_login(self, username, password, parent):
         self.parent_user = os.environ.get('PARENT_USER', parent)
