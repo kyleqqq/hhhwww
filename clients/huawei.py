@@ -30,24 +30,24 @@ class HuaWei(BaseHuaWei):
         h = int(utc_dt.astimezone(timezone(timedelta(hours=8))).strftime('%H'))
         self.logger.info(f'now hours: {h}')
 
-        if h <= 12:
+        if h <= 16:
             await self.check_project()
             await self.start()
 
-        if h > 12:
-            await self.delete_project()
-            await self.delete_function()
-            await self.delete_api()
-            await self.delete_api_group()
+        # if h > 12:
+        #     await self.delete_project()
+        #     await self.delete_function()
+        #     await self.delete_api()
+        #     await self.delete_api_group()
 
         # await self.init_account()
 
         return await self.get_credit()
 
     async def login(self, username, password):
-        await self.page.waitForSelector('.hwid-input.hwid-cover-input.userAccount')
+        await self.page.waitForSelector('input[name="userAccount"]')
         await asyncio.sleep(2)
-        await self.page.type('.hwid-input.hwid-cover-input.userAccount', username, {'delay': 10})
+        await self.page.type('input[name="userAccount"]', username, {'delay': 10})
         await asyncio.sleep(0.5)
         await self.page.type('.hwid-input-pwd', password, {'delay': 10})
         await self.page.click('.normalBtn')

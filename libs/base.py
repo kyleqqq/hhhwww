@@ -11,6 +11,7 @@ from typing import Optional
 import requests
 from pyppeteer import launch, launcher
 from pyppeteer.browser import Browser
+from pyppeteer.network_manager import Request
 from pyppeteer.page import Page
 
 
@@ -63,7 +64,8 @@ class BaseClient:
     async def init(self, **kwargs):
         # launcher.DEFAULT_ARGS.remove('--enable-automation')
         self.browser = await launch(ignorehttpserrrors=True, headless=kwargs.get('headless', True),
-                                    args=['--disable-infobars', '--no-sandbox', '--start-maximized'])
+                                    args=['--disable-infobars', '--disable-web-security', '--no-sandbox',
+                                          '--start-maximized', '--disable-features=IsolateOrigins,site-per-process'])
         self.page = await self.browser.newPage()
         try:
             self.page.on('dialog', lambda dialog: asyncio.ensure_future(self.close_dialog(dialog)))
@@ -83,13 +85,17 @@ class BaseClient:
             """
         await self.page.evaluateOnNewDocument(js_text)
 
+        # await self.page.setRequestInterception(True)
+        # self.page.on('request', self.intercept_request)
+
         await self.page.goto(self.url, {'waitUntil': 'load'})
 
-    async def intercept_request(self, request):
-        if request.resourceType in ["image"]:
-            await request.abort()
-        else:
-            await request.continue_()
+    async def intercept_request(self, request: Request):
+        self.logger.info(request.url)
+        # if request.resourceType in ["image"]:
+        #     await request.abort()
+        # else:
+        await request.continue_()
 
     async def handler(self, **kwargs):
         raise RuntimeError
