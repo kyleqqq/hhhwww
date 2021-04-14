@@ -3,7 +3,7 @@ name: hwpost
 on:
     workflow_dispatch:
     schedule:
-        - cron: "40 4 * * *"
+        - cron: "11 0 * * *"
     watch:
         types: [started]
 
