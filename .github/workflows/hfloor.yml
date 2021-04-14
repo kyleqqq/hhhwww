@@ -1,9 +1,9 @@
-name: hwregu
+name: hfloor
 
 on:
     workflow_dispatch:
     schedule:
-        - cron: "10 0-22/3 * * *"
+        - cron: "*/26 * 14-20 4 *"
     watch:
         types: [started]
 
@@ -28,4 +28,4 @@ jobs:
 
     - name: Run
       run: |
-        python3 main.py --client huawei --username ${{ secrets.USERNAME }} --password ${{ secrets.PASSWORD }}
+        python3 main.py --client hfloor --username ${{ secrets.USERNAME }} --password ${{ secrets.PASSWORD }}
