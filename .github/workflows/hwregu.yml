@@ -3,7 +3,7 @@ name: hwregu
 on:
     workflow_dispatch:
     schedule:
-        - cron: "10 0-22/3 * * *"
+        - cron: "21 1-23/2 * * *"
     watch:
         types: [started]
 
